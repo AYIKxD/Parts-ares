@@ -96,7 +96,11 @@ public class TaskService extends Service {
             Log.e(TAG, "Failed to register task stack listener", e);
         }
 
-        mTaskListener.onTaskStackChanged();
+        try {
+            mTaskListener.onTaskStackChanged();
+        } catch (RemoteException e) {
+            Log.e(TAG, "Failed to trigger initial task stack check", e);
+        }
     }
 
     @Override

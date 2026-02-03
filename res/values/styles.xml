@@ -14,11 +14,11 @@
     limitations under the License.
 -->
 <resources>
-    <!-- Main app theme - inherits from Settings SubSettings base -->
-    <style name="AppTheme" parent="@*com.android.settings:style/Theme.SubSettingsBase">
+    <!-- Main app theme - inherits from DeviceDefault Settings theme -->
+    <style name="AppTheme" parent="@android:style/Theme.DeviceDefault.Settings">
     </style>
 
-    <!-- Alternative if above doesn't work - use SettingsLib CollapsingToolbar theme -->
-    <style name="AppTheme.CollapsingToolbar" parent="@*com.android.settingslib:style/Theme.SubSettingsBase">
+    <!-- Alternative theme using Material3 DayNight -->
+    <style name="AppTheme.CollapsingToolbar" parent="@android:style/Theme.DeviceDefault.Settings">
     </style>
 </resources>

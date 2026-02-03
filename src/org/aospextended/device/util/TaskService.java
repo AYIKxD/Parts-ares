@@ -21,10 +21,10 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
+import android.os.RemoteException;
 import android.util.Slog;
 
-import com.android.systemui.shared.system.ActivityManagerWrapper;
-import com.android.systemui.shared.system.TaskStackChangeListener;
+import android.app.TaskStackListener;
 
 import androidx.preference.PreferenceManager;
 
@@ -63,7 +63,7 @@ public class TaskService extends Service {
     private ComponentName mTaskComponentName;
     private PackageManager mPm;
 
-    private final TaskStackChangeListener mTaskListener = new TaskStackChangeListener() {
+    private final TaskStackListener mTaskListener = new TaskStackListener() {
         @Override
         public void onTaskStackChanged() {
             AsyncTask.execute(() -> {
@@ -75,9 +75,11 @@ public class TaskService extends Service {
                     }
                 } catch (Exception e) {}
                 try {
-                    final ActivityInfo ai = mPm.getActivityInfo(mTaskComponentName, 0);
-                    String appName = ai.applicationInfo != null ? ai.applicationInfo.packageName : mTaskComponentName.getPackageName();
-                    saveAppName(appName);
+                    if (mTaskComponentName != null) {
+                        final ActivityInfo ai = mPm.getActivityInfo(mTaskComponentName, 0);
+                        String appName = ai.applicationInfo != null ? ai.applicationInfo.packageName : mTaskComponentName.getPackageName();
+                        saveAppName(appName);
+                    }
                 } catch (PackageManager.NameNotFoundException e) {
                 }
             });
@@ -88,7 +90,11 @@ public class TaskService extends Service {
     public void onCreate() {
         mPm = getPackageManager();
 
-        ActivityManagerWrapper.getInstance().addTaskStackListener(mTaskListener);
+        try {
+            ActivityTaskManager.getService().registerTaskStackListener(mTaskListener);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Failed to register task stack listener", e);
+        }
 
         mTaskListener.onTaskStackChanged();
     }
@@ -101,6 +107,11 @@ public class TaskService extends Service {
 
     @Override
     public void onDestroy() {
+        try {
+            ActivityTaskManager.getService().unregisterTaskStackListener(mTaskListener);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Failed to unregister task stack listener", e);
+        }
         super.onDestroy();
     }
 

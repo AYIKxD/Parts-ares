@@ -76,7 +76,7 @@ public class TaskService extends Service {
                 } catch (Exception e) {}
                 try {
                     final ActivityInfo ai = mPm.getActivityInfo(mTaskComponentName, 0);
-                    String appName =  ai.applicationInfo.packageName;
+                    String appName = ai.applicationInfo != null ? ai.applicationInfo.packageName : mTaskComponentName.getPackageName();
                     saveAppName(appName);
                 } catch (PackageManager.NameNotFoundException e) {
                 }
@@ -88,7 +88,7 @@ public class TaskService extends Service {
     public void onCreate() {
         mPm = getPackageManager();
 
-        ActivityManagerWrapper.getInstance().registerTaskStackListener(mTaskListener);
+        ActivityManagerWrapper.getInstance().addTaskStackListener(mTaskListener);
 
         mTaskListener.onTaskStackChanged();
     }

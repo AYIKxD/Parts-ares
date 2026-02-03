@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.KeyEvent;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import androidx.preference.Preference;
@@ -29,7 +30,6 @@ import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
 
 import com.android.settingslib.widget.MainSwitchPreference;
-import com.android.settingslib.widget.OnMainSwitchChangeListener;
 import com.android.internal.os.DeviceKeyHandler;
 
 import org.aospextended.device.util.Action;
@@ -40,7 +40,7 @@ import org.aospextended.device.R;
 import org.aospextended.device.util.ShortcutPickerHelper;
 
 public class CustomTrigger extends PreferenceFragment implements
-        OnPreferenceChangeListener, OnMainSwitchChangeListener,
+        OnPreferenceChangeListener, CompoundButton.OnCheckedChangeListener,
 	OnPreferenceClickListener, ShortcutPickerHelper.OnPickListener {
 
     private static final String TAG = "CustomTrigger";
@@ -186,9 +186,10 @@ public class CustomTrigger extends PreferenceFragment implements
     }
 
     @Override
-    public void onSwitchChanged(Switch switchView, boolean isChecked) {
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         mEnableCustomTrigger.setChecked(isChecked);
         Utils.putIntSystem(getActivity(), PREF_CUSTOM_TRIGGER_ENABLE, isChecked ? 1 : 0);
+        mHapticFeedback.setEnabled(isChecked);
     }
 
     // Reset all entries to default.

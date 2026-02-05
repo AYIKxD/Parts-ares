@@ -59,11 +59,11 @@
                 android:value="@color/icon_bg_color"/>
             <meta-data
                 android:name="com.android.settings.category"
-                android:value="com.android.settings.category.ia.homepage" />
+                android:value="com.android.settings.category.ia.system" />
             <meta-data android:name="com.android.settings.summary"
                 android:resource="@string/XiaomiParts_summary" />
             <meta-data android:name="com.android.settings.order"
-                android:value="-1" />
+                android:value="100" />
         </activity-alias>
 
         <activity

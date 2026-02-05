@@ -189,10 +189,10 @@ public class TriggerUtils {
     public void onEvent(KeyEvent event) {
         if (DEBUG) Slog.d(TAG, "onEvent");
         if (isDoubleClick(event)) {
-            handleDoubleClick(event.getKeyCode() == 131);
+            handleDoubleClick(event.getKeyCode() == 59);
         }
         if (isLongPress(event)) {
-            handleLongPress(event.getKeyCode() == 131);
+            handleLongPress(event.getKeyCode() == 59);
         }
     }
 

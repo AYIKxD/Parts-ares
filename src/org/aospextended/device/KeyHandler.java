@@ -301,6 +301,21 @@ public class KeyHandler implements DeviceKeyHandler {
     }
 
     public KeyEvent handleTriggerEvent(KeyEvent event) {
+        int keyCode = event.getKeyCode();
+        
+        // Slider keycodes (KEY_F3-F6): update Settings.System for slider state
+        // KEY_F3 (61) = Left slider open, KEY_F4 (62) = Left slider close
+        // KEY_F5 (63) = Right slider open, KEY_F6 (64) = Right slider close
+        if (keyCode >= 61 && keyCode <= 64 && event.getAction() == KeyEvent.ACTION_DOWN) {
+            boolean isLeft = (keyCode == 61 || keyCode == 62);
+            boolean isOpen = (keyCode == 61 || keyCode == 63);
+            String setting = isLeft ? "triggerleft" : "triggerright";
+            Settings.System.putInt(mContext.getContentResolver(), setting, isOpen ? 1 : 0);
+            if (DEBUG) Slog.d(TAG, "Slider event: " + setting + "=" + (isOpen ? 1 : 0));
+            return event;
+        }
+        
+        // Trigger button keycodes (KEY_F1=59, KEY_F2=60)
         if (!Utils.isGameApp(mContext)) {
             if (DEBUG) Slog.d(TAG, "not a game app");
             tr.onEvent(event);
@@ -308,7 +323,7 @@ public class KeyHandler implements DeviceKeyHandler {
         }
 
         // Use modern touch injection instead of kernel driver writes
-        boolean isLeft = event.getKeyCode() == 131;
+        boolean isLeft = keyCode == 59;
         boolean down = event.getAction() == KeyEvent.ACTION_DOWN;
         mTouchInjector.handleTrigger(isLeft, down);
 

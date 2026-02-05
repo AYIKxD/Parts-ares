@@ -13,16 +13,6 @@
     </PreferenceCategory>
     
     <PreferenceCategory
-        android:key="doze_category"
-        android:title="@string/ambient_display_title">
-
-        <Preference
-            android:key="doze"
-            android:summary="@string/ambient_display_gestures_summary"
-            android:title="@string/ambient_display_gestures_title" />
-    </PreferenceCategory>
-
-    <PreferenceCategory
         android:key="triggers_category"
         android:title="Triggers">
 

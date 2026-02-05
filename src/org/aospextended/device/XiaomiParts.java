@@ -41,7 +41,7 @@ import androidx.preference.TwoStatePreference;
 import org.aospextended.device.gestures.TouchGestures;
 import org.aospextended.device.gestures.TouchGesturesActivity;
 import org.aospextended.device.util.AppListActivity;
-import org.aospextended.device.doze.DozeSettingsActivity;
+
 import org.aospextended.device.vibration.VibratorStrengthPreference;
 
 import java.text.DateFormat;
@@ -73,7 +73,7 @@ public class XiaomiParts extends PreferenceFragmentCompat implements
 
     private SharedPreferences mPrefs;
 
-    private Preference mDozePref;
+
     private Preference mGesturesPref;
     private SwitchPreference mLedDisco;
     private VibratorStrengthPreference mVibratorStrength;
@@ -114,15 +114,7 @@ public class XiaomiParts extends PreferenceFragmentCompat implements
             getPreferenceScreen().removePreference(gestures);
         }
 
-        mDozePref = findPreference("doze");
-        mDozePref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(getContext(), DozeSettingsActivity.class);
-                startActivity(intent);
-                return true;
-            }
-        });
+
 
         mGame = findPreference("game");
         mGame.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {

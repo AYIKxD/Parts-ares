@@ -31,7 +31,7 @@ import org.aospextended.device.XiaomiParts;
 import org.aospextended.device.gestures.TouchGestures;
 import org.aospextended.device.util.Utils;
 import org.aospextended.device.util.TaskService;
-import org.aospextended.device.doze.DozeUtils;
+
 import org.aospextended.device.vibration.VibratorStrengthPreference;
 import org.aospextended.device.triggers.TriggerService;
 import org.aospextended.device.triggers.TriggerUtils;
@@ -48,7 +48,7 @@ public class BootReceiver extends BroadcastReceiver {
             TouchGestures.enableDt2w(prefs.getBoolean(
                 TouchGestures.PREF_DT2W_ENABLE, true));
         }
-        DozeUtils.checkDozeService(context);
+
 //        VibratorStrengthPreference.restore(context);
         TriggerService.onBoot(context);
 //        TriggerUtils tr = TriggerUtils.getInstance(context);

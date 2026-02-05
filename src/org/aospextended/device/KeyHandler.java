@@ -61,7 +61,7 @@ import com.android.internal.util.ArrayUtils;
 import org.aospextended.device.util.Action;
 import org.aospextended.device.util.Action;
 import org.aospextended.device.util.Utils;
-import org.aospextended.device.doze.DozeUtils;
+
 import org.aospextended.device.gestures.TouchGestures;
 import org.aospextended.device.triggers.TouchInjector;
 import org.aospextended.device.triggers.TriggerService;
@@ -188,11 +188,7 @@ public class KeyHandler implements DeviceKeyHandler {
                             Action.ACTION_WAKE_DEVICE);
                             doHapticFeedback();
 
-                    if (mPref.getBoolean(DozeUtils.GESTURE_DOUBLE_TAP, false)) {
-                        action = null;
-                        DozeUtils.launchDozePulse(mAppContext);
-                        doHapticFeedback();
-                    }
+
                 }
                 break;
             case GESTURE_W_SCANCODE:

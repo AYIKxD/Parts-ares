@@ -17,7 +17,7 @@
 
 
     <uses-sdk
-        android:minSdkVersion="30"
+        android:minSdkVersion="36"
         android:targetSdkVersion="36"/>
 
     <application

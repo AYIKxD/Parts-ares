@@ -45,7 +45,7 @@ import androidx.preference.TwoStatePreference;
 import org.aospextended.device.gestures.TouchGestures;
 import org.aospextended.device.gestures.TouchGesturesActivity;
 import org.aospextended.device.util.AppListActivity;
-import org.aospextended.device.doze.DozeSettingsActivity;
+
 import org.aospextended.device.vibration.VibratorStrengthPreference;
 
 import java.text.DateFormat;

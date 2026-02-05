@@ -43,7 +43,7 @@
             android:name=".XiaomiParts"
             android:label="@string/XiaomiParts"
             android:exported="true"
-            android:targetActivity="XiaomiPartsActivity">
+            android:targetActivity=".XiaomiPartsActivity">
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
                 <action android:name="com.android.settings.action.EXTRA_SETTINGS" />

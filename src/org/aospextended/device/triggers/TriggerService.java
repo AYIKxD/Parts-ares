@@ -91,6 +91,9 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
         Utils.writeValue("/proc/touchpanel/left_trigger_y", prefs.getString("left_trigger_y", "700"));
         Utils.writeValue("/proc/touchpanel/right_trigger_x", prefs.getString("right_trigger_x", "540"));
         Utils.writeValue("/proc/touchpanel/right_trigger_y", prefs.getString("right_trigger_y", "1700"));
+        // Enable triggers at kernel level
+        Utils.writeValue("/proc/touchpanel/left_trigger_enable", "1");
+        Utils.writeValue("/proc/touchpanel/right_trigger_enable", "1");
     }
 
     public static TriggerService getInstance(Context context) {

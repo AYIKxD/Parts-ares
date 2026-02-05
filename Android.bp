@@ -46,4 +46,8 @@ android_app {
     },
     platform_apis: true,
 
+    min_sdk_version: "30",
+    target_sdk_version: "36",
+
+
 }

@@ -10,15 +10,15 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.hardware.input.InputManager
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.SystemClock
-import android.util.DisplayMetrics
 import android.util.Log
 import org.aospextended.device.triggers.TriggerUtils
+import org.aospextended.device.util.Utils
 
 /**
  * Service that monitors trigger hardware via /dev/gamekey and bridges to existing XiaomiParts functionality.
@@ -56,6 +56,7 @@ class GamekeyService : Service() {
     private lateinit var touchInjector: GamekeyTouchInjector
     private var triggerUtils: TriggerUtils? = null
     private val handler = Handler(Looper.getMainLooper())
+    private lateinit var prefs: SharedPreferences
     
     // Screen state receiver
     private var screenStateReceiver: BroadcastReceiver? = null
@@ -82,6 +83,7 @@ class GamekeyService : Service() {
         Log.i(TAG, "GamekeyService starting")
 
         try {
+            prefs = Utils.getSharedPreferences(this)
             triggerUtils = TriggerUtils.getInstance(this)
             touchInjector = GamekeyTouchInjector(this)
             
@@ -147,6 +149,21 @@ class GamekeyService : Service() {
     private fun unregisterScreenStateReceiver() {
         screenStateReceiver?.let { unregisterReceiver(it) }
         screenStateReceiver = null
+    }
+
+    /**
+     * Get trigger position from SharedPreferences
+     */
+    private fun getTriggerX(isLeft: Boolean): Float {
+        val key = if (isLeft) "left_trigger_x" else "right_trigger_x"
+        val default = if (isLeft) "540" else "540"
+        return prefs.getString(key, default)?.toFloatOrNull() ?: 540f
+    }
+
+    private fun getTriggerY(isLeft: Boolean): Float {
+        val key = if (isLeft) "left_trigger_y" else "right_trigger_y"
+        val default = if (isLeft) "700" else "1700"
+        return prefs.getString(key, default)?.toFloatOrNull() ?: if (isLeft) 700f else 1700f
     }
 
     /**
@@ -230,25 +247,25 @@ class GamekeyService : Service() {
                 }, LONG_PRESS_DURATION_MS)
             }
             
-            // Inject touch down for gaming
-            val displayMetrics = resources.displayMetrics
-            if (isLeft) {
-                val x = displayMetrics.widthPixels * 0.25f
-                val y = displayMetrics.heightPixels * 0.5f
-                touchInjector.leftTriggerDown(x, y)
+            // Only inject touch events in game apps
+            if (Utils.isGameApp(this)) {
+                val x = getTriggerX(isLeft)
+                val y = getTriggerY(isLeft)
+                
+                if (isLeft) {
+                    touchInjector.leftTriggerDown(x, y)
+                } else {
+                    touchInjector.rightTriggerDown(x, y)
+                }
+                Log.d(TAG, "${if (isLeft) "Left" else "Right"} trigger DOWN at ($x, $y) - GAME APP")
             } else {
-                val x = displayMetrics.widthPixels * 0.75f
-                val y = displayMetrics.heightPixels * 0.5f
-                touchInjector.rightTriggerDown(x, y)
+                Log.d(TAG, "${if (isLeft) "Left" else "Right"} trigger DOWN - NOT GAME APP, skipping touch injection")
             }
-            
-            Log.d(TAG, "${if (isLeft) "Left" else "Right"} trigger DOWN")
             
         } else if (!pressed && wasDown) {
             // Button just released
             if (isLeft) {
                 leftTriggerDown = false
-                touchInjector.leftTriggerUp()
                 
                 // Check for double-click on release (if not long-pressed)
                 if (!leftLongPressHandled && leftClickCount >= 2) {
@@ -258,13 +275,21 @@ class GamekeyService : Service() {
                 }
             } else {
                 rightTriggerDown = false
-                touchInjector.rightTriggerUp()
                 
                 // Check for double-click on release (if not long-pressed)
                 if (!rightLongPressHandled && rightClickCount >= 2) {
                     triggerUtils?.handleDoubleClick(false)
                     rightClickCount = 0
                     Log.d(TAG, "Right double click triggered")
+                }
+            }
+            
+            // Only send UP if we were in a game app (touch was injected)
+            if (Utils.isGameApp(this)) {
+                if (isLeft) {
+                    touchInjector.leftTriggerUp()
+                } else {
+                    touchInjector.rightTriggerUp()
                 }
             }
             

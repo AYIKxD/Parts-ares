@@ -293,13 +293,17 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
                 mContext.unregisterReceiver(mIntentReceiver);
                 mReceiverRegistered = false;
             }
-            // Reset initialized so overlay can be shown fresh next time
-            mInitialized = false;
         } catch (IllegalArgumentException e) {
             Slog.w(TAG, "View not attached to window manager, ignoring", e);
         } catch (Exception e) {
             Slog.e(TAG, "Error hiding trigger overlay", e);
         }
+        // Reset all state so overlay can be shown fresh next time
+        mView = null;
+        image1 = null;
+        image2 = null;
+        button = null;
+        mInitialized = false;
     }
 
     private void updatePosition(boolean def) {

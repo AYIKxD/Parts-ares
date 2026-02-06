@@ -63,6 +63,11 @@ public class TriggerUtils {
         } else {
             mContext.registerReceiver(mBroadcastReceiver, filter);
         }
+        // Load sounds immediately if trigger_sound is enabled
+        // (handles case when created after BOOT_COMPLETED already happened)
+        if (Settings.System.getInt(mContext.getContentResolver(), "trigger_sound", 0) == 1) {
+            loadSoundResource();
+        }
     }
 
     public static TriggerUtils getInstance(Context context) {

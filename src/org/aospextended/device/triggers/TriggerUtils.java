@@ -83,6 +83,12 @@ public class TriggerUtils {
         boolean play = Settings.System.getInt(mContext.getContentResolver(), "trigger_sound", 0) == 1;
         if (!play) return;
         
+        // Lazy load sounds if not already loaded
+        if (!mIsSoundPooLoadComplete && LOADED_SOUND_IDS.size() == 0) {
+            if (DEBUG) Slog.d(TAG, "Lazy loading sounds");
+            loadSoundResource();
+        }
+        
         // Don't play sounds in vibrate or silent mode
         android.media.AudioManager audioManager = (android.media.AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         int ringerMode = audioManager.getRingerMode();

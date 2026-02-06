@@ -64,7 +64,8 @@ class GamekeyService : Service() {
     // Trigger state tracking
     private var leftTriggerDown = false
     private var rightTriggerDown = false
-    private var slidersOpen = false
+    private var leftSliderOpen = false
+    private var rightSliderOpen = false
     
     // Double-click detection
     private var lastLeftClickTime = 0L
@@ -178,18 +179,18 @@ class GamekeyService : Service() {
         keyLeft: Boolean,
         keyRight: Boolean
     ) {
-        val newSlidersOpen = hallLeft && hallRight
+        // Handle left slider state change (for sounds)
+        if (hallLeft != leftSliderOpen) {
+            leftSliderOpen = hallLeft
+            triggerUtils?.triggerAction(true, hallLeft)
+            Log.d(TAG, "Left slider: $hallLeft")
+        }
         
-        // Handle slider state change (for sounds)
-        if (newSlidersOpen != slidersOpen) {
-            slidersOpen = newSlidersOpen
-            if (hallLeft) {
-                triggerUtils?.triggerAction(true, hallLeft)
-            }
-            if (hallRight) {
-                triggerUtils?.triggerAction(false, hallRight)
-            }
-            Log.d(TAG, "Sliders state: $slidersOpen")
+        // Handle right slider state change (for sounds)
+        if (hallRight != rightSliderOpen) {
+            rightSliderOpen = hallRight
+            triggerUtils?.triggerAction(false, hallRight)
+            Log.d(TAG, "Right slider: $hallRight")
         }
         
         // Handle button presses

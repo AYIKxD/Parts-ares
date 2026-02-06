@@ -16,8 +16,10 @@
 
 package org.aospextended.device.triggers;
 
-import android.content.ComponentName;
+import android.content.Intent;
 import android.graphics.drawable.Icon;
+import android.os.Handler;
+import android.os.Looper;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 import android.util.Log;
@@ -26,12 +28,12 @@ import org.aospextended.device.R;
 
 /**
  * Quick Settings tile to show/hide the trigger position overlay.
- * Users can tap this tile to quickly adjust trigger positions during gaming.
+ * Collapses the panel first, then shows the overlay in the current app.
  */
 public class TriggerTileService extends TileService {
 
     private static final String TAG = "TriggerTileService";
-    private TriggerService mTriggerService;
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     @Override
     public void onStartListening() {
@@ -43,28 +45,47 @@ public class TriggerTileService extends TileService {
     public void onClick() {
         super.onClick();
         
-        mTriggerService = TriggerService.getInstance(this);
+        TriggerService triggerService = TriggerService.getInstance(this);
         
-        if (mTriggerService != null) {
-            if (mTriggerService.isShowing()) {
-                mTriggerService.hide();
-                Log.d(TAG, "Hiding trigger overlay");
-            } else {
-                mTriggerService.show();
-                Log.d(TAG, "Showing trigger overlay");
-            }
-            updateTileState();
+        if (triggerService != null) {
+            boolean wasShowing = triggerService.isShowing();
+            
+            // Collapse the panel first, then toggle overlay
+            collapsePanelAndRun(() -> {
+                if (wasShowing) {
+                    triggerService.hide();
+                    Log.d(TAG, "Hiding trigger overlay");
+                } else {
+                    triggerService.init(this);
+                    triggerService.show();
+                    Log.d(TAG, "Showing trigger overlay");
+                }
+            });
         } else {
             Log.e(TAG, "TriggerService is null");
         }
+        
+        updateTileState();
+    }
+
+    private void collapsePanelAndRun(Runnable action) {
+        // Collapse the Quick Settings panel
+        try {
+            sendBroadcast(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to collapse panel", e);
+        }
+        
+        // Run action after a short delay to allow panel to close
+        mHandler.postDelayed(action, 300);
     }
 
     private void updateTileState() {
         Tile tile = getQsTile();
         if (tile == null) return;
 
-        mTriggerService = TriggerService.getInstance(this);
-        boolean isActive = mTriggerService != null && mTriggerService.isShowing();
+        TriggerService triggerService = TriggerService.getInstance(this);
+        boolean isActive = triggerService != null && triggerService.isShowing();
 
         tile.setState(isActive ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
         tile.setLabel(getString(R.string.trigger_tile_label));

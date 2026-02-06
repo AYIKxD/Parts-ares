@@ -318,11 +318,8 @@ public class KeyHandler implements DeviceKeyHandler {
             return event;
         }
 
-        // Use modern touch injection instead of kernel driver writes
-        boolean isLeft = keyCode == 59;
-        boolean down = event.getAction() == KeyEvent.ACTION_DOWN;
-        mTouchInjector.handleTrigger(isLeft, down);
-
+        // Touch injection is now handled by GamekeyService via /dev/gamekey
+        // KeyHandler no longer needs to inject touch events
         return event;
     }
 

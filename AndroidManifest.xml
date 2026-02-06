@@ -131,6 +131,21 @@
           </intent-filter>
         </activity>
 
+        <!-- Quick Settings Tile for Trigger Overlay -->
+        <service
+            android:name=".triggers.TriggerTileService"
+            android:icon="@drawable/ic_trigger_tile"
+            android:label="@string/trigger_tile_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.quicksettings.ACTIVE_TILE"
+                android:value="false" />
+        </service>
+
     </application>
 
 </manifest>

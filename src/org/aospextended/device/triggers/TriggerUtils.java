@@ -175,8 +175,31 @@ public class TriggerUtils {
             else {
                 n = 0;
             }
-            if (DEBUG) Slog.d(TAG, "playSound: playing: intValue=" + intValue);
-            mSoundPool.play(intValue, 1.0f, 1.0f, 1, n, 0.95f);
+            
+            // Parse sound key to get side (format: type-side-state, e.g., "classic-0-1")
+            // side=0 means left trigger, side=1 means right trigger
+            float leftVolume = 1.0f;
+            float rightVolume = 1.0f;
+            try {
+                String[] parts = s.split("-");
+                if (parts.length >= 2) {
+                    int side = Integer.parseInt(parts[1]);
+                    if (side == 0) {
+                        // Left trigger - play from left speaker only
+                        leftVolume = 1.0f;
+                        rightVolume = 0.1f;  // Small amount to avoid complete silence
+                    } else {
+                        // Right trigger - play from right speaker only
+                        leftVolume = 0.1f;
+                        rightVolume = 1.0f;
+                    }
+                }
+            } catch (Exception e) {
+                // Use default stereo if parsing fails
+            }
+            
+            if (DEBUG) Slog.d(TAG, "playSound: playing: intValue=" + intValue + ", L=" + leftVolume + ", R=" + rightVolume);
+            mSoundPool.play(intValue, leftVolume, rightVolume, 1, n, 0.95f);
         }
     }
 

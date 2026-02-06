@@ -104,6 +104,10 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
         return mInstance;
     }
 
+    public boolean isShowing() {
+        return mShowing;
+    }
+
     private TriggerService(Context context) {
         mContext = context;
     }

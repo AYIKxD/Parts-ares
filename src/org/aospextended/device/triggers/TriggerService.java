@@ -73,6 +73,7 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
 
     private Context mContext;
     private static TriggerService mInstance;
+    private boolean mInitialized = false;
 
     private boolean mShowing;
 
@@ -113,6 +114,9 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
     }
 
     public void init(Context context) {
+        if (mInitialized) return;  // Prevent duplicate initialization
+        mInitialized = true;
+        
         mPrefs = Utils.getSharedPreferences(context);
 
         onBoot(context);

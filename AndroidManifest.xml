@@ -32,10 +32,12 @@
         <activity
             android:name=".XiaomiPartsActivity"
             android:label="@string/XiaomiParts"
-            android:exported="false">
+            android:icon="@drawable/ic_settings_gestures"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 	    </activity>
 

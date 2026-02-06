@@ -104,7 +104,6 @@ public class KeyHandler implements DeviceKeyHandler {
 
     public TriggerUtils tr = null;
     public TriggerService triggerService;
-    private TouchInjector mTouchInjector;
 
     public KeyHandler(Context context) {
         mContext = context;
@@ -117,7 +116,6 @@ public class KeyHandler implements DeviceKeyHandler {
         mCustomSettingsObserver.observe();
         tr = TriggerUtils.getInstance(mAppContext);
         triggerService = TriggerService.getInstance(mAppContext);
-        mTouchInjector = new TouchInjector(mAppContext);
     }
 
     private class CustomSettingsObserver extends ContentObserver {

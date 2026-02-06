@@ -186,7 +186,9 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
         layoutParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE 
+                    | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                    | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSPARENT);
         layoutParams.gravity = Gravity.CENTER;
         layoutParams.x = 0;
@@ -277,8 +279,16 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
         if (!mShowing) return;
         mShowing = false;
         if (DEBUG) Slog.d(TAG, "hide");
-        windowManager.removeView(mView);
-        mContext.unregisterReceiver(mIntentReceiver);
+        try {
+            if (mView != null && mView.isAttachedToWindow()) {
+                windowManager.removeView(mView);
+            }
+            mContext.unregisterReceiver(mIntentReceiver);
+        } catch (IllegalArgumentException e) {
+            Slog.w(TAG, "View not attached to window manager, ignoring", e);
+        } catch (Exception e) {
+            Slog.e(TAG, "Error hiding trigger overlay", e);
+        }
     }
 
     private void updatePosition(boolean def) {

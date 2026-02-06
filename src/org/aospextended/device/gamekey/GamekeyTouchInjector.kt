@@ -18,13 +18,14 @@ import android.view.MotionEvent
 /**
  * Injects touch events for trigger buttons.
  * 
- * IMPORTANT: Each trigger is handled completely independently as separate touch gestures.
- * This means left and right triggers don't interfere with each other.
- * Each trigger gets its own downTime and lifecycle.
+ * Each trigger is handled completely independently as separate touch gestures.
+ * Both triggers use pointer ID 0 since they are independent touch sequences.
  */
 class GamekeyTouchInjector(context: Context) {
     companion object {
         private const val TAG = "GamekeyTouchInjector"
+        // INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH = 2 (more reliable for games)
+        private const val INJECT_MODE = 2
     }
 
     private val inputManager = context.getSystemService(Context.INPUT_SERVICE) as InputManager
@@ -35,14 +36,12 @@ class GamekeyTouchInjector(context: Context) {
     private var leftX = 0f
     private var leftY = 0f
     private var leftDownTime = 0L
-    private var leftPointerId = 0  // Fixed pointer ID for left
     
     // Right trigger state - completely independent
     private var rightActive = false
     private var rightX = 0f
     private var rightY = 0f
     private var rightDownTime = 0L
-    private var rightPointerId = 1  // Fixed pointer ID for right
     
     private val lock = Any()
 
@@ -58,7 +57,7 @@ class GamekeyTouchInjector(context: Context) {
             leftDownTime = SystemClock.uptimeMillis()
             
             // Send independent DOWN event for left trigger
-            sendSingleTouchEvent(MotionEvent.ACTION_DOWN, leftDownTime, leftDownTime, leftX, leftY, leftPointerId)
+            injectTouchEvent(MotionEvent.ACTION_DOWN, leftDownTime, leftDownTime, leftX, leftY)
             Log.d(TAG, "Left DOWN at ($x, $y)")
         }
     }
@@ -72,7 +71,7 @@ class GamekeyTouchInjector(context: Context) {
             
             val eventTime = SystemClock.uptimeMillis()
             // Send independent UP event for left trigger
-            sendSingleTouchEvent(MotionEvent.ACTION_UP, leftDownTime, eventTime, leftX, leftY, leftPointerId)
+            injectTouchEvent(MotionEvent.ACTION_UP, leftDownTime, eventTime, leftX, leftY)
             
             leftActive = false
             leftDownTime = 0L
@@ -92,7 +91,7 @@ class GamekeyTouchInjector(context: Context) {
             rightDownTime = SystemClock.uptimeMillis()
             
             // Send independent DOWN event for right trigger
-            sendSingleTouchEvent(MotionEvent.ACTION_DOWN, rightDownTime, rightDownTime, rightX, rightY, rightPointerId)
+            injectTouchEvent(MotionEvent.ACTION_DOWN, rightDownTime, rightDownTime, rightX, rightY)
             Log.d(TAG, "Right DOWN at ($x, $y)")
         }
     }
@@ -106,7 +105,7 @@ class GamekeyTouchInjector(context: Context) {
             
             val eventTime = SystemClock.uptimeMillis()
             // Send independent UP event for right trigger
-            sendSingleTouchEvent(MotionEvent.ACTION_UP, rightDownTime, eventTime, rightX, rightY, rightPointerId)
+            injectTouchEvent(MotionEvent.ACTION_UP, rightDownTime, eventTime, rightX, rightY)
             
             rightActive = false
             rightDownTime = 0L
@@ -125,12 +124,12 @@ class GamekeyTouchInjector(context: Context) {
         synchronized(lock) {
             val eventTime = SystemClock.uptimeMillis()
             if (leftActive) {
-                sendSingleTouchEvent(MotionEvent.ACTION_CANCEL, leftDownTime, eventTime, leftX, leftY, leftPointerId)
+                injectTouchEvent(MotionEvent.ACTION_CANCEL, leftDownTime, eventTime, leftX, leftY)
                 leftActive = false
                 leftDownTime = 0L
             }
             if (rightActive) {
-                sendSingleTouchEvent(MotionEvent.ACTION_CANCEL, rightDownTime, eventTime, rightX, rightY, rightPointerId)
+                injectTouchEvent(MotionEvent.ACTION_CANCEL, rightDownTime, eventTime, rightX, rightY)
                 rightActive = false
                 rightDownTime = 0L
             }
@@ -138,19 +137,18 @@ class GamekeyTouchInjector(context: Context) {
     }
 
     /**
-     * Send a single-touch event with one pointer.
-     * Each trigger is treated as a completely separate touch sequence.
+     * Inject a touch event using InputManager.
+     * Uses pointer ID 0 for all events (standard single-touch).
      */
-    private fun sendSingleTouchEvent(
+    private fun injectTouchEvent(
         action: Int,
         downTime: Long,
         eventTime: Long,
         x: Float,
-        y: Float,
-        pointerId: Int
+        y: Float
     ) {
         val props = MotionEvent.PointerProperties().apply {
-            id = pointerId
+            id = 0  // Always use pointer ID 0 for single-touch events
             toolType = MotionEvent.TOOL_TYPE_FINGER
         }
         
@@ -165,24 +163,19 @@ class GamekeyTouchInjector(context: Context) {
             downTime,
             eventTime,
             action,
-            1,  // Always 1 pointer per event
+            1,  // 1 pointer
             arrayOf(props),
             arrayOf(coords),
-            0,
-            0,
-            1f,
-            1f,
-            0,
-            0,
+            0,  // metaState
+            0,  // buttonState
+            1f, // xPrecision
+            1f, // yPrecision
+            0,  // deviceId (0 = virtual)
+            0,  // edgeFlags
             InputDevice.SOURCE_TOUCHSCREEN,
-            0
+            0   // flags
         )
         
-        sendEvent(event)
-        event.recycle()
-    }
-
-    private fun sendEvent(event: MotionEvent) {
         try {
             // Use reflection to call injectInputEvent
             val method = InputManager::class.java.getMethod(
@@ -190,9 +183,12 @@ class GamekeyTouchInjector(context: Context) {
                 InputEvent::class.java,
                 Int::class.javaPrimitiveType
             )
-            method.invoke(inputManager, event, 0)  // INJECT_INPUT_EVENT_MODE_ASYNC = 0
+            val result = method.invoke(inputManager, event, INJECT_MODE)
+            Log.d(TAG, "Injected touch event: action=$action x=$x y=$y result=$result")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to inject touch event", e)
+        } finally {
+            event.recycle()
         }
     }
 }

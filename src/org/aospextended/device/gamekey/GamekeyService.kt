@@ -187,8 +187,10 @@ class GamekeyService : Service() {
             leftSliderOpen = hallLeft
             triggerUtils?.triggerAction(true, hallLeft)
             
-            // Alert slider: left slider toggles vibrate + DND
-            handleAlertSlider(hallLeft)
+            // Alert slider: left slider toggles vibrate + DND (only if enabled)
+            if (prefs.getBoolean("alert_slider_enabled", false)) {
+                handleAlertSlider(hallLeft)
+            }
             
             Log.d(TAG, "Left slider: $hallLeft")
         }

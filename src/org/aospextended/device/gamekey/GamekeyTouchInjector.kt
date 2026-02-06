@@ -12,33 +12,39 @@ import android.os.Looper
 import android.os.SystemClock
 import android.util.Log
 import android.view.InputDevice
+import android.view.InputEvent
 import android.view.MotionEvent
 
 /**
- * Injects touch events for trigger buttons during gaming.
- * Uses InputManager.injectInputEvent() to simulate screen touches.
+ * Injects touch events for trigger buttons.
+ * 
+ * IMPORTANT: Each trigger is handled completely independently as separate touch gestures.
+ * This means left and right triggers don't interfere with each other.
+ * Each trigger gets its own downTime and lifecycle.
  */
 class GamekeyTouchInjector(context: Context) {
     companion object {
         private const val TAG = "GamekeyTouchInjector"
     }
 
-    private val inputManager: InputManager = context.getSystemService(InputManager::class.java)
+    private val inputManager = context.getSystemService(Context.INPUT_SERVICE) as InputManager
     private val handler = Handler(Looper.getMainLooper())
-    private val lock = Any()
-
-    private var gestureDownTime = 0L
-
-    // Track current active trigger touches
+    
+    // Left trigger state - completely independent
     private var leftActive = false
-    private var leftId = 0
     private var leftX = 0f
     private var leftY = 0f
-
+    private var leftDownTime = 0L
+    private var leftPointerId = 0  // Fixed pointer ID for left
+    
+    // Right trigger state - completely independent
     private var rightActive = false
-    private var rightId = 1
     private var rightX = 0f
     private var rightY = 0f
+    private var rightDownTime = 0L
+    private var rightPointerId = 1  // Fixed pointer ID for right
+    
+    private val lock = Any()
 
     /**
      * Press left trigger at (x,y)
@@ -49,16 +55,10 @@ class GamekeyTouchInjector(context: Context) {
             leftActive = true
             leftX = x
             leftY = y
+            leftDownTime = SystemClock.uptimeMillis()
             
-            val eventTime = SystemClock.uptimeMillis()
-            if (!rightActive) {
-                // First finger down
-                gestureDownTime = eventTime
-                sendEvent(createEvent(MotionEvent.ACTION_DOWN, eventTime))
-            } else {
-                // Second finger down
-                sendEvent(createEvent(MotionEvent.ACTION_POINTER_DOWN or (getPointerIndex(true) shl MotionEvent.ACTION_POINTER_INDEX_SHIFT), eventTime))
-            }
+            // Send independent DOWN event for left trigger
+            sendSingleTouchEvent(MotionEvent.ACTION_DOWN, leftDownTime, leftDownTime, leftX, leftY, leftPointerId)
             Log.d(TAG, "Left DOWN at ($x, $y)")
         }
     }
@@ -71,15 +71,11 @@ class GamekeyTouchInjector(context: Context) {
             if (!leftActive) return
             
             val eventTime = SystemClock.uptimeMillis()
-            if (rightActive) {
-                // Other finger still down - pointer up
-                sendEvent(createEvent(MotionEvent.ACTION_POINTER_UP or (getPointerIndex(true) shl MotionEvent.ACTION_POINTER_INDEX_SHIFT), eventTime))
-            } else {
-                // Last finger up
-                sendEvent(createEvent(MotionEvent.ACTION_UP, eventTime))
-                gestureDownTime = 0L
-            }
+            // Send independent UP event for left trigger
+            sendSingleTouchEvent(MotionEvent.ACTION_UP, leftDownTime, eventTime, leftX, leftY, leftPointerId)
+            
             leftActive = false
+            leftDownTime = 0L
             Log.d(TAG, "Left UP")
         }
     }
@@ -93,16 +89,10 @@ class GamekeyTouchInjector(context: Context) {
             rightActive = true
             rightX = x
             rightY = y
+            rightDownTime = SystemClock.uptimeMillis()
             
-            val eventTime = SystemClock.uptimeMillis()
-            if (!leftActive) {
-                // First finger down
-                gestureDownTime = eventTime
-                sendEvent(createEvent(MotionEvent.ACTION_DOWN, eventTime))
-            } else {
-                // Second finger down
-                sendEvent(createEvent(MotionEvent.ACTION_POINTER_DOWN or (getPointerIndex(false) shl MotionEvent.ACTION_POINTER_INDEX_SHIFT), eventTime))
-            }
+            // Send independent DOWN event for right trigger
+            sendSingleTouchEvent(MotionEvent.ACTION_DOWN, rightDownTime, rightDownTime, rightX, rightY, rightPointerId)
             Log.d(TAG, "Right DOWN at ($x, $y)")
         }
     }
@@ -115,15 +105,11 @@ class GamekeyTouchInjector(context: Context) {
             if (!rightActive) return
             
             val eventTime = SystemClock.uptimeMillis()
-            if (leftActive) {
-                // Other finger still down - pointer up
-                sendEvent(createEvent(MotionEvent.ACTION_POINTER_UP or (getPointerIndex(false) shl MotionEvent.ACTION_POINTER_INDEX_SHIFT), eventTime))
-            } else {
-                // Last finger up
-                sendEvent(createEvent(MotionEvent.ACTION_UP, eventTime))
-                gestureDownTime = 0L
-            }
+            // Send independent UP event for right trigger
+            sendSingleTouchEvent(MotionEvent.ACTION_UP, rightDownTime, eventTime, rightX, rightY, rightPointerId)
+            
             rightActive = false
+            rightDownTime = 0L
             Log.d(TAG, "Right UP")
         }
     }
@@ -137,121 +123,76 @@ class GamekeyTouchInjector(context: Context) {
 
     fun cancelAll() {
         synchronized(lock) {
-            if (leftActive || rightActive) {
-                val eventTime = SystemClock.uptimeMillis()
-                sendEvent(createEvent(MotionEvent.ACTION_CANCEL, eventTime))
+            val eventTime = SystemClock.uptimeMillis()
+            if (leftActive) {
+                sendSingleTouchEvent(MotionEvent.ACTION_CANCEL, leftDownTime, eventTime, leftX, leftY, leftPointerId)
                 leftActive = false
+                leftDownTime = 0L
+            }
+            if (rightActive) {
+                sendSingleTouchEvent(MotionEvent.ACTION_CANCEL, rightDownTime, eventTime, rightX, rightY, rightPointerId)
                 rightActive = false
-                gestureDownTime = 0L
+                rightDownTime = 0L
             }
         }
     }
 
-    private fun getPointerIndex(isLeft: Boolean): Int {
-        // When both are active, left is index 0, right is index 1
-        return if (isLeft) 0 else if (leftActive) 1 else 0
-    }
-
-    private fun createEvent(action: Int, eventTime: Long): MotionEvent {
-        synchronized(lock) {
-            val pointerProps = mutableListOf<MotionEvent.PointerProperties>()
-            val pointerCoords = mutableListOf<MotionEvent.PointerCoords>()
-            
-            // Always add active pointers (or the one being released for UP events)
-            val actionMasked = action and MotionEvent.ACTION_MASK
-            val isUpAction = actionMasked == MotionEvent.ACTION_UP || 
-                            actionMasked == MotionEvent.ACTION_POINTER_UP ||
-                            actionMasked == MotionEvent.ACTION_CANCEL
-
-            // For UP events, include the pointer being released
-            // For other events, include only active pointers
-            val includeLeft = leftActive || (isUpAction && !leftActive && !rightActive)
-            val includeRight = rightActive || (isUpAction && !leftActive && !rightActive && !includeLeft)
-            
-            // Determine which pointers to include
-            val shouldIncludeLeft = if (isUpAction) {
-                // For single UP, include the last active pointer
-                // For POINTER_UP, include all current pointers
-                leftActive || (actionMasked == MotionEvent.ACTION_UP && gestureDownTime != 0L)
-            } else {
-                leftActive
-            }
-            
-            val shouldIncludeRight = if (isUpAction) {
-                rightActive || (actionMasked == MotionEvent.ACTION_UP && gestureDownTime != 0L && !shouldIncludeLeft)
-            } else {
-                rightActive
-            }
-
-            if (leftActive || (actionMasked == MotionEvent.ACTION_UP && !rightActive)) {
-                pointerProps.add(MotionEvent.PointerProperties().apply {
-                    id = leftId
-                    toolType = MotionEvent.TOOL_TYPE_FINGER
-                })
-                pointerCoords.add(MotionEvent.PointerCoords().apply {
-                    x = leftX
-                    y = leftY
-                    pressure = if (isUpAction && !rightActive) 0f else 1f
-                    size = 0.1f
-                })
-            }
-
-            if (rightActive || (actionMasked == MotionEvent.ACTION_UP && !leftActive && pointerProps.isEmpty())) {
-                pointerProps.add(MotionEvent.PointerProperties().apply {
-                    id = rightId
-                    toolType = MotionEvent.TOOL_TYPE_FINGER
-                })
-                pointerCoords.add(MotionEvent.PointerCoords().apply {
-                    x = rightX
-                    y = rightY
-                    pressure = if (isUpAction && !leftActive) 0f else 1f
-                    size = 0.1f
-                })
-            }
-
-            // Safety check - must have at least 1 pointer
-            if (pointerProps.isEmpty()) {
-                Log.w(TAG, "No pointers for event, using fallback")
-                pointerProps.add(MotionEvent.PointerProperties().apply {
-                    id = 0
-                    toolType = MotionEvent.TOOL_TYPE_FINGER
-                })
-                pointerCoords.add(MotionEvent.PointerCoords().apply {
-                    x = leftX.takeIf { it != 0f } ?: rightX
-                    y = leftY.takeIf { it != 0f } ?: rightY
-                    pressure = 0f
-                    size = 0.1f
-                })
-            }
-
-            return MotionEvent.obtain(
-                gestureDownTime.takeIf { it != 0L } ?: eventTime,
-                eventTime,
-                action,
-                pointerProps.size,
-                pointerProps.toTypedArray(),
-                pointerCoords.toTypedArray(),
-                0,
-                0,
-                1f,
-                1f,
-                0,
-                0,
-                InputDevice.SOURCE_TOUCHSCREEN,
-                0
-            )
+    /**
+     * Send a single-touch event with one pointer.
+     * Each trigger is treated as a completely separate touch sequence.
+     */
+    private fun sendSingleTouchEvent(
+        action: Int,
+        downTime: Long,
+        eventTime: Long,
+        x: Float,
+        y: Float,
+        pointerId: Int
+    ) {
+        val props = MotionEvent.PointerProperties().apply {
+            id = pointerId
+            toolType = MotionEvent.TOOL_TYPE_FINGER
         }
+        
+        val coords = MotionEvent.PointerCoords().apply {
+            this.x = x
+            this.y = y
+            pressure = 1.0f
+            size = 1.0f
+        }
+        
+        val event = MotionEvent.obtain(
+            downTime,
+            eventTime,
+            action,
+            1,  // Always 1 pointer per event
+            arrayOf(props),
+            arrayOf(coords),
+            0,
+            0,
+            1f,
+            1f,
+            0,
+            0,
+            InputDevice.SOURCE_TOUCHSCREEN,
+            0
+        )
+        
+        sendEvent(event)
+        event.recycle()
     }
 
     private fun sendEvent(event: MotionEvent) {
-        handler.post {
-            try {
-                inputManager.injectInputEvent(event, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC)
-            } catch (e: Exception) {
-                Log.e(TAG, "Error injecting event: ${e.message}")
-            } finally {
-                event.recycle()
-            }
+        try {
+            // Use reflection to call injectInputEvent
+            val method = InputManager::class.java.getMethod(
+                "injectInputEvent",
+                InputEvent::class.java,
+                Int::class.javaPrimitiveType
+            )
+            method.invoke(inputManager, event, 0)  // INJECT_INPUT_EVENT_MODE_ASYNC = 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to inject touch event", e)
         }
     }
 }

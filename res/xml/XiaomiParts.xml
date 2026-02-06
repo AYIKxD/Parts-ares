@@ -42,6 +42,12 @@
             android:summary="Customize trigger buttons for different purposes, only works in non-gaming apps"
             android:title="@string/custom_trigger" />
 
+        <SwitchPreference
+            android:key="alert_slider_enabled"
+            android:title="Alert Slider Mode"
+            android:summary="Left slider toggles Vibrate + DND mode (like OnePlus alert slider)"
+            android:defaultValue="false" />
+
      </PreferenceCategory>
 
     <PreferenceCategory

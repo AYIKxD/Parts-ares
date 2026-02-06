@@ -35,6 +35,7 @@ import org.aospextended.device.util.TaskService;
 import org.aospextended.device.vibration.VibratorStrengthPreference;
 import org.aospextended.device.triggers.TriggerService;
 import org.aospextended.device.triggers.TriggerUtils;
+import org.aospextended.device.gamekey.GamekeyService;
 
 public class BootReceiver extends BroadcastReceiver {
 
@@ -54,6 +55,9 @@ public class BootReceiver extends BroadcastReceiver {
 //        TriggerUtils tr = TriggerUtils.getInstance(context);
 //        tr.onBoot();
         context.startService(new Intent(context, TaskService.class));
+        
+        // Start the new Kotlin-based GamekeyService for trigger detection
+        GamekeyService.Companion.startService(context);
     }
 
     private void enableComponent(Context context, String component) {

@@ -59,11 +59,9 @@ import android.view.ViewConfiguration;
 import com.android.internal.os.DeviceKeyHandler;
 import com.android.internal.util.ArrayUtils;
 import org.aospextended.device.util.Action;
-import org.aospextended.device.util.Action;
 import org.aospextended.device.util.Utils;
 
 import org.aospextended.device.gestures.TouchGestures;
-import org.aospextended.device.triggers.TouchInjector;
 import org.aospextended.device.triggers.TriggerService;
 import org.aospextended.device.triggers.TriggerUtils;
 

@@ -199,9 +199,4 @@
     <string name="custom_trigger_haptic_feedback_title">Haptic feedback</string>
     <string name="custom_trigger_haptic_feedback_summary">Vibrate when a custom trigger action is detected</string>
 
-    <!-- Quick Settings Trigger Tile -->
-    <string name="trigger_tile_label">Trigger View</string>
-    <string name="trigger_tile_on">Visible</string>
-    <string name="trigger_tile_off">Hidden</string>
-
 </resources>

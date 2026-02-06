@@ -82,6 +82,15 @@ public class TriggerUtils {
         if (DEBUG) Slog.d(TAG, "left=" + left + ", open=" + open);
         boolean play = Settings.System.getInt(mContext.getContentResolver(), "trigger_sound", 0) == 1;
         if (!play) return;
+        
+        // Don't play sounds in vibrate or silent mode
+        android.media.AudioManager audioManager = (android.media.AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+        int ringerMode = audioManager.getRingerMode();
+        if (ringerMode != android.media.AudioManager.RINGER_MODE_NORMAL) {
+            if (DEBUG) Slog.d(TAG, "Skipping sound - ringer mode: " + ringerMode);
+            return;
+        }
+        
         String type = Settings.System.getString(mContext.getContentResolver(), "trigger_sound_type");
         if (type == null) type = "classic";
         StringBuilder sb = new StringBuilder();

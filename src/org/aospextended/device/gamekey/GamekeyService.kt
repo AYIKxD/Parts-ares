@@ -5,18 +5,21 @@
 
 package org.aospextended.device.gamekey
 
+import android.app.NotificationManager
 import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.media.AudioManager
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.SystemClock
 import android.util.Log
+import org.aospextended.device.triggers.TriggerService
 import org.aospextended.device.triggers.TriggerUtils
 import org.aospextended.device.util.Utils
 
@@ -179,10 +182,14 @@ class GamekeyService : Service() {
         keyLeft: Boolean,
         keyRight: Boolean
     ) {
-        // Handle left slider state change (for sounds)
+        // Handle left slider state change (for sounds + alert slider)
         if (hallLeft != leftSliderOpen) {
             leftSliderOpen = hallLeft
             triggerUtils?.triggerAction(true, hallLeft)
+            
+            // Alert slider: left slider toggles vibrate + DND
+            handleAlertSlider(hallLeft)
+            
             Log.d(TAG, "Left slider: $hallLeft")
         }
         
@@ -191,6 +198,32 @@ class GamekeyService : Service() {
             rightSliderOpen = hallRight
             triggerUtils?.triggerAction(false, hallRight)
             Log.d(TAG, "Right slider: $hallRight")
+        }
+        
+        // Auto-show trigger overlay when BOTH sliders are open
+        val bothSlidersOpen = leftSliderOpen && rightSliderOpen
+        if (bothSlidersOpen) {
+            try {
+                val triggerService = TriggerService.getInstance(this)
+                triggerService.init(this)
+                if (!triggerService.isShowing()) {
+                    triggerService.show()
+                    Log.d(TAG, "Both sliders open - showing trigger overlay")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to show trigger overlay", e)
+            }
+        } else if (!leftSliderOpen && !rightSliderOpen) {
+            // Auto-hide when BOTH sliders are closed
+            try {
+                val triggerService = TriggerService.getInstance(this)
+                if (triggerService.isShowing()) {
+                    triggerService.hide()
+                    Log.d(TAG, "Both sliders closed - hiding trigger overlay")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to hide trigger overlay", e)
+            }
         }
         
         // Handle button presses
@@ -297,4 +330,41 @@ class GamekeyService : Service() {
             Log.d(TAG, "${if (isLeft) "Left" else "Right"} trigger UP")
         }
     }
+
+    /**
+     * Alert slider implementation: left slider toggles vibrate + DND mode
+     * - Slider OPEN: Set to vibrate mode + enable DND
+     * - Slider CLOSED: Set to normal ringer mode + disable DND
+     */
+    private fun handleAlertSlider(sliderOpen: Boolean) {
+        try {
+            val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            
+            if (sliderOpen) {
+                // Slider opened = vibrate + DND
+                audioManager.ringerMode = AudioManager.RINGER_MODE_VIBRATE
+                
+                // Enable DND if we have permission
+                if (notificationManager.isNotificationPolicyAccessGranted) {
+                    notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_PRIORITY)
+                }
+                
+                Log.d(TAG, "Alert slider: VIBRATE + DND mode enabled")
+            } else {
+                // Slider closed = normal mode
+                audioManager.ringerMode = AudioManager.RINGER_MODE_NORMAL
+                
+                // Disable DND if we have permission
+                if (notificationManager.isNotificationPolicyAccessGranted) {
+                    notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
+                }
+                
+                Log.d(TAG, "Alert slider: NORMAL mode enabled")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to handle alert slider", e)
+        }
+    }
 }
+

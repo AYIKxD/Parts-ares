@@ -202,31 +202,7 @@ class GamekeyService : Service() {
             Log.d(TAG, "Right slider: $hallRight")
         }
         
-        // Auto-show trigger overlay when BOTH sliders are open
-        val bothSlidersOpen = leftSliderOpen && rightSliderOpen
-        if (bothSlidersOpen) {
-            try {
-                val triggerService = TriggerService.getInstance(this)
-                triggerService.init(this)
-                if (!triggerService.isShowing()) {
-                    triggerService.show()
-                    Log.d(TAG, "Both sliders open - showing trigger overlay")
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to show trigger overlay", e)
-            }
-        } else if (!leftSliderOpen && !rightSliderOpen) {
-            // Auto-hide when BOTH sliders are closed
-            try {
-                val triggerService = TriggerService.getInstance(this)
-                if (triggerService.isShowing()) {
-                    triggerService.hide()
-                    Log.d(TAG, "Both sliders closed - hiding trigger overlay")
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to hide trigger overlay", e)
-            }
-        }
+        // NOTE: Auto-show trigger overlay removed - user should enable it manually from settings
         
         // Handle button presses
         handleButtonState(true, keyLeft)

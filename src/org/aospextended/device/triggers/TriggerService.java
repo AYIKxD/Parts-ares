@@ -74,6 +74,7 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
     private Context mContext;
     private static TriggerService mInstance;
     private boolean mInitialized = false;
+    private boolean mReceiverRegistered = false;
 
     private boolean mShowing;
 
@@ -124,6 +125,7 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
         mContext.registerReceiver(mIntentReceiver, filter);
+        mReceiverRegistered = true;
 
         mHeight = context.getResources().getDimensionPixelSize(R.dimen.image_height);
 
@@ -287,7 +289,12 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
             if (mView != null && mView.isAttachedToWindow()) {
                 windowManager.removeView(mView);
             }
-            mContext.unregisterReceiver(mIntentReceiver);
+            if (mReceiverRegistered) {
+                mContext.unregisterReceiver(mIntentReceiver);
+                mReceiverRegistered = false;
+            }
+            // Reset initialized so overlay can be shown fresh next time
+            mInitialized = false;
         } catch (IllegalArgumentException e) {
             Slog.w(TAG, "View not attached to window manager, ignoring", e);
         } catch (Exception e) {

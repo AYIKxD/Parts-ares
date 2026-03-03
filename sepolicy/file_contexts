@@ -1,0 +1,2 @@
+# XiaomiParts - Gamekey device (trigger buttons and sliders)
+/dev/gamekey                                              u:object_r:gamekey_device:s0

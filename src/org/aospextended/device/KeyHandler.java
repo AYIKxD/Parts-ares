@@ -347,7 +347,8 @@ public class KeyHandler implements DeviceKeyHandler {
                 pointerProperties, pointerCoords, 0, 0,
                 1.0f, 1.0f, getInputDeviceId(inputSource),
                 0, inputSource, displayId, 0);
-        InputManager.getInstance().injectInputEvent(event,
+        InputManager im = (InputManager) mContext.getSystemService(Context.INPUT_SERVICE);
+        im.injectInputEvent(event,
                 InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
     }
 

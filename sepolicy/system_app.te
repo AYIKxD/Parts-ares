@@ -1,0 +1,12 @@
+# SEPolicy rules for XiaomiParts (system_app)
+#
+# XiaomiParts runs with android:sharedUserId="android.uid.system" so it runs
+# in the system_app domain. Grant access to device-specific hardware nodes.
+
+# Allow system_app to read from /dev/gamekey (trigger buttons and sliders)
+# Using vendor_gamekey_device type which is already defined in device tree
+allow system_app vendor_gamekey_device:chr_file { open read getattr };
+
+# NOTE: sysfs_leds and sysfs_vibrator access is blocked by neverallow rules
+# in coredomain.te. LED and vibrator control should have permissions set
+# via ueventd.rc (chmod 0666 or chown system).

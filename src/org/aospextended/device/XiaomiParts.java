@@ -217,9 +217,8 @@ public class XiaomiParts extends PreferenceFragmentCompat implements
                     .putString("trigger_sound_type", (String) newValue).commit();
             Settings.System.putString(getActivity().getContentResolver(), "trigger_sound_type", (String) newValue);
             mTriggerSoundType.setSummary(mTriggerSoundType.getEntries()[index]);
-            
             // Play a sound preview
-            TriggerUtils.getInstance(getActivity()).playTriggerSound(true);
+            TriggerUtils.getInstance(getActivity()).triggerAction(true, true);
             return true;
         }
 

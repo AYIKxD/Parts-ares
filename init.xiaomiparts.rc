@@ -1,0 +1,19 @@
+on boot
+    # Allow system to access the gamekey triggers device node
+    chown system system /dev/gamekey
+    chmod 0660 /dev/gamekey
+
+    # Allow system to access the LED sysfs nodes for direct controls via HAL or XiaomiParts
+    chown system system /sys/class/leds/red/brightness
+    chown system system /sys/class/leds/green/brightness
+    chown system system /sys/class/leds/blue/brightness
+    chown system system /sys/class/leds/red/breath
+    chown system system /sys/class/leds/green/breath
+    chown system system /sys/class/leds/blue/breath
+    
+    chmod 0664 /sys/class/leds/red/brightness
+    chmod 0664 /sys/class/leds/green/brightness
+    chmod 0664 /sys/class/leds/blue/brightness
+    chmod 0664 /sys/class/leds/red/breath
+    chmod 0664 /sys/class/leds/green/breath
+    chmod 0664 /sys/class/leds/blue/breath

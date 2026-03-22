@@ -1,0 +1,2 @@
+03-23 01:49:59.049  1126  1126 W android.hardwar: type=1400 audit(0.0:26): avc:  denied  { search } for  name="udc" dev="sysfs" ino=27003 scontext=u:r:mtk_hal_usb:s0 tcontext=u:object_r:sysfs_udc:s0 tclass=dir permissive=0
+03-23 01:50:19.709  4460  4460 W dmesg   : type=1400 audit(0.0:27): avc:  denied  { syslog_read } for  scontext=u:r:shell:s0 tcontext=u:r:kernel:s0 tclass=system permissive=0

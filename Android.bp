@@ -51,12 +51,22 @@ android_app {
     min_sdk_version: "36",
     target_sdk_version: "36",
 
-    required: ["privapp-permissions-xiaomiparts.xml"],
+    required: [
+        "privapp-permissions-xiaomiparts.xml",
+        "init.xiaomiparts.rc"
+    ],
 }
 
 prebuilt_etc {
     name: "privapp-permissions-xiaomiparts.xml",
     src: "privapp-permissions-xiaomiparts.xml",
     sub_dir: "permissions",
+    system_ext_specific: true,
+}
+
+prebuilt_etc {
+    name: "init.xiaomiparts.rc",
+    src: "init.xiaomiparts.rc",
+    sub_dir: "init",
     system_ext_specific: true,
 }

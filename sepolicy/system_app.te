@@ -10,3 +10,7 @@ allow system_app vendor_gamekey_device:chr_file { open read getattr };
 # Allow XiaomiParts to control the RGB LEDs (for disco mode)
 allow system_app vendor_sysfs_aw2013_leds:dir search;
 allow system_app vendor_sysfs_aw2013_leds:file { open read write getattr };
+
+# Allow XiaomiParts to control vibrator strength
+allow system_app vendor_sysfs_vibrator:dir search;
+allow system_app vendor_sysfs_vibrator:file { open read write getattr };

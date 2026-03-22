@@ -7,13 +7,21 @@ on boot
     chown system system /sys/class/leds/red/brightness
     chown system system /sys/class/leds/green/brightness
     chown system system /sys/class/leds/blue/brightness
-    chown system system /sys/class/leds/red/breath
-    chown system system /sys/class/leds/green/breath
-    chown system system /sys/class/leds/blue/breath
     
     chmod 0664 /sys/class/leds/red/brightness
     chmod 0664 /sys/class/leds/green/brightness
     chmod 0664 /sys/class/leds/blue/brightness
+
+    # Restorecon to apply custom sysfs_leds_xiaomi labels from file_contexts
+    # This securely bypasses AOSP's strict system_app sysfs_leds neverallows
+    restorecon /sys/class/leds/red/brightness
+    restorecon /sys/class/leds/green/brightness
+    restorecon /sys/class/leds/blue/brightness
+
+    chown system system /sys/class/leds/red/breath
+    chown system system /sys/class/leds/green/breath
+    chown system system /sys/class/leds/blue/breath
+    
     chmod 0664 /sys/class/leds/red/breath
     chmod 0664 /sys/class/leds/green/breath
     chmod 0664 /sys/class/leds/blue/breath

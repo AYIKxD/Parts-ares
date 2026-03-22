@@ -5,3 +5,9 @@
 #
 # Sysfs and proc paths are labeled via genfs_contexts (not file_contexts)
 # because they are pseudo-filesystems.
+#
+# Exception: To bypass AOSP neverallows, we explicitly label the RGB LED
+# symlinked files here and use restorecon in init.xiaomiparts.rc
+/sys/class/leds/red/brightness      u:object_r:sysfs_leds_xiaomi:s0
+/sys/class/leds/green/brightness    u:object_r:sysfs_leds_xiaomi:s0
+/sys/class/leds/blue/brightness     u:object_r:sysfs_leds_xiaomi:s0

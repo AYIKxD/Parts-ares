@@ -187,9 +187,10 @@ class GamekeyService : Service() {
             leftSliderOpen = hallLeft
             triggerUtils?.triggerAction(true, hallLeft)
             
-            // Alert slider: left slider toggles vibrate + DND (only if enabled)
-            if (prefs.getBoolean("alert_slider_enabled", false)) {
-                handleAlertSlider(hallLeft)
+            // Alert slider: left slider triggers selected mode
+            val alertMode = prefs.getString("alert_slider_mode", "disabled")
+            if (alertMode != "disabled") {
+                handleAlertSlider(hallLeft, alertMode)
             }
             
             Log.d(TAG, "Left slider: $hallLeft")
@@ -310,35 +311,56 @@ class GamekeyService : Service() {
     }
 
     /**
-     * Alert slider implementation: left slider toggles vibrate + DND mode
-     * - Slider OPEN: Set to vibrate mode + enable DND
-     * - Slider CLOSED: Set to normal ringer mode + disable DND
+     * Alert slider implementation with configurable modes.
+     * Modes: disabled, vibrate, silent, dnd_silent, dnd_vibrate, dnd_total
      */
-    private fun handleAlertSlider(sliderOpen: Boolean) {
+    private fun handleAlertSlider(sliderOpen: Boolean, mode: String?) {
         try {
             val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             
+            // Provide haptic feedback for slider toggle
+            triggerUtils?.triggerVibration(50) // Short 50ms pulse
+            
             if (sliderOpen) {
-                // Slider opened = vibrate + DND
-                audioManager.ringerMode = AudioManager.RINGER_MODE_VIBRATE
-                
-                // Enable DND if we have permission
-                if (notificationManager.isNotificationPolicyAccessGranted) {
-                    notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_PRIORITY)
+                // Slider OPEN: Apply selected profile
+                when (mode) {
+                    "vibrate" -> {
+                        audioManager.ringerMode = AudioManager.RINGER_MODE_VIBRATE
+                    }
+                    "silent" -> {
+                        audioManager.ringerMode = AudioManager.RINGER_MODE_SILENT
+                    }
+                    "dnd_silent" -> {
+                        audioManager.ringerMode = AudioManager.RINGER_MODE_SILENT
+                        if (notificationManager.isNotificationPolicyAccessGranted) {
+                            notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_PRIORITY)
+                        }
+                    }
+                    "dnd_vibrate" -> {
+                        audioManager.ringerMode = AudioManager.RINGER_MODE_VIBRATE
+                        if (notificationManager.isNotificationPolicyAccessGranted) {
+                            notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_PRIORITY)
+                        }
+                    }
+                    "dnd_total" -> {
+                        audioManager.ringerMode = AudioManager.RINGER_MODE_SILENT
+                        if (notificationManager.isNotificationPolicyAccessGranted) {
+                            notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_NONE)
+                        }
+                    }
                 }
-                
-                Log.d(TAG, "Alert slider: VIBRATE + DND mode enabled")
+                Log.d(TAG, "Alert slider OPENED: Applied mode $mode")
             } else {
-                // Slider closed = normal mode
+                // Slider CLOSED: Restore to normal
                 audioManager.ringerMode = AudioManager.RINGER_MODE_NORMAL
                 
-                // Disable DND if we have permission
-                if (notificationManager.isNotificationPolicyAccessGranted) {
+                // Disable DND for any DND mode
+                if (mode?.startsWith("dnd_") == true && notificationManager.isNotificationPolicyAccessGranted) {
                     notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
                 }
                 
-                Log.d(TAG, "Alert slider: NORMAL mode enabled")
+                Log.d(TAG, "Alert slider CLOSED: Restored to NORMAL mode")
             }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to handle alert slider", e)

@@ -199,4 +199,18 @@
     <string name="custom_trigger_haptic_feedback_title">Haptic feedback</string>
     <string name="custom_trigger_haptic_feedback_summary">Vibrate when a custom trigger action is detected</string>
 
+    <!-- QS Tiles -->
+    <string name="qs_trigger_map_label">Trigger Map</string>
+    <string name="qs_led_disco_label">LED Disco</string>
+
+    <!-- Alert Slider -->
+    <string name="alert_slider_mode_title">Alert Slider Mode</string>
+    <string name="alert_slider_mode_summary">Choose what happens when the left slider is opened</string>
+    <string name="alert_slider_disabled">Disabled</string>
+    <string name="alert_slider_vibrate">Vibrate</string>
+    <string name="alert_slider_silent">Silent</string>
+    <string name="alert_slider_dnd_silent">DND + Silent</string>
+    <string name="alert_slider_dnd_vibrate">DND + Vibrate</string>
+    <string name="alert_slider_dnd_total">DND Total Silence</string>
+
 </resources>

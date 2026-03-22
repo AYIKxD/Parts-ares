@@ -56,4 +56,22 @@
        <item>wind</item>
     </string-array>
 
+    <string-array name="alert_slider_mode_entries">
+        <item>@string/alert_slider_disabled</item>
+        <item>@string/alert_slider_vibrate</item>
+        <item>@string/alert_slider_silent</item>
+        <item>@string/alert_slider_dnd_silent</item>
+        <item>@string/alert_slider_dnd_vibrate</item>
+        <item>@string/alert_slider_dnd_total</item>
+    </string-array>
+
+    <string-array name="alert_slider_mode_values" translatable="false">
+        <item>disabled</item>
+        <item>vibrate</item>
+        <item>silent</item>
+        <item>dnd_silent</item>
+        <item>dnd_vibrate</item>
+        <item>dnd_total</item>
+    </string-array>
+
 </resources>

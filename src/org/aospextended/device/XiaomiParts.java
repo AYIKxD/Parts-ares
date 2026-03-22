@@ -82,6 +82,8 @@ public class XiaomiParts extends PreferenceFragmentCompat implements
     private Preference mGame;
     private SwitchPreference mLedInCalls;
 
+    private ListPreference mAlertSliderMode;
+
     private SwitchPreference mTriggerSound;
     private ListPreference mTriggerSoundType;
 
@@ -149,6 +151,12 @@ public class XiaomiParts extends PreferenceFragmentCompat implements
         mTriggerSoundType.setSummary(mTriggerSoundType.getEntry());
         mTriggerSoundType.setOnPreferenceChangeListener(this);
 
+        mAlertSliderMode = (ListPreference) findPreference("alert_slider_mode");
+        String mode = mPrefs.getString("alert_slider_mode", "disabled");
+        mAlertSliderMode.setValue(mode == null ? "disabled" : mode);
+        mAlertSliderMode.setSummary(mAlertSliderMode.getEntry());
+        mAlertSliderMode.setOnPreferenceChangeListener(this);
+
         mLedDisco = (SwitchPreference) findPreference("led_disco");
         mLedDisco.setChecked(mPrefs.getBoolean("led_disco", false));
         mLedDisco.setOnPreferenceChangeListener(this);
@@ -209,6 +217,18 @@ public class XiaomiParts extends PreferenceFragmentCompat implements
                     .putString("trigger_sound_type", (String) newValue).commit();
             Settings.System.putString(getActivity().getContentResolver(), "trigger_sound_type", (String) newValue);
             mTriggerSoundType.setSummary(mTriggerSoundType.getEntries()[index]);
+            
+            // Play a sound preview
+            TriggerUtils.getInstance(getActivity()).playTriggerSound(true);
+            return true;
+        }
+
+        if (preference == mAlertSliderMode) {
+            String mode = (String) newValue;
+            int index = mAlertSliderMode.findIndexOfValue((String) newValue);
+            mPrefs.edit()
+                    .putString("alert_slider_mode", (String) newValue).commit();
+            mAlertSliderMode.setSummary(mAlertSliderMode.getEntries()[index]);
             return true;
         }
 

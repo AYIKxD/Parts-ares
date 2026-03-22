@@ -49,39 +49,12 @@ public class LedUtils {
     private Handler mHandler;
     private HandlerThread mHandlerThread;
 
-    private LightsManager mLightsManager;
-    private LightsManager.LightsSession mSession;
-    private List<Light> mLights;
-
-    public static LedUtils getInstance(Context context) {
-        if (sInstance == null) {
-            sInstance = new LedUtils(context);
-        }
-        return sInstance;
-    }
-
     private LedUtils(Context context) {
         mContext = context;
         mHandlerThread = new HandlerThread("XiaomiParts.HandlerThread");
         mHandlerThread.start();
         mHandler = new Handler(mHandlerThread.getLooper());
         mPrefs = Utils.getSharedPreferences(context);
-
-        // Initialize LightsManager
-        mLightsManager = context.getSystemService(LightsManager.class);
-        if (mLightsManager != null) {
-            mLights = mLightsManager.getLights();
-            if (DEBUG) {
-                Slog.d(TAG, "Found " + mLights.size() + " lights:");
-                for (Light light : mLights) {
-                    Slog.d(TAG, "  Light: id=" + light.getId()
-                            + " name=" + light.getName()
-                            + " type=" + light.getType());
-                }
-            }
-        } else {
-            Slog.e(TAG, "LightsManager not available!");
-        }
     }
 
     public void play(boolean play) {
@@ -91,7 +64,9 @@ public class LedUtils {
     public void play(boolean play, boolean force) {
         stopDisco();
         mStop = !play;
-        AsyncTask.execute(() -> disco(play, force));
+        if (mHandler != null) {
+            mHandler.post(() -> disco(play, force));
+        }
     }
 
     private void disco(boolean play, boolean force) {
@@ -108,53 +83,32 @@ public class LedUtils {
     }
 
     /**
-     * Set the RGB LED color using the Light HAL.
+     * Set the RGB LED color using direct sysfs writes instead of Light HAL.
      */
     private void setLedColor(int r, int g, int b) {
-        if (mLightsManager == null || mLights == null || mLights.isEmpty()) {
-            if (DEBUG) Slog.w(TAG, "No lights available");
-            return;
-        }
-
         try {
-            if (mSession == null) {
-                mSession = mLightsManager.openSession();
-            }
-
-            int color = Color.argb(255, r, g, b);
-            LightState state = new LightState.Builder()
-                    .setColor(color)
-                    .build();
-
-            // Build a request for all available lights
-            LightsRequest.Builder requestBuilder = new LightsRequest.Builder();
-            for (Light light : mLights) {
-                // Target notification/player type lights (the RGB LEDs)
-                int type = light.getType();
-                if (type == Light.LIGHT_TYPE_MICROPHONE
-                        || type == Light.LIGHT_TYPE_CAMERA) {
-                    continue; // Skip privacy indicator lights
-                }
-                requestBuilder.addLight(light, state);
-            }
-
-            mSession.requestLights(requestBuilder.build());
-
+            writeSysfs("/sys/class/leds/red/brightness", String.valueOf(r));
+            writeSysfs("/sys/class/leds/green/brightness", String.valueOf(g));
+            writeSysfs("/sys/class/leds/blue/brightness", String.valueOf(b));
             if (DEBUG) Slog.d(TAG, "Set LED color: R=" + r + " G=" + g + " B=" + b);
         } catch (Exception e) {
-            Slog.e(TAG, "Failed to set LED color", e);
+            Slog.e(TAG, "Failed to set LED color via sysfs", e);
+        }
+    }
+
+    private void writeSysfs(String path, String value) {
+        try {
+            java.io.FileOutputStream fos = new java.io.FileOutputStream(path);
+            fos.write(value.getBytes());
+            fos.flush();
+            fos.close();
+        } catch (Exception e) {
+            if (DEBUG) Slog.e(TAG, "Failed to write " + value + " to " + path, e);
         }
     }
 
     private void closeSession() {
-        if (mSession != null) {
-            try {
-                mSession.close();
-            } catch (Exception e) {
-                Slog.w(TAG, "Error closing lights session", e);
-            }
-            mSession = null;
-        }
+        // No longer using LightSession, nothing to close.
     }
 
     private int rgb_limit(int value) {

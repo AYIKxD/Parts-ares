@@ -1,2 +1,9 @@
-# XiaomiParts - Gamekey device (trigger buttons and sliders)
-/dev/gamekey                                              u:object_r:gamekey_device:s0
+# Devices
+/dev/gamekey                                  u:object_r:vendor_gamekey_device:s0
+
+# Sysfs paths for AW2013 LEDs and vibrator
+/sys/class/leds/red/brightness                u:object_r:vendor_sysfs_aw2013_leds:s0
+/sys/class/leds/green/brightness              u:object_r:vendor_sysfs_aw2013_leds:s0
+/sys/class/leds/blue/brightness               u:object_r:vendor_sysfs_aw2013_leds:s0
+
+# Note: vibrator permission needs to be checked in ueventd.rc

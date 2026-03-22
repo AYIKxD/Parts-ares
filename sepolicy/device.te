@@ -1,0 +1,5 @@
+# Device Types
+type vendor_gamekey_device, dev_type;
+
+# Sysfs Types
+type vendor_sysfs_aw2013_leds, sysfs_type, fs_type;

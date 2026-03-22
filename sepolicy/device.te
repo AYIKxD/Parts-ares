@@ -1,3 +1,6 @@
-# Sysfs Types
+# Sysfs Types for LEDs and Vibrator
 type vendor_sysfs_aw2013_leds, sysfs_type, fs_type;
 type vendor_sysfs_vibrator, sysfs_type, fs_type;
+
+# Proc type for touchpanel trigger controls
+type vendor_proc_touchpanel, fs_type, proc_type;

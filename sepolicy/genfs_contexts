@@ -1,0 +1,10 @@
+# Sysfs - LEDs (AW2013 RGB)
+genfscon sysfs /devices/platform/leds-mt65xx/leds/red                u:object_r:vendor_sysfs_aw2013_leds:s0
+genfscon sysfs /devices/platform/leds-mt65xx/leds/green              u:object_r:vendor_sysfs_aw2013_leds:s0
+genfscon sysfs /devices/platform/leds-mt65xx/leds/blue               u:object_r:vendor_sysfs_aw2013_leds:s0
+
+# Sysfs - Vibrator
+genfscon sysfs /devices/platform/leds-mt65xx/leds/vibrator           u:object_r:vendor_sysfs_vibrator:s0
+
+# Proc - Touchpanel trigger controls
+genfscon proc /touchpanel                                            u:object_r:vendor_proc_touchpanel:s0

@@ -4,7 +4,6 @@
 # in the system_app domain. Grant access to device-specific hardware nodes.
 
 # Allow system_app to read from /dev/gamekey (trigger buttons and sliders)
-# Using vendor_gamekey_device type which is now defined in our tree
 allow system_app vendor_gamekey_device:chr_file { open read getattr };
 
 # Allow XiaomiParts to control the RGB LEDs (for disco mode)
@@ -14,3 +13,8 @@ allow system_app vendor_sysfs_aw2013_leds:file { open read write getattr };
 # Allow XiaomiParts to control vibrator strength
 allow system_app vendor_sysfs_vibrator:dir search;
 allow system_app vendor_sysfs_vibrator:file { open read write getattr };
+
+# Allow XiaomiParts to read/write trigger position and gesture proc files
+# /proc/touchpanel/{left,right}_trigger_{enable,x,y}, gesture_enable, double_tap_enable
+allow system_app vendor_proc_touchpanel:dir search;
+allow system_app vendor_proc_touchpanel:file { open read write getattr };

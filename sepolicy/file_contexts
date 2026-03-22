@@ -1,7 +1,2 @@
-# Sysfs paths for AW2013 LEDs
-/sys/class/leds/red/brightness                u:object_r:vendor_sysfs_aw2013_leds:s0
-/sys/class/leds/green/brightness              u:object_r:vendor_sysfs_aw2013_leds:s0
-/sys/class/leds/blue/brightness               u:object_r:vendor_sysfs_aw2013_leds:s0
-
-# Sysfs paths for Vibrator
-/sys/class/leds/vibrator/vmax_mv              u:object_r:vendor_sysfs_vibrator:s0
+# Devices
+/dev/gamekey                                  u:object_r:vendor_gamekey_device:s0

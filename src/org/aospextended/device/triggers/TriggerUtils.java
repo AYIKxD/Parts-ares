@@ -285,6 +285,17 @@ public class TriggerUtils {
         }
     }
 
+    public void triggerVibration(int durationMs) {
+        Vibrator mVibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+        if (mVibrator != null && mVibrator.hasVibrator()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                mVibrator.vibrate(VibrationEffect.createOneShot(durationMs, VibrationEffect.DEFAULT_AMPLITUDE));
+            } else {
+                mVibrator.vibrate(durationMs);
+            }
+        }
+    }
+
     public boolean isDoubleClick(KeyEvent event) {
         if (DEBUG) Slog.d(TAG, "isDoubleClick");
         if (event.getAction() != KeyEvent.ACTION_UP) {

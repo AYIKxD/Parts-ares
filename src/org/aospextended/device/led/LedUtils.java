@@ -16,65 +16,28 @@
 
 package org.aospextended.device.led;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.os.AsyncTask;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.FileObserver;
-import android.os.SystemClock;
-import android.provider.Settings;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MenuInflater;
-import android.app.Fragment;
-import androidx.preference.PreferenceFragment;
-import androidx.preference.Preference;
-import androidx.preference.ListPreference;
-import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceManager;
-import androidx.preference.PreferenceScreen;
-import androidx.preference.SwitchPreference;
-import androidx.preference.TwoStatePreference;
-
-import org.aospextended.device.gestures.TouchGestures;
-import org.aospextended.device.gestures.TouchGesturesActivity;
-import org.aospextended.device.util.AppListActivity;
-
-import org.aospextended.device.vibration.VibratorStrengthPreference;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-import java.util.Date;
-import java.util.Random;
-import java.lang.Runnable;
-import java.lang.Thread;
-import java.lang.InterruptedException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.CountDownLatch;
-
-import android.util.Slog;
-import android.os.SystemProperties;
-import android.os.Looper;
+import android.graphics.Color;
+import android.hardware.lights.Light;
+import android.hardware.lights.LightState;
+import android.hardware.lights.LightsManager;
+import android.hardware.lights.LightsRequest;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.HandlerThread;
-import java.io.*;
-import android.widget.Toast;
+import android.os.SystemClock;
+import android.util.Slog;
 
-import org.aospextended.device.R;
+import java.util.List;
+import java.util.Random;
+
 import org.aospextended.device.util.Utils;
-import org.aospextended.device.triggers.TriggerService;
 
+/**
+ * Controls the RGB LED on the back of the device using the Android Light HAL.
+ * Uses LightsManager API instead of direct sysfs writes to comply with SELinux policy.
+ */
 public class LedUtils {
     private static final boolean DEBUG = Utils.DEBUG;
     private static final String TAG = "LedUtils";
@@ -86,15 +49,9 @@ public class LedUtils {
     private Handler mHandler;
     private HandlerThread mHandlerThread;
 
-    private static String RED_LED_PATH = "/sys/class/leds/red/brightness";
-    private static String GREEN_LED_PATH = "/sys/class/leds/green/brightness";
-    private static String BLUE_LED_PATH = "/sys/class/leds/blue/brightness";
-
-    private Executor mExecutor = new ThreadPoolExecutor(/*corePoolSize=*/3,
-            Runtime.getRuntime().availableProcessors(), /*keepAliveTime*/ 60L, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>());
-
-    private CountDownLatch latch = new CountDownLatch(3);
+    private LightsManager mLightsManager;
+    private LightsManager.LightsSession mSession;
+    private List<Light> mLights;
 
     public static LedUtils getInstance(Context context) {
         if (sInstance == null) {
@@ -109,6 +66,22 @@ public class LedUtils {
         mHandlerThread.start();
         mHandler = new Handler(mHandlerThread.getLooper());
         mPrefs = Utils.getSharedPreferences(context);
+
+        // Initialize LightsManager
+        mLightsManager = context.getSystemService(LightsManager.class);
+        if (mLightsManager != null) {
+            mLights = mLightsManager.getLights();
+            if (DEBUG) {
+                Slog.d(TAG, "Found " + mLights.size() + " lights:");
+                for (Light light : mLights) {
+                    Slog.d(TAG, "  Light: id=" + light.getId()
+                            + " name=" + light.getName()
+                            + " type=" + light.getType());
+                }
+            }
+        } else {
+            Slog.e(TAG, "LightsManager not available!");
+        }
     }
 
     public void play(boolean play) {
@@ -129,10 +102,59 @@ public class LedUtils {
     }
 
     private void stopDisco() {
-        Utils.writeValue(RED_LED_PATH, "0");
-        Utils.writeValue(GREEN_LED_PATH, "0");
-        Utils.writeValue(BLUE_LED_PATH, "0");
         mHandler.removeCallbacks(mUpdateInfo);
+        setLedColor(0, 0, 0);
+        closeSession();
+    }
+
+    /**
+     * Set the RGB LED color using the Light HAL.
+     */
+    private void setLedColor(int r, int g, int b) {
+        if (mLightsManager == null || mLights == null || mLights.isEmpty()) {
+            if (DEBUG) Slog.w(TAG, "No lights available");
+            return;
+        }
+
+        try {
+            if (mSession == null) {
+                mSession = mLightsManager.openSession();
+            }
+
+            int color = Color.argb(255, r, g, b);
+            LightState state = new LightState.Builder()
+                    .setColor(color)
+                    .build();
+
+            // Build a request for all available lights
+            LightsRequest.Builder requestBuilder = new LightsRequest.Builder();
+            for (Light light : mLights) {
+                // Target notification/player type lights (the RGB LEDs)
+                int type = light.getType();
+                if (type == Light.LIGHT_TYPE_MICROPHONE
+                        || type == Light.LIGHT_TYPE_CAMERA) {
+                    continue; // Skip privacy indicator lights
+                }
+                requestBuilder.addLight(light, state);
+            }
+
+            mSession.requestLights(requestBuilder.build());
+
+            if (DEBUG) Slog.d(TAG, "Set LED color: R=" + r + " G=" + g + " B=" + b);
+        } catch (Exception e) {
+            Slog.e(TAG, "Failed to set LED color", e);
+        }
+    }
+
+    private void closeSession() {
+        if (mSession != null) {
+            try {
+                mSession.close();
+            } catch (Exception e) {
+                Slog.w(TAG, "Error closing lights session", e);
+            }
+            mSession = null;
+        }
     }
 
     private int rgb_limit(int value) {
@@ -169,9 +191,7 @@ public class LedUtils {
             int G = rgb_limit(r.nextInt(255));
             int B = rgb_limit(r.nextInt(255));
 
-            Utils.writeValue(RED_LED_PATH, String.valueOf(R));
-            Utils.writeValue(GREEN_LED_PATH, String.valueOf(G));
-            Utils.writeValue(BLUE_LED_PATH, String.valueOf(B));
+            setLedColor(R, G, B);
 
             if (mHandler != null) {
                 mHandler.postAtTime(mUpdateInfo, next);
@@ -179,4 +199,3 @@ public class LedUtils {
         }
     };
 }
-

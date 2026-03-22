@@ -1,5 +1,2 @@
-# Sysfs Types for MT6360 PMU RGB LEDs
-type vendor_sysfs_aw2013_leds, sysfs_type, fs_type;
-
 # Proc type for touchpanel trigger controls
 type vendor_proc_touchpanel, fs_type, proc_type;

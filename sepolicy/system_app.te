@@ -7,11 +7,9 @@
 # Type vendor_gamekey_device is defined in device/xiaomi/mt6893-common/sepolicy
 allow system_app vendor_gamekey_device:chr_file { open read getattr };
 
-# Allow XiaomiParts to control the MT6360 PMU RGB LEDs (disco mode)
-allow system_app vendor_sysfs_aw2013_leds:dir search;
-allow system_app vendor_sysfs_aw2013_leds:file { open read write getattr };
-
 # Allow XiaomiParts to read/write trigger position and gesture proc files
 # /proc/touchpanel/{left,right}_trigger_{enable,x,y}, gesture_enable, double_tap_enable
 allow system_app vendor_proc_touchpanel:dir search;
 allow system_app vendor_proc_touchpanel:file { open read write getattr };
+
+# LED control is done via LightsManager API (Light HAL) - no sepolicy needed

@@ -16,11 +16,9 @@
 <resources>
     <!-- Main app theme - inherits from SettingsLib CollapsingToolbar theme -->
     <style name="AppTheme" parent="@style/Theme.CollapsingToolbar.Settings">
-        <item name="preferenceTheme">@style/PreferenceTheme.SettingsBase</item>
     </style>
 
     <!-- Alternative theme using Material3 DayNight -->
     <style name="AppTheme.CollapsingToolbar" parent="@style/Theme.CollapsingToolbar.Settings">
-        <item name="preferenceTheme">@style/PreferenceTheme.SettingsBase</item>
     </style>
 </resources>

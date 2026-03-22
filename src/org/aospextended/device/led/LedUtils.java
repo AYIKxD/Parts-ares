@@ -49,6 +49,13 @@ public class LedUtils {
     private Handler mHandler;
     private HandlerThread mHandlerThread;
 
+    public static LedUtils getInstance(Context context) {
+        if (sInstance == null) {
+            sInstance = new LedUtils(context.getApplicationContext());
+        }
+        return sInstance;
+    }
+
     private LedUtils(Context context) {
         mContext = context;
         mHandlerThread = new HandlerThread("XiaomiParts.HandlerThread");

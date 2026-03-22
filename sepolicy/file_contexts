@@ -1,2 +1,7 @@
-# Devices
-/dev/gamekey                                  u:object_r:vendor_gamekey_device:s0
+# file_contexts for XiaomiParts
+#
+# NOTE: /dev/gamekey is already labeled in device/xiaomi/mt6893-common/sepolicy/vendor/file.te
+# so we do NOT re-label it here to avoid duplicate specification errors.
+#
+# Sysfs and proc paths are labeled via genfs_contexts (not file_contexts)
+# because they are pseudo-filesystems.

@@ -1,6 +1,3 @@
-# Devices
-/dev/gamekey                                  u:object_r:vendor_gamekey_device:s0
-
 # Sysfs paths for AW2013 LEDs
 /sys/class/leds/red/brightness                u:object_r:vendor_sysfs_aw2013_leds:s0
 /sys/class/leds/green/brightness              u:object_r:vendor_sysfs_aw2013_leds:s0

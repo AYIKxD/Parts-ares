@@ -3,11 +3,5 @@
 # NOTE: /dev/gamekey is already labeled in device/xiaomi/mt6893-common/sepolicy/vendor/file.te
 # so we do NOT re-label it here to avoid duplicate specification errors.
 #
-# Sysfs and proc paths are labeled via genfs_contexts (not file_contexts)
-# because they are pseudo-filesystems.
-#
-# Exception: To bypass AOSP neverallows, we explicitly label the RGB LED
-# symlinked files here and use restorecon in init.xiaomiparts.rc
-/sys/class/leds/red/brightness      u:object_r:sysfs_leds_xiaomi:s0
-/sys/class/leds/green/brightness    u:object_r:sysfs_leds_xiaomi:s0
-/sys/class/leds/blue/brightness     u:object_r:sysfs_leds_xiaomi:s0
+# NOTE: RGB LED sysfs nodes are now labeled via genfs_contexts in common-dt
+# using the sysfs_leds_xiaomi type. No file_contexts needed here.

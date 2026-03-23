@@ -1,5 +1,2 @@
 # Proc type for touchpanel trigger controls
 type vendor_proc_touchpanel, fs_type, proc_type;
-
-# Custom sysfs label for RGB LEDs to bypass AOSP sysfs_leds system_app neverallow
-type sysfs_leds_xiaomi, fs_type, sysfs_type;

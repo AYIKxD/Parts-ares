@@ -3,7 +3,8 @@ on boot
     chown system system /dev/gamekey
     chmod 0660 /dev/gamekey
 
-    # Allow system to access the LED sysfs nodes for direct controls via HAL or XiaomiParts
+    # Allow system to access the LED sysfs nodes (DAC permissions)
+    # SELinux labeling is handled via genfs_contexts in common-dt sepolicy
     chown system system /sys/class/leds/red/brightness
     chown system system /sys/class/leds/green/brightness
     chown system system /sys/class/leds/blue/brightness
@@ -11,12 +12,6 @@ on boot
     chmod 0664 /sys/class/leds/red/brightness
     chmod 0664 /sys/class/leds/green/brightness
     chmod 0664 /sys/class/leds/blue/brightness
-
-    # Restorecon to apply custom sysfs_leds_xiaomi labels from file_contexts
-    # This securely bypasses AOSP's strict system_app sysfs_leds neverallows
-    restorecon /sys/class/leds/red/brightness
-    restorecon /sys/class/leds/green/brightness
-    restorecon /sys/class/leds/blue/brightness
 
     chown system system /sys/class/leds/red/breath
     chown system system /sys/class/leds/green/breath

@@ -12,7 +12,5 @@ allow system_app vendor_gamekey_device:chr_file { open read getattr };
 allow system_app vendor_proc_touchpanel:dir search;
 allow system_app vendor_proc_touchpanel:file { open read write getattr };
 
-# LED control is done directly via sysfs because the hardware Light HAL doesn't expose them.
-# We traverse sysfs_leds directories and write to the individual brightness nodes.
-allow system_app sysfs_leds:dir search;
-allow system_app sysfs_leds_xiaomi:file { open read write getattr };
+# NOTE: LED sysfs access rules are in common-dt vendor sepolicy (system_app.te)
+# to keep the sysfs_leds_xiaomi type and genfs_contexts labeling co-located.

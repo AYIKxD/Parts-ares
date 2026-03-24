@@ -19,7 +19,6 @@ package org.lineageos.xiaomiparts.gestures
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
-import android.app.DialogFragment
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
@@ -27,6 +26,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import androidx.fragment.app.DialogFragment
 
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
@@ -47,7 +47,7 @@ import org.lineageos.xiaomiparts.util.Utils
 class TouchGesturesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        fragmentManager.beginTransaction()
+        supportFragmentManager.beginTransaction()
             .replace(android.R.id.content, TouchGestures())
             .commit()
     }
@@ -172,9 +172,9 @@ class TouchGestures : PreferenceFragment(),
         mEnableDt2w?.apply    { isChecked = mPrefs.getBoolean(PREF_DT2W_ENABLE, true);    onPreferenceChangeListener = this@TouchGestures }
         mEnableGestures?.apply{ isChecked = mPrefs.getBoolean(PREF_GESTURE_ENABLE, true); onPreferenceChangeListener = this@TouchGestures }
 
-        if (!isSupported(DT2W_PATH))  preferenceScreen.removePreference(dt2w)
-        if (!isSupported())           preferenceScreen.removePreference(haptic)
-        preferenceScreen.removePreference(gestures)
+        if (!isSupported(DT2W_PATH))  preferenceScreen.removePreference(dt2w as? Preference)
+        if (!isSupported())           preferenceScreen.removePreference(haptic as? Preference)
+        preferenceScreen.removePreference(gestures as? Preference)
 
         return prefs
     }
@@ -291,8 +291,7 @@ class TouchGestures : PreferenceFragment(),
 
     private fun showDialogInner(id: Int, key: String?, title: Int) {
         val f = MyAlertDialogFragment.newInstance(id, key, title)
-        f.setTargetFragment(this, 0)
-        f.show(fragmentManager, "dialog $id")
+        f.show(parentFragmentManager, "dialog $id")
     }
 
     class MyAlertDialogFragment : DialogFragment() {
@@ -313,10 +312,10 @@ class TouchGestures : PreferenceFragment(),
             val key   = requireArguments().getString("key")
             val title = requireArguments().getInt("title")
             return when (id) {
-                0 -> AlertDialog.Builder(activity)
+                0 -> AlertDialog.Builder(requireActivity())
                     .setTitle(title)
-                    .setNegativeButton(R.string.cancel, null)
-                    .setItems(getOwner().mActionEntries) { _, item ->
+                    .setNegativeButton(R.string.cancel, null as? DialogInterface.OnClickListener)
+                    .setItems(getOwner().mActionEntries) { _: DialogInterface, item: Int ->
                         if (getOwner().mActionValues[item] == Action.ACTION_APP) {
                             getOwner().mPendingkey = key
                             getOwner().mPicker.pickShortcut(getOwner().id)

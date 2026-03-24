@@ -47,14 +47,13 @@ import android.widget.ImageView
 import android.widget.Toast
 import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
 
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.DialogFragment
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragment
 import androidx.preference.PreferenceScreen
 import androidx.preference.SwitchPreference
-
-import com.android.settingslib.collapsingtoolbar.CollapsingToolbarBaseActivity
-import com.android.settingslib.widget.MainSwitchPreference
 
 import org.lineageos.xiaomiparts.R
 import org.lineageos.xiaomiparts.util.Action
@@ -65,11 +64,11 @@ import java.util.ArrayList
 import java.util.HashMap
 
 // ─── CustomTriggerActivity ────────────────────────────────────────
-class CustomTriggerActivity : CollapsingToolbarBaseActivity() {
+class CustomTriggerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        fragmentManager.beginTransaction()
-            .replace(com.android.settingslib.collapsingtoolbar.R.id.content_frame, CustomTrigger())
+        supportFragmentManager.beginTransaction()
+            .replace(android.R.id.content, CustomTrigger())
             .commit()
     }
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
@@ -98,7 +97,7 @@ class CustomTrigger : PreferenceFragment(),
     private val DLG_RESET_TO_DEFAULT   = 1
     private val MENU_RESET = Menu.FIRST
 
-    private var mEnableCustomTrigger: MainSwitchPreference? = null
+    private var mEnableCustomTrigger: SwitchPreference? = null
     private var mLeftTriggerDoubleClick:  Preference? = null
     private var mRightTriggerDoubleClick: Preference? = null
     private var mLeftTriggerLongpress:    Preference? = null
@@ -124,8 +123,14 @@ class CustomTrigger : PreferenceFragment(),
         val prefs = preferenceScreen
 
         val enabled = Utils.getIntSystem(activity, PREF_CUSTOM_TRIGGER_ENABLE, 1) == 1
-        mEnableCustomTrigger = findPreference(PREF_CUSTOM_TRIGGER_ENABLE) as? MainSwitchPreference
-        mEnableCustomTrigger?.addOnSwitchChangeListener(this)
+        mEnableCustomTrigger = findPreference(PREF_CUSTOM_TRIGGER_ENABLE) as? SwitchPreference
+        mEnableCustomTrigger?.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+            val isChecked = newValue as Boolean
+            mEnableCustomTrigger?.isChecked = isChecked
+            Utils.putIntSystem(activity, PREF_CUSTOM_TRIGGER_ENABLE, if (isChecked) 1 else 0)
+            mHapticFeedback?.isEnabled = isChecked
+            true
+        }
         mEnableCustomTrigger?.isChecked = enabled
 
         mLeftTriggerDoubleClick  = prefs.findPreference(PREF_LEFT_TRIGGER_DOUBLE_CLICK)
@@ -172,9 +177,8 @@ class CustomTrigger : PreferenceFragment(),
     }
 
     override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
-        mEnableCustomTrigger?.isChecked = isChecked
-        Utils.putIntSystem(activity, PREF_CUSTOM_TRIGGER_ENABLE, if (isChecked) 1 else 0)
-        mHapticFeedback?.isEnabled = isChecked
+        // SwitchPreference change handled via onPreferenceChangeListener above;
+        // this callback is kept for API compatibility only.
     }
 
     private fun resetToDefault() {
@@ -216,11 +220,10 @@ class CustomTrigger : PreferenceFragment(),
 
     private fun showDialogInner(id: Int, key: String?, title: Int) {
         val f = MyAlertDialogFragment.newInstance(id, key, title)
-        f.setTargetFragment(this, 0)
-        f.show(fragmentManager, "dialog $id")
+        f.show(parentFragmentManager, "dialog $id")
     }
 
-    class MyAlertDialogFragment : DialogFragment() {
+    class MyAlertDialogFragment : androidx.fragment.app.DialogFragment() {
         companion object {
             fun newInstance(id: Int, key: String?, title: Int) = MyAlertDialogFragment().also {
                 it.arguments = Bundle().apply { putInt("id", id); putString("key", key); putInt("title", title) }
@@ -232,8 +235,9 @@ class CustomTrigger : PreferenceFragment(),
             val key = requireArguments().getString("key")
             val title = requireArguments().getInt("title")
             return when (id) {
-                0 -> AlertDialog.Builder(activity).setTitle(title).setNegativeButton(R.string.cancel, null)
-                    .setItems(getOwner().mActionEntries) { _, item ->
+                0 -> AlertDialog.Builder(requireActivity()).setTitle(title)
+                    .setNegativeButton(R.string.cancel, null as? android.content.DialogInterface.OnClickListener)
+                    .setItems(getOwner().mActionEntries) { _: android.content.DialogInterface, item: Int ->
                         if (getOwner().mActionValues[item] == Action.ACTION_APP) {
                             getOwner().mPendingkey = key
                             getOwner().mPicker.pickShortcut(getOwner().id)

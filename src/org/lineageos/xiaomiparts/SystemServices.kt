@@ -110,8 +110,8 @@ class KeyHandler(private val mContext: Context) : DeviceKeyHandler {
     var mLeftOpen = false; var mLeftClosed = false
     var mRightOpen = false; var mRightClosed = false
 
-    val tr: TriggerUtils = TriggerUtils.getInstance(mAppContext)
-    val triggerService: TriggerService = TriggerService.getInstance(mAppContext)
+    val tr: TriggerUtils = TriggerUtils.getInstance(mAppContext!!)
+    val triggerService: TriggerService = TriggerService.getInstance(mAppContext!!)
 
     init {
         mCustomSettingsObserver.observe()

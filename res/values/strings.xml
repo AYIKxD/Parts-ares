@@ -212,5 +212,11 @@
     <string name="alert_slider_dnd_silent">DND + Silent</string>
     <string name="alert_slider_dnd_vibrate">DND + Vibrate</string>
     <string name="alert_slider_dnd_total">DND Total Silence</string>
+    <!-- Navigation / Dashboard strings (used by Compose UI) -->
+    <string name="app_name">XiaomiParts</string>
+    <string name="trigger_title">Triggers</string>
+    <string name="led_title">LED</string>
+    <string name="gesture_title">Gestures</string>
+    <string name="back">Back</string>
 
 </resources>

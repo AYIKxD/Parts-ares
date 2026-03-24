@@ -1,142 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          android:sharedUserId="android.uid.system"
-          package="org.aospextended.device"
-          android:versionCode="1"
-          android:versionName="1" >
+<!--
+     Copyright (C) 2025 XiaomiParts Project
 
-    <uses-permission android:name="android.permission.INJECT_EVENTS"/>
-    <uses-permission android:name="android.permission.DEVICE_POWER" />
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.lineageos.xiaomiparts"
+    android:sharedUserId="android.uid.system">
+
+    <uses-sdk android:minSdkVersion="31" android:targetSdkVersion="36" />
+
+    <!-- Permissions -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <uses-permission android:name="android.permission.DEVICE_POWER" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INJECT_EVENTS" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.CONTROL_DEVICE_LIGHTS"/>
-    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
-    
-
-
-    <uses-sdk
-        android:minSdkVersion="36"
-        android:targetSdkVersion="36"/>
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
+    <uses-permission android:name="android.permission.FORCE_STOP_PACKAGES" />
+    <uses-permission android:name="android.permission.STATUS_BAR" />
+    <uses-permission android:name="android.permission.READ_WALLPAPER_INTERNAL" />
 
     <application
-            android:icon="@mipmap/ic_launcher"
-            android:label="@string/XiaomiParts"
-            android:theme="@style/AppTheme"
-            >
+        android:label="@string/XiaomiParts"
+        android:icon="@mipmap/ic_launcher"
+        android:supportsRtl="true"
+        android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
 
-        <!-- stub to ensure its loaded - DO NOT REMOVE -->
-        <activity android:name=".KeyHandler" />
-
+        <!-- Main Compose Activity -->
         <activity
-            android:name=".XiaomiPartsActivity"
-            android:label="@string/XiaomiParts"
-            android:icon="@mipmap/ic_launcher"
-            android:exported="true">
+            android:name=".ui.XiaomiPartsActivity"
+            android:exported="true"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-	    </activity>
+        </activity>
 
+        <!-- Settings Dashboard Integration (appears in Settings app) -->
         <activity-alias
-            android:name=".XiaomiParts"
-            android:label="@string/XiaomiParts"
+            android:name=".XiaomiPartsSettingsAlias"
             android:exported="true"
-            android:targetActivity=".XiaomiPartsActivity">
+            android:label="@string/XiaomiParts"
+            android:targetActivity=".ui.XiaomiPartsActivity">
             <intent-filter>
-                <category android:name="android.intent.category.DEFAULT" />
                 <action android:name="com.android.settings.action.IA_SETTINGS" />
             </intent-filter>
+            <meta-data
+                android:name="com.android.settings.category"
+                android:value="com.android.settings.category.ia.homepage" />
+            <meta-data
+                android:name="com.android.settings.summary"
+                android:resource="@string/XiaomiParts_summary" />
             <meta-data
                 android:name="com.android.settings.icon"
                 android:resource="@drawable/ic_settings_gestures" />
             <meta-data
                 android:name="com.android.settings.icon_tintable"
                 android:value="true" />
-            <meta-data
-                android:name="com.android.settings.category"
-                android:value="com.android.settings.category.ia.homepage" />
-            <meta-data android:name="com.android.settings.summary"
-                android:resource="@string/XiaomiParts_summary" />
-            <meta-data android:name="com.android.settings.order"
-                android:value="-1" />
         </activity-alias>
 
-        <activity
-            android:name=".gestures.TouchGesturesActivity"
-            android:label="@string/screen_off_gestures"
-            android:exported="true">
-          <intent-filter>
-                <action android:name="com.android.settings.action.IA_SETTINGS" />
-          </intent-filter>
-        </activity>
-
-        <receiver android:name=".BootReceiver"
-            android:exported="true">
-          <intent-filter>
+        <!-- Boot Receiver -->
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="true"
+            android:enabled="true">
+            <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <category android:name="android.intent.category.DEFAULT" />
-          </intent-filter>
+            </intent-filter>
         </receiver>
 
-
-        <activity android:name=".util.AppListActivity" 
-            android:label="@string/app_list"
-            android:exported="false">
-            <intent-filter>
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-        <service
-            android:name=".triggers.TriggerService"
-            android:enabled="true" />
-
-        <service android:name=".util.TaskService"
-            android:enabled="true" />
-
-        <!-- New Kotlin-based trigger detection service -->
-        <service
-            android:name=".gamekey.GamekeyService"
-            android:enabled="true"
+        <!-- Key Handler (system service) -->
+        <activity
+            android:name=".KeyHandler"
             android:exported="false" />
 
-	<activity android:name=".led.LedOnCall"
-	          android:exported="true">
-            <intent-filter>
-                <action android:name="org.aospextended.device.led.LedOnCall" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
+        <!-- Gamekey Service (trigger detection) -->
+        <service
+            android:name=".gamekey.GamekeyService"
+            android:exported="false" />
 
-        <receiver android:name=".led.LedOnCall"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.PHONE_STATE"/>
-            </intent-filter>
-        </receiver>
+        <!-- Task Service (foreground LED/game monitoring) -->
+        <service
+            android:name=".util.TaskService"
+            android:exported="false" />
 
-	<activity
-            android:name=".triggers.CustomTriggerActivity"
-            android:label="@string/custom_trigger"
-            android:exported="true">
-          <intent-filter>
-                <action android:name="com.android.settings.action.IA_SETTINGS" />
-          </intent-filter>
-        </activity>
+        <!-- LED On Call Service -->
+        <service
+            android:name=".led.LedOnCall"
+            android:exported="false" />
 
         <!-- QS Tiles -->
         <service
             android:name=".triggers.TriggerMapTile"
+            android:exported="true"
             android:icon="@drawable/ic_qs_trigger_map"
             android:label="@string/qs_trigger_map_label"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
-            android:exported="true">
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
@@ -144,15 +120,27 @@
 
         <service
             android:name=".led.LedDiscoTile"
+            android:exported="true"
             android:icon="@drawable/ic_qs_led_disco"
             android:label="@string/qs_led_disco_label"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
-            android:exported="true">
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
 
-    </application>
+        <!-- Legacy Activities (still used by Java services internally) -->
+        <activity
+            android:name=".gestures.TouchGesturesActivity"
+            android:exported="false" />
 
+        <activity
+            android:name=".triggers.CustomTriggerActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".util.AppListActivity"
+            android:exported="false" />
+
+    </application>
 </manifest>

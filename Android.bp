@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020 The AospExtended Project
+// Copyright (C) 2025 XiaomiParts Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,19 +18,41 @@ android_app {
     name: "XiaomiParts",
 
     static_libs: [
+        // AndroidX core
+        "androidx.core_core-ktx",
         "androidx.appcompat_appcompat",
+
+        // Compose UI
+        "androidx.activity_activity-compose",
+        "androidx.compose.foundation_foundation",
+        "androidx.compose.material3_material3",
+        "androidx.compose.material_material-icons-core",
+        "androidx.compose.material_material-icons-extended",
+        "androidx.compose.runtime_runtime",
+        "androidx.compose.ui_ui",
+
+        // Navigation
+        "androidx.navigation_navigation-compose",
+
+        // Lifecycle
+        "androidx.lifecycle_lifecycle-viewmodel-compose",
+        "androidx.lifecycle_lifecycle-runtime-compose",
+
+        // Material Design
+        "com.google.android.material_material",
+
+        // Preferences (still used by legacy services)
+        "androidx.preference_preference",
         "androidx.legacy_legacy-support-v13",
         "androidx.palette_palette",
-        "androidx.preference_preference",
         "androidx.recyclerview_recyclerview",
-        "androidx.core_core-ktx",
+
+        // Kotlin
         "kotlinx-coroutines-android",
-        "com.google.android.material_material",
+        "kotlinx-coroutines-core",
+
+        // System
         "SystemUISharedLib",
-        "SettingsLib",
-        "SettingsLibCollapsingToolbarBaseActivity",
-        "SettingsLibSettingsTheme",
-        "SettingsLibSettingsTransition",
     ],
 
     srcs: [
@@ -52,12 +74,18 @@ android_app {
     },
     platform_apis: true,
 
-    min_sdk_version: "36",
+    min_sdk_version: "31",
     target_sdk_version: "36",
+
+    kotlincflags: [
+        "-Xjvm-default=all",
+        "-opt-in=kotlin.RequiresOptIn",
+        "-P plugin:androidx.compose.compiler.plugins.kotlin:sourceInformation=true",
+    ],
 
     required: [
         "privapp-permissions-xiaomiparts.xml",
-        "init.xiaomiparts.rc"
+        "init.xiaomiparts.rc",
     ],
 }
 

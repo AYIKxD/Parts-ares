@@ -1,14 +1,13 @@
 on boot
-    # Allow system to access the gamekey triggers device node
+    # ── Gamekey trigger device node ─────────────────────────────────
     chown system system /dev/gamekey
     chmod 0660 /dev/gamekey
 
-    # Allow system to access the LED sysfs nodes (DAC permissions)
+    # ── RGB LED sysfs nodes ─────────────────────────────────────────
     # SELinux labeling is handled via genfs_contexts in common-dt sepolicy
     chown system system /sys/class/leds/red/brightness
     chown system system /sys/class/leds/green/brightness
     chown system system /sys/class/leds/blue/brightness
-    
     chmod 0664 /sys/class/leds/red/brightness
     chmod 0664 /sys/class/leds/green/brightness
     chmod 0664 /sys/class/leds/blue/brightness
@@ -16,7 +15,27 @@ on boot
     chown system system /sys/class/leds/red/breath
     chown system system /sys/class/leds/green/breath
     chown system system /sys/class/leds/blue/breath
-    
     chmod 0664 /sys/class/leds/red/breath
     chmod 0664 /sys/class/leds/green/breath
     chmod 0664 /sys/class/leds/blue/breath
+
+    # ── Touchpanel proc controls ────────────────────────────────────
+    # Gesture master switch and double-tap-to-wake
+    chown system system /proc/touchpanel/gesture_enable
+    chown system system /proc/touchpanel/double_tap_enable
+    chmod 0664 /proc/touchpanel/gesture_enable
+    chmod 0664 /proc/touchpanel/double_tap_enable
+
+    # Left and right trigger positions and enable flags
+    chown system system /proc/touchpanel/left_trigger_enable
+    chown system system /proc/touchpanel/left_trigger_x
+    chown system system /proc/touchpanel/left_trigger_y
+    chown system system /proc/touchpanel/right_trigger_enable
+    chown system system /proc/touchpanel/right_trigger_x
+    chown system system /proc/touchpanel/right_trigger_y
+    chmod 0664 /proc/touchpanel/left_trigger_enable
+    chmod 0664 /proc/touchpanel/left_trigger_x
+    chmod 0664 /proc/touchpanel/left_trigger_y
+    chmod 0664 /proc/touchpanel/right_trigger_enable
+    chmod 0664 /proc/touchpanel/right_trigger_x
+    chmod 0664 /proc/touchpanel/right_trigger_y

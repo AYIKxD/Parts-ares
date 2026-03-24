@@ -3,14 +3,16 @@
 # XiaomiParts runs with android:sharedUserId="android.uid.system" so it runs
 # in the system_app domain. Grant access to device-specific hardware nodes.
 
-# Allow system_app to read from /dev/gamekey (trigger buttons and sliders)
+# Allow system_app to open/read/write/ioctl /dev/gamekey (trigger buttons and sliders)
 # Type vendor_gamekey_device is defined in device/xiaomi/mt6893-common/sepolicy
-allow system_app vendor_gamekey_device:chr_file { open read getattr };
+allow system_app vendor_gamekey_device:chr_file { open read write getattr ioctl };
 
 # Allow XiaomiParts to read/write trigger position and gesture proc files
 # /proc/touchpanel/{left,right}_trigger_{enable,x,y}, gesture_enable, double_tap_enable
 allow system_app vendor_proc_touchpanel:dir search;
 allow system_app vendor_proc_touchpanel:file { open read write getattr };
 
-# NOTE: LED sysfs access rules are in common-dt vendor sepolicy (system_app.te)
-# to keep the sysfs_leds_xiaomi type and genfs_contexts labeling co-located.
+# Allow XiaomiParts to write RGB LED brightness via sysfs
+# /sys/class/leds/{red,green,blue}/brightness  – written by LedUtils.kt
+# Type sysfs_leds_xiaomi is labeled via genfs_contexts in common-dt vendor sepolicy
+allow system_app sysfs_leds_xiaomi:file { open read write getattr };

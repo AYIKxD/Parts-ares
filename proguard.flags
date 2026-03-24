@@ -1,5 +1,30 @@
--keep public class org.lineageos.xiaomiparts.KeyHandler
+# ProGuard / R8 rules for XiaomiParts
+#
+# NOTE: Android.bp already sets optimize { enabled: false } and dex_preopt { enabled: false }
+# so R8 shrinking/obfuscation is not applied during the AOSP build.
+# These rules exist as safety net for any future Gradle-based build.
 
--keepclassmembers public class org.lineageos.xiaomiparts.KeyHandler {
-    *;
+# Keep KeyHandler - instantiated reflectively by the system gesture interceptor
+-keep public class org.lineageos.xiaomiparts.KeyHandler {
+    public <init>(android.content.Context);
+    public android.view.KeyEvent handleKeyEvent(android.view.KeyEvent);
 }
+
+# Keep BootReceiver, TaskService, LedOnCall - used via AndroidManifest.xml component names
+-keep public class org.lineageos.xiaomiparts.BootReceiver
+-keep public class org.lineageos.xiaomiparts.TaskService
+-keep public class org.lineageos.xiaomiparts.led.LedOnCall
+-keep public class org.lineageos.xiaomiparts.led.LedDiscoTile
+-keep public class org.lineageos.xiaomiparts.triggers.TriggerMapTile
+-keep public class org.lineageos.xiaomiparts.gestures.TouchGesturesActivity
+-keep public class org.lineageos.xiaomiparts.triggers.CustomTriggerActivity
+-keep public class org.lineageos.xiaomiparts.util.AppListActivity
+
+# Keep Compose entry points
+-keep public class org.lineageos.xiaomiparts.ui.XiaomiPartsActivity
+
+# Suppress warnings for AOSP-internal APIs not available in standard SDK
+-dontwarn android.util.Slog
+-dontwarn android.view.WindowManagerGlobal
+-dontwarn com.android.internal.**
+-dontwarn com.android.settingslib.**

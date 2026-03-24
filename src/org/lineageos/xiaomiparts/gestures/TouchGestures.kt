@@ -115,7 +115,8 @@ class TouchGestures : PreferenceFragment(),
     private lateinit var mPicker: ShortcutPickerHelper
     private var mPendingkey: String? = null
 
-    override fun onCreatePreferences(bundle: Bundle?, s: String?) {
+    override fun onCreate(bundle: Bundle?) {
+        super.onCreate(bundle)
         mPicker = ShortcutPickerHelper(activity, this)
         mPrefs = Utils.getSharedPreferences(activity)
         mActionValues = resources.getStringArray(R.array.action_screen_off_values)
@@ -307,13 +308,13 @@ class TouchGestures : PreferenceFragment(),
         private fun getOwner() = targetFragment as TouchGestures
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val id    = requireArguments().getInt("id")
-            val key   = requireArguments().getString("key")
-            val title = requireArguments().getInt("title")
+            val id    = arguments!!.getInt("id")
+            val key   = arguments!!.getString("key")
+            val title = arguments!!.getInt("title")
             return when (id) {
-                0 -> AlertDialog.Builder(requireActivity())
+                0 -> AlertDialog.Builder(activity)
                     .setTitle(title)
-                    .setNegativeButton(R.string.cancel, null as? DialogInterface.OnClickListener)
+                    .setNegativeButton(R.string.cancel, null)
                     .setItems(getOwner().mActionEntries) { _: DialogInterface, item: Int ->
                         if (getOwner().mActionValues[item] == Action.ACTION_APP) {
                             getOwner().mPendingkey = key

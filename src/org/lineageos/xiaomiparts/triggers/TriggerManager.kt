@@ -108,7 +108,8 @@ class CustomTrigger : PreferenceFragment(),
     private lateinit var mPicker: ShortcutPickerHelper
     private var mPendingkey: String? = null
 
-    override fun onCreatePreferences(bundle: Bundle?, s: String?) {
+    override fun onCreate(bundle: Bundle?) {
+        super.onCreate(bundle)
         mPicker = ShortcutPickerHelper(activity, this)
         mActionValues  = resources.getStringArray(R.array.action_screen_off_values)
         mActionEntries = resources.getStringArray(R.array.action_screen_off_entries)
@@ -230,12 +231,12 @@ class CustomTrigger : PreferenceFragment(),
         }
         private fun getOwner() = targetFragment as CustomTrigger
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val id = requireArguments().getInt("id")
-            val key = requireArguments().getString("key")
-            val title = requireArguments().getInt("title")
+            val id = arguments!!.getInt("id")
+            val key = arguments!!.getString("key")
+            val title = arguments!!.getInt("title")
             return when (id) {
-                0 -> AlertDialog.Builder(requireActivity()).setTitle(title)
-                    .setNegativeButton(R.string.cancel, null as? android.content.DialogInterface.OnClickListener)
+                0 -> AlertDialog.Builder(activity).setTitle(title)
+                    .setNegativeButton(R.string.cancel, null)
                     .setItems(getOwner().mActionEntries) { _: android.content.DialogInterface, item: Int ->
                         if (getOwner().mActionValues[item] == Action.ACTION_APP) {
                             getOwner().mPendingkey = key

@@ -21,7 +21,7 @@
         <item name="colorPrimaryDark">@android:color/system_accent1_700</item>
         <item name="colorAccent">@android:color/system_accent1_200</item>
         <!-- Preference text uses system colors -->
-        <item name="android:textColorPrimary">@android:color/primary_text_material_dark</item>
+        <item name="android:textColorPrimary">?android:attr/textColorPrimary</item>
     </style>
 
 </resources>

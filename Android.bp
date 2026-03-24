@@ -25,8 +25,12 @@ android_app {
         "androidx.recyclerview_recyclerview",
         "androidx.core_core-ktx",
         "kotlinx-coroutines-android",
+        "com.google.android.material_material",
         "SystemUISharedLib",
         "SettingsLib",
+        "SettingsLibCollapsingToolbarBaseActivity",
+        "SettingsLibSettingsTheme",
+        "SettingsLibSettingsTransition",
     ],
 
     srcs: [

@@ -18,7 +18,6 @@ import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.hardware.input.InputManager
 import android.media.AudioManager
-import android.media.MediaSessionLegacyHelper
 import android.media.ToneGenerator
 import android.os.Bundle
 import android.os.Parcelable
@@ -179,7 +178,7 @@ object Action {
     @JvmStatic fun processAction(context: Context, action: String?, isLongpress: Boolean) {
         if (action == null || action == ACTION_NULL) { Slog.w(TAG, "action is null"); return }
         var isKeyguardShowing = false
-        try { isKeyguardShowing = WindowManagerGlobal.getWindowManagerService().isKeyguardLocked() }
+        try { isKeyguardShowing = WindowManagerGlobal.getWindowManagerService()?.isKeyguardLocked() ?: false }
         catch (e: RemoteException) { Slog.w(TAG, "Error getting window manager service", e) }
 
         when (action) {
@@ -265,10 +264,10 @@ object Action {
     }
 
     @JvmStatic private fun dispatchMediaKeyWithWakeLock(keycode: Int, context: Context) {
-        var event = KeyEvent(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), KeyEvent.ACTION_DOWN, keycode, 0)
-        MediaSessionLegacyHelper.getHelper(context).sendMediaButtonEvent(event, true)
-        event = KeyEvent.changeAction(event, KeyEvent.ACTION_UP)
-        MediaSessionLegacyHelper.getHelper(context).sendMediaButtonEvent(event, true)
+        val am = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val now = SystemClock.uptimeMillis()
+        am.dispatchMediaKeyEvent(KeyEvent(now, now, KeyEvent.ACTION_DOWN, keycode, 0))
+        am.dispatchMediaKeyEvent(KeyEvent(now, now, KeyEvent.ACTION_UP,   keycode, 0))
     }
 
     @JvmStatic fun triggerVirtualKeypress(context: Context, keyCode: Int, longpress: Boolean) {

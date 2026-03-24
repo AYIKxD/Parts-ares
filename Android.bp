@@ -38,6 +38,9 @@ android_app {
         "androidx.lifecycle_lifecycle-viewmodel-compose",
         "androidx.lifecycle_lifecycle-runtime-compose",
 
+        // SettingsLib – CollapsingToolbarBaseActivity for AppListActivity
+        "SettingsLib-CollapsingToolbar",
+
         // Material Design
         "com.google.android.material_material",
 
@@ -56,7 +59,6 @@ android_app {
     ],
 
     srcs: [
-        "src/**/*.java",
         "src/**/*.kt",
     ],
 

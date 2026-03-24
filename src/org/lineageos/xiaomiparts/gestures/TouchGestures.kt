@@ -33,7 +33,7 @@ import android.preference.PreferenceFragment
 import android.preference.PreferenceScreen
 import android.preference.SwitchPreference
 
-import androidx.appcompat.app.AppCompatActivity
+
 
 import org.lineageos.xiaomiparts.R
 import org.lineageos.xiaomiparts.util.Action
@@ -43,7 +43,7 @@ import org.lineageos.xiaomiparts.util.Utils
 // ─────────────────────────────────────────────────────────────────
 // TouchGesturesActivity – host Activity for the gesture settings
 // ─────────────────────────────────────────────────────────────────
-class TouchGesturesActivity : AppCompatActivity() {
+class TouchGesturesActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fragmentManager.beginTransaction()

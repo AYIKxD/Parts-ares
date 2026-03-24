@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2025 XiaomiParts Project
+     Licensed under the Apache License, Version 2.0
+-->
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference
+        android:key="trigger_settings"
+        android:title="@string/trigger_settings_title"
+        android:summary="@string/trigger_settings_summary"
+        android:icon="@drawable/ic_qs_trigger_map" />
+
+    <Preference
+        android:key="led_settings"
+        android:title="@string/led_settings_title"
+        android:summary="@string/led_settings_summary"
+        android:icon="@drawable/ic_qs_led_disco" />
+
+    <Preference
+        android:key="gesture_settings"
+        android:title="@string/gesture_settings_title"
+        android:summary="@string/gesture_settings_summary"
+        android:icon="@drawable/ic_settings_gestures" />
+
+</PreferenceScreen>

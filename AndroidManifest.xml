@@ -41,11 +41,11 @@
         android:label="@string/XiaomiParts"
         android:icon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+        android:theme="@style/XiaomiPartsSettingsTheme">
 
         <!-- Main Compose Activity -->
         <activity
-            android:name=".ui.XiaomiPartsActivity"
+            android:name=".XiaomiPartsActivity"
             android:exported="true"
             android:launchMode="singleTask">
             <intent-filter>
@@ -58,7 +58,7 @@
             android:name=".XiaomiPartsSettingsAlias"
             android:exported="true"
             android:label="@string/XiaomiParts"
-            android:targetActivity=".ui.XiaomiPartsActivity">
+            android:targetActivity=".XiaomiPartsActivity">
             <intent-filter>
                 <action android:name="com.android.settings.action.IA_SETTINGS" />
             </intent-filter>

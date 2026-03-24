@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2025 XiaomiParts Project
+     Licensed under the Apache License, Version 2.0
+-->
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/trigger_category_map">
+
+        <Preference
+            android:key="open_trigger_map"
+            android:title="@string/trigger_map_title"
+            android:summary="@string/trigger_map_summary"
+            android:icon="@drawable/ic_qs_trigger_map" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/trigger_category_sound">
+
+        <SwitchPreferenceCompat
+            android:key="trigger_sound"
+            android:title="@string/trigger_sound_title"
+            android:summary="@string/trigger_sound_summary"
+            android:defaultValue="false" />
+
+        <ListPreference
+            android:key="trigger_sound_type"
+            android:title="@string/trigger_sound_type_title"
+            android:summary="@string/trigger_sound_type_summary"
+            android:entries="@array/trigger_sound_type_entries"
+            android:entryValues="@array/trigger_sound_type_values"
+            android:defaultValue="classic" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/trigger_category_alert_slider">
+
+        <ListPreference
+            android:key="alert_slider_mode"
+            android:title="@string/alert_slider_mode_title"
+            android:summary="%s"
+            android:entries="@array/alert_slider_mode_entries"
+            android:entryValues="@array/alert_slider_mode_values"
+            android:defaultValue="disabled" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/trigger_category_custom">
+
+        <Preference
+            android:key="gaming_apps"
+            android:title="@string/gaming_apps_title"
+            android:summary="@string/gaming_apps_summary"
+            android:icon="@drawable/ic_qs_trigger_map" />
+
+        <Preference
+            android:key="trigger_actions"
+            android:title="@string/trigger_actions_title"
+            android:summary="@string/trigger_actions_summary"
+            android:icon="@drawable/ic_settings_gestures" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

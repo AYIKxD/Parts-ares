@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2025 XiaomiParts Project
+     Licensed under the Apache License, Version 2.0
+-->
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/led_category_disco">
+
+        <SwitchPreferenceCompat
+            android:key="led_disco"
+            android:title="@string/led_disco_title"
+            android:summary="@string/led_disco_summary"
+            android:defaultValue="false" />
+
+        <SwitchPreferenceCompat
+            android:key="led_in_games"
+            android:title="@string/led_in_games_title"
+            android:summary="@string/led_in_games_summary"
+            android:dependency="led_disco"
+            android:defaultValue="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/led_category_calls">
+
+        <SwitchPreferenceCompat
+            android:key="led_in_calls"
+            android:title="@string/led_in_calls_title"
+            android:summary="@string/led_in_calls_summary"
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -212,11 +212,76 @@
     <string name="alert_slider_dnd_silent">DND + Silent</string>
     <string name="alert_slider_dnd_vibrate">DND + Vibrate</string>
     <string name="alert_slider_dnd_total">DND Total Silence</string>
-    <!-- Navigation / Dashboard strings (used by Compose UI) -->
+    <!-- Navigation / Dashboard strings -->
     <string name="app_name">XiaomiParts</string>
     <string name="trigger_title">Triggers</string>
     <string name="led_title">LED</string>
     <string name="gesture_title">Gestures</string>
     <string name="back">Back</string>
 
+    <!-- Top-level preference screen -->
+    <string name="trigger_settings_title">Triggers</string>
+    <string name="trigger_settings_summary">Trigger map, sounds and custom actions</string>
+    <string name="led_settings_title">RGB LED</string>
+    <string name="led_settings_summary">Disco mode and call notifications</string>
+    <string name="gesture_settings_title">Gestures</string>
+    <string name="gesture_settings_summary">Screen-off gesture controls</string>
+
+    <!-- Trigger Settings -->
+    <string name="trigger_category_map">Trigger Map</string>
+    <string name="trigger_map_title">Open Trigger Map</string>
+    <string name="trigger_map_summary">Drag to set trigger positions. Long press save to reset.</string>
+    <string name="trigger_category_sound">Sound &amp; Haptics</string>
+    <string name="trigger_sound_title">Trigger Sound</string>
+    <string name="trigger_sound_summary">Play sound when trigger opens or closes</string>
+    <string name="trigger_sound_type_title">Sound Type</string>
+    <string name="trigger_sound_type_summary">Choose trigger feedback sound</string>
+    <string name="trigger_category_alert_slider">Alert Slider</string>
+    <string name="trigger_category_custom">Customization</string>
+    <string name="gaming_apps_title">Gaming Apps</string>
+    <string name="gaming_apps_summary">Add or remove gaming apps</string>
+    <string name="trigger_actions_title">Trigger Actions</string>
+    <string name="trigger_actions_summary">Customize trigger button actions for non-gaming apps</string>
+
+    <!-- LED Settings -->
+    <string name="led_category_disco">Disco Mode</string>
+    <string name="led_disco_title">LED Disco</string>
+    <string name="led_disco_summary">Enable RGB LED disco effect</string>
+    <string name="led_in_games_title">Play in Games</string>
+    <string name="led_in_games_summary">Only activate LED disco while gaming</string>
+    <string name="led_category_calls">Calls</string>
+    <string name="led_in_calls_title">LED During Calls</string>
+    <string name="led_in_calls_summary">Play LED light effect during phone calls</string>
+
+    <!-- String arrays for list preferences -->
+    <string-array name="trigger_sound_type_entries">
+        <item>Sword</item>
+        <item>Bullet</item>
+        <item>Future</item>
+        <item>Engine</item>
+    </string-array>
+    <string-array name="trigger_sound_type_values">
+        <item>classic</item>
+        <item>bullet</item>
+        <item>current</item>
+        <item>wind</item>
+    </string-array>
+    <string-array name="alert_slider_mode_entries">
+        <item>Disabled</item>
+        <item>Vibrate</item>
+        <item>Silent</item>
+        <item>DND + Silent</item>
+        <item>DND + Vibrate</item>
+        <item>DND Total Silence</item>
+    </string-array>
+    <string-array name="alert_slider_mode_values">
+        <item>disabled</item>
+        <item>vibrate</item>
+        <item>silent</item>
+        <item>dnd_silent</item>
+        <item>dnd_vibrate</item>
+        <item>dnd_total</item>
+    </string-array>
+
 </resources>
+

@@ -22,29 +22,7 @@ android_app {
         "androidx.core_core-ktx",
         "androidx.appcompat_appcompat",
 
-        // Compose UI
-        "androidx.activity_activity-compose",
-        "androidx.compose.animation_animation-core",
-        "androidx.compose.animation_animation-graphics",
-        "androidx.compose.foundation_foundation",
-        "androidx.compose.material3_material3",
-        "androidx.compose.material3_material3-window-size-class",
-        "androidx.compose.material_material-icons-core",
-        "androidx.compose.material_material-icons-extended",
-        "androidx.compose.runtime_runtime",
-        "androidx.compose.ui_ui",
-
-        // Navigation
-        "androidx.navigation_navigation-compose",
-
-        // Lifecycle
-        "androidx.lifecycle_lifecycle-viewmodel-compose",
-        "androidx.lifecycle_lifecycle-runtime-compose",
-
-        // Material Design
-        "com.google.android.material_material",
-
-        // Preferences (still used by legacy services)
+        // Preferences (main UI + legacy services)
         "androidx.preference_preference",
 
         // Kotlin
@@ -80,7 +58,6 @@ android_app {
     kotlincflags: [
         "-Xjvm-default=all",
         "-opt-in=kotlin.RequiresOptIn",
-        "-P plugin:androidx.compose.compiler.plugins.kotlin:sourceInformation=true",
     ],
 
     kotlin_plugins: ["kotlin-parcelize-compiler-plugin"],

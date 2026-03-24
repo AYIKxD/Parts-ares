@@ -46,7 +46,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
 
-import androidx.appcompat.app.AppCompatActivity
+import android.app.Activity
 import android.app.DialogFragment
 import android.preference.Preference
 import android.preference.PreferenceCategory
@@ -63,7 +63,7 @@ import java.util.ArrayList
 import java.util.HashMap
 
 // ─── CustomTriggerActivity ────────────────────────────────────────
-class CustomTriggerActivity : AppCompatActivity() {
+class CustomTriggerActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fragmentManager.beginTransaction()

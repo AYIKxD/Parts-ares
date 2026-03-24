@@ -7,7 +7,6 @@ package org.lineageos.xiaomiparts.triggers
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.app.DialogFragment
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.DialogInterface
@@ -48,12 +47,12 @@ import android.widget.Toast
 import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
 
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.DialogFragment
-import androidx.preference.Preference
-import androidx.preference.PreferenceCategory
-import androidx.preference.PreferenceFragment
-import androidx.preference.PreferenceScreen
-import androidx.preference.SwitchPreference
+import android.app.DialogFragment
+import android.preference.Preference
+import android.preference.PreferenceCategory
+import android.preference.PreferenceFragment
+import android.preference.PreferenceScreen
+import android.preference.SwitchPreference
 
 import org.lineageos.xiaomiparts.R
 import org.lineageos.xiaomiparts.util.Action
@@ -67,7 +66,7 @@ import java.util.HashMap
 class CustomTriggerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        supportFragmentManager.beginTransaction()
+        fragmentManager.beginTransaction()
             .replace(android.R.id.content, CustomTrigger())
             .commit()
     }
@@ -220,10 +219,10 @@ class CustomTrigger : PreferenceFragment(),
 
     private fun showDialogInner(id: Int, key: String?, title: Int) {
         val f = MyAlertDialogFragment.newInstance(id, key, title)
-        f.show(parentFragmentManager, "dialog $id")
+        f.show(fragmentManager, "dialog $id")
     }
 
-    class MyAlertDialogFragment : androidx.fragment.app.DialogFragment() {
+    class MyAlertDialogFragment : android.app.DialogFragment() {
         companion object {
             fun newInstance(id: Int, key: String?, title: Int) = MyAlertDialogFragment().also {
                 it.arguments = Bundle().apply { putInt("id", id); putString("key", key); putInt("title", title) }
@@ -242,7 +241,7 @@ class CustomTrigger : PreferenceFragment(),
                             getOwner().mPendingkey = key
                             getOwner().mPicker.pickShortcut(getOwner().id)
                         } else {
-                            Utils.putStringSystem(getOwner().activity, key, getOwner().mActionValues[item])
+                            Utils.putStringSystem(getOwner().activity, key ?: "", getOwner().mActionValues[item])
                             getOwner().initPrefs()
                         }
                     }.create()

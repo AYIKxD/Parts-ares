@@ -26,13 +26,12 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import androidx.fragment.app.DialogFragment
-
-import androidx.preference.Preference
-import androidx.preference.PreferenceCategory
-import androidx.preference.PreferenceFragment
-import androidx.preference.PreferenceScreen
-import androidx.preference.SwitchPreference
+import android.app.DialogFragment
+import android.preference.Preference
+import android.preference.PreferenceCategory
+import android.preference.PreferenceFragment
+import android.preference.PreferenceScreen
+import android.preference.SwitchPreference
 
 import androidx.appcompat.app.AppCompatActivity
 
@@ -47,7 +46,7 @@ import org.lineageos.xiaomiparts.util.Utils
 class TouchGesturesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        supportFragmentManager.beginTransaction()
+        fragmentManager.beginTransaction()
             .replace(android.R.id.content, TouchGestures())
             .commit()
     }
@@ -172,9 +171,9 @@ class TouchGestures : PreferenceFragment(),
         mEnableDt2w?.apply    { isChecked = mPrefs.getBoolean(PREF_DT2W_ENABLE, true);    onPreferenceChangeListener = this@TouchGestures }
         mEnableGestures?.apply{ isChecked = mPrefs.getBoolean(PREF_GESTURE_ENABLE, true); onPreferenceChangeListener = this@TouchGestures }
 
-        if (!isSupported(DT2W_PATH))  preferenceScreen.removePreference(dt2w as? Preference)
-        if (!isSupported())           preferenceScreen.removePreference(haptic as? Preference)
-        preferenceScreen.removePreference(gestures as? Preference)
+        if (!isSupported(DT2W_PATH))  dt2w?.let  { preferenceScreen.removePreference(it) }
+        if (!isSupported())           haptic?.let { preferenceScreen.removePreference(it) }
+        gestures?.let { preferenceScreen.removePreference(it) }
 
         return prefs
     }
@@ -291,7 +290,7 @@ class TouchGestures : PreferenceFragment(),
 
     private fun showDialogInner(id: Int, key: String?, title: Int) {
         val f = MyAlertDialogFragment.newInstance(id, key, title)
-        f.show(parentFragmentManager, "dialog $id")
+        f.show(fragmentManager, "dialog $id")
     }
 
     class MyAlertDialogFragment : DialogFragment() {

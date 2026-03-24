@@ -6,14 +6,23 @@
 <resources>
 
     <!--
-        Theme for XiaomiParts activities.
-        Inherits Theme.DeviceDefault.Settings — the same base theme used by the Settings app.
-        This gives us Material You system colors, standard preference styling, and correct
-        system action bar without any extra dependencies.
+        XiaomiParts settings theme.
+        AppCompatActivity REQUIRES an AppCompat-based theme — Theme.DeviceDefault.Settings
+        would crash immediately with "You need to use a Theme.AppCompat theme".
+        We inherit Theme.AppCompat.DayNight so that:
+          - AppCompatActivity is happy
+          - Day/Night auto-switching works
+          - Action bar is provided by AppCompat
+        The preference list itself uses system-styled widgets via PreferenceFragmentCompat.
     -->
-    <style name="XiaomiPartsSettingsTheme" parent="@android:style/Theme.DeviceDefault.Settings">
-        <item name="android:windowActionBar">true</item>
-        <item name="android:windowNoTitle">false</item>
+    <style name="XiaomiPartsSettingsTheme" parent="Theme.AppCompat.DayNight">
+        <!-- Let the system color the action bar with the wallpaper-derived color -->
+        <item name="colorPrimary">@android:color/system_accent1_600</item>
+        <item name="colorPrimaryDark">@android:color/system_accent1_700</item>
+        <item name="colorAccent">@android:color/system_accent1_200</item>
+        <!-- Preference text uses system colors -->
+        <item name="android:textColorPrimary">@android:color/primary_text_material_dark</item>
     </style>
 
 </resources>
+

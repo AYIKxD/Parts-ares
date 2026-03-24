@@ -24,6 +24,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import org.lineageos.xiaomiparts.R
+import org.lineageos.xiaomiparts.triggers.CustomTriggerActivity
 import org.lineageos.xiaomiparts.triggers.TriggerService
 import org.lineageos.xiaomiparts.triggers.TriggerUtils
 import org.lineageos.xiaomiparts.util.AppListActivity

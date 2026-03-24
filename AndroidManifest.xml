@@ -43,7 +43,7 @@
         android:supportsRtl="true"
         android:theme="@style/XiaomiPartsSettingsTheme">
 
-        <!-- Main Compose Activity -->
+        <!-- Main Settings Activity -->
         <activity
             android:name=".XiaomiPartsActivity"
             android:exported="true"
@@ -74,6 +74,9 @@
             <meta-data
                 android:name="com.android.settings.icon_tintable"
                 android:value="true" />
+            <meta-data
+                android:name="com.android.settings.HIGHLIGHT_MENU_KEY"
+                android:value="top_level_xiaomiparts" />
         </activity-alias>
 
         <!-- Boot Receiver -->

@@ -24,12 +24,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import org.lineageos.xiaomiparts.ui.screens.DashboardScreen
-import org.lineageos.xiaomiparts.ui.screens.TriggerSettingsScreen
-import org.lineageos.xiaomiparts.ui.screens.LedSettingsScreen
 import org.lineageos.xiaomiparts.ui.theme.XiaomiPartsTheme
 
 class XiaomiPartsActivity : ComponentActivity() {
@@ -42,32 +37,11 @@ class XiaomiPartsActivity : ComponentActivity() {
             XiaomiPartsTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = MaterialTheme.colorScheme.surfaceContainer
                 ) {
-                    val navController = rememberNavController()
-
-                    NavHost(
-                        navController = navController,
-                        startDestination = "dashboard"
-                    ) {
-                        composable("dashboard") {
-                            DashboardScreen(
-                                onNavigateToTriggers = { navController.navigate("triggers") },
-                                onNavigateToLeds = { navController.navigate("leds") },
-                                onBack = { finish() }
-                            )
-                        }
-                        composable("triggers") {
-                            TriggerSettingsScreen(
-                                onBack = { navController.popBackStack() }
-                            )
-                        }
-                        composable("leds") {
-                            LedSettingsScreen(
-                                onBack = { navController.popBackStack() }
-                            )
-                        }
-                    }
+                    DashboardScreen(
+                        onBack = { finish() }
+                    )
                 }
             }
         }

@@ -22,12 +22,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import org.lineageos.xiaomiparts.led.LedUtils
@@ -35,9 +33,8 @@ import org.lineageos.xiaomiparts.ui.components.*
 
 private const val PREFS_NAME = "org.lineageos.xiaomiparts_preferences"
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LedSettingsScreen(onBack: () -> Unit) {
+fun LedSettingsScreen() {
     val context = LocalContext.current
     val prefs = remember {
         context.createPackageContext(
@@ -54,79 +51,57 @@ fun LedSettingsScreen(onBack: () -> Unit) {
         mutableStateOf(value == 1)
     }
 
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 150.dp, top = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        SectionHeader(title = "DISCO MODE")
 
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            LargeTopAppBar(
-                title = { Text("LED Controls") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.largeTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
+        SwitchRow(
+            title = "LED Disco",
+            summary = "Enable RGB LED disco effect",
+            checked = ledDisco,
+            icon = Icons.Filled.Lightbulb,
+            onCheckedChange = { newValue ->
+                ledDisco = newValue
+                prefs.edit().putBoolean("led_disco", newValue).apply()
+                LedUtils.getInstance(context).play(newValue)
+            }
+        )
+
+        SwitchRow(
+            title = "Play in Games",
+            summary = "Only activate LED disco while gaming",
+            checked = ledInGames,
+            enabled = ledDisco,
+            icon = Icons.Filled.SportsEsports,
+            onCheckedChange = { newValue ->
+                ledInGames = newValue
+                prefs.edit().putBoolean("led_in_games", newValue).apply()
+                val shouldPlay = !newValue || (newValue && ledDisco)
+                LedUtils.getInstance(context).play(shouldPlay)
+            }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+        SectionHeader(title = "CALLS")
+
+        SwitchRow(
+            title = "LED During Calls",
+            summary = "Play LED light effect during phone calls",
+            checked = ledInCalls,
+            icon = Icons.Filled.Call,
+            onCheckedChange = { newValue ->
+                ledInCalls = newValue
+                Settings.System.putInt(
+                    context.contentResolver, "led_in_calls",
+                    if (newValue) 1 else 0
                 )
-            )
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            SectionHeader(title = "DISCO MODE")
-
-            SwitchRow(
-                title = "LED Disco",
-                summary = "Enable RGB LED disco effect",
-                checked = ledDisco,
-                icon = Icons.Filled.Lightbulb,
-                onCheckedChange = { newValue ->
-                    ledDisco = newValue
-                    prefs.edit().putBoolean("led_disco", newValue).apply()
-                    LedUtils.getInstance(context).play(newValue)
-                }
-            )
-
-            SwitchRow(
-                title = "Play in Games",
-                summary = "Only activate LED disco while gaming",
-                checked = ledInGames,
-                enabled = ledDisco,
-                icon = Icons.Filled.SportsEsports,
-                onCheckedChange = { newValue ->
-                    ledInGames = newValue
-                    prefs.edit().putBoolean("led_in_games", newValue).apply()
-                    val shouldPlay = !newValue || (newValue && ledDisco)
-                    LedUtils.getInstance(context).play(shouldPlay)
-                }
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-            SectionHeader(title = "CALLS")
-
-            SwitchRow(
-                title = "LED During Calls",
-                summary = "Play LED light effect during phone calls",
-                checked = ledInCalls,
-                icon = Icons.Filled.Call,
-                onCheckedChange = { newValue ->
-                    ledInCalls = newValue
-                    Settings.System.putInt(
-                        context.contentResolver, "led_in_calls",
-                        if (newValue) 1 else 0
-                    )
-                }
-            )
-        }
+            }
+        )
     }
 }

@@ -41,7 +41,7 @@ fun CategoryCard(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            containerColor = MaterialTheme.colorScheme.surfaceBright
         ),
         shape = MaterialTheme.shapes.large
     ) {
@@ -62,6 +62,7 @@ fun CategoryCard(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(2.dp))
@@ -94,7 +95,7 @@ fun SwitchRow(
         targetValue = if (checked)
             MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
         else
-            MaterialTheme.colorScheme.surfaceContainerHigh,
+            MaterialTheme.colorScheme.surfaceBright,
         animationSpec = tween(300),
         label = "switchRowBg"
     )
@@ -163,7 +164,7 @@ fun DropdownRow(
     Card(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            containerColor = MaterialTheme.colorScheme.surfaceBright
         ),
         shape = MaterialTheme.shapes.large
     ) {
@@ -236,7 +237,7 @@ fun ActionRow(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            containerColor = MaterialTheme.colorScheme.surfaceBright
         ),
         shape = MaterialTheme.shapes.large
     ) {

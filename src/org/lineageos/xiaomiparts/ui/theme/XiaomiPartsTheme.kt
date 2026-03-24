@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package org.lineageos.xiaomiparts.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -35,6 +37,22 @@ val XiaomiPartsShapes = Shapes(
 )
 
 val XiaomiPartsTypography = Typography(
+    displayLarge = TextStyle(
+        fontWeight = FontWeight.Bold,
+        fontSize = 57.sp,
+        lineHeight = 64.sp,
+        letterSpacing = (-0.25).sp
+    ),
+    displayMedium = TextStyle(
+        fontWeight = FontWeight.Bold,
+        fontSize = 45.sp,
+        lineHeight = 52.sp
+    ),
+    displaySmall = TextStyle(
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 36.sp,
+        lineHeight = 44.sp
+    ),
     headlineLarge = TextStyle(
         fontWeight = FontWeight.Bold,
         fontSize = 32.sp,
@@ -117,8 +135,9 @@ fun XiaomiPartsTheme(
         dynamicLightColorScheme(context)
     }
 
-    MaterialTheme(
+    MaterialExpressiveTheme(
         colorScheme = colorScheme,
+        motionScheme = MotionScheme.expressive(),
         shapes = XiaomiPartsShapes,
         typography = XiaomiPartsTypography,
         content = content

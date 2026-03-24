@@ -34,7 +34,7 @@ import androidx.preference.PreferenceFragment
 import androidx.preference.PreferenceScreen
 import androidx.preference.SwitchPreference
 
-import com.android.settingslib.collapsingtoolbar.CollapsingToolbarBaseActivity
+import androidx.appcompat.app.AppCompatActivity
 
 import org.lineageos.xiaomiparts.R
 import org.lineageos.xiaomiparts.util.Action
@@ -44,11 +44,11 @@ import org.lineageos.xiaomiparts.util.Utils
 // ─────────────────────────────────────────────────────────────────
 // TouchGesturesActivity – host Activity for the gesture settings
 // ─────────────────────────────────────────────────────────────────
-class TouchGesturesActivity : CollapsingToolbarBaseActivity() {
+class TouchGesturesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fragmentManager.beginTransaction()
-            .replace(com.android.settingslib.collapsingtoolbar.R.id.content_frame, TouchGestures())
+            .replace(android.R.id.content, TouchGestures())
             .commit()
     }
 

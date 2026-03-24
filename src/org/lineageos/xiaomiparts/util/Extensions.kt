@@ -35,7 +35,7 @@ import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.WindowManagerGlobal
 
-import com.android.settingslib.collapsingtoolbar.CollapsingToolbarBaseActivity
+import androidx.appcompat.app.AppCompatActivity
 
 import org.lineageos.xiaomiparts.R
 
@@ -288,11 +288,11 @@ object Action {
 }
 
 // ─── AppListActivity ──────────────────────────────────────────────
-class AppListActivity : CollapsingToolbarBaseActivity() {
+class AppListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportFragmentManager.beginTransaction()
-            .replace(com.android.settingslib.collapsingtoolbar.R.id.content_frame, AppList())
+            .replace(android.R.id.content, AppList())
             .commit()
     }
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {

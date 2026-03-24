@@ -22,5 +22,7 @@
         <permission name="android.permission.KILL_BACKGROUND_PROCESSES" />
         <!-- Status bar expand/collapse (used by ACTION_NOTIFICATIONS) -->
         <permission name="android.permission.STATUS_BAR" />
+        <!-- Required for reading wallpaper colors (used by Material You dynamic theming) -->
+        <permission name="android.permission.READ_WALLPAPER_INTERNAL" />
     </privapp-permissions>
 </permissions>

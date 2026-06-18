@@ -195,6 +195,7 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
         try {
             windowManager.addView(mView, layoutParams);
         } catch (RuntimeException e) {
+            Slog.e(TAG, "Failed to add overlay view", e);
         }
         mShowing = true;
         mView.setVisibility(View.VISIBLE);

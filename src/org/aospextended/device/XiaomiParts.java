@@ -38,8 +38,7 @@ import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
 import androidx.preference.TwoStatePreference;
 
-import org.aospextended.device.gestures.TouchGestures;
-import org.aospextended.device.gestures.TouchGesturesActivity;
+
 import org.aospextended.device.util.AppListActivity;
 
 import org.aospextended.device.vibration.VibratorStrengthPreference;
@@ -74,7 +73,7 @@ public class XiaomiParts extends PreferenceFragmentCompat implements
     private SharedPreferences mPrefs;
 
 
-    private Preference mGesturesPref;
+
     private SwitchPreference mLedDisco;
     private VibratorStrengthPreference mVibratorStrength;
 
@@ -100,21 +99,6 @@ public class XiaomiParts extends PreferenceFragmentCompat implements
         setPreferencesFromResource(R.xml.XiaomiParts, rootKey);
 
         mPrefs = Utils.getSharedPreferences(getActivity());
-
-        PreferenceCategory gestures = (PreferenceCategory) getPreferenceScreen()
-                 .findPreference("gestures_category");
-        mGesturesPref = findPreference("screen_gestures");
-        mGesturesPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(getContext(), TouchGesturesActivity.class);
-                startActivity(intent);
-                return true;
-            }
-        });
-        if (!TouchGestures.isSupported()) {
-            getPreferenceScreen().removePreference(gestures);
-        }
 
 
 

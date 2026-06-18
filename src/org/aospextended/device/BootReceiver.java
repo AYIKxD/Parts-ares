@@ -28,7 +28,7 @@ import android.content.SharedPreferences;
 import androidx.preference.PreferenceManager;
 
 import org.aospextended.device.XiaomiParts;
-import org.aospextended.device.gestures.TouchGestures;
+
 import org.aospextended.device.util.Utils;
 import org.aospextended.device.util.TaskService;
 
@@ -41,15 +41,6 @@ public class BootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
-        if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
-            enableComponent(context, TouchGestures.class.getName());
-            SharedPreferences prefs = Utils.getSharedPreferences(context);
-            TouchGestures.enableGestures(prefs.getBoolean(
-                TouchGestures.PREF_GESTURE_ENABLE, true));
-            TouchGestures.enableDt2w(prefs.getBoolean(
-                TouchGestures.PREF_DT2W_ENABLE, true));
-        }
-
 //        VibratorStrengthPreference.restore(context);
         TriggerService.onBoot(context);
 //        TriggerUtils tr = TriggerUtils.getInstance(context);

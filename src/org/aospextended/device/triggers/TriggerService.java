@@ -132,8 +132,8 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
         image1.setOnTouchListener(this);
         image2.setOnTouchListener(this);
 
-        mLX = Float.parseFloat(Utils.getFileValue("/proc/touchpanel/left_trigger_x", "0"));
-        mLY = Float.parseFloat(Utils.getFileValue("/proc/touchpanel/left_trigger_y", "0"));
+        mLX = Float.parseFloat(mPrefs.getString("left_trigger_x", "540"));
+        mLY = Float.parseFloat(mPrefs.getString("left_trigger_y", "700"));
 
         image1.animate()
                 .x(mLX)
@@ -141,8 +141,8 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
                 .setDuration(0)
                 .start();
 
-        mRX = Float.parseFloat(Utils.getFileValue("/proc/touchpanel/right_trigger_x", "0"));
-        mRY = Float.parseFloat(Utils.getFileValue("/proc/touchpanel/right_trigger_y", "0"));
+        mRX = Float.parseFloat(mPrefs.getString("right_trigger_x", "540"));
+        mRY = Float.parseFloat(mPrefs.getString("right_trigger_y", "1700"));
 
         image2.animate()
                 .x(mRX)

@@ -89,14 +89,7 @@ public class TriggerUtils {
             if (DEBUG) Slog.d(TAG, "Lazy loading sounds");
             loadSoundResource();
         }
-        
-        // Don't play sounds in vibrate or silent mode
-        android.media.AudioManager audioManager = (android.media.AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-        int ringerMode = audioManager.getRingerMode();
-        if (ringerMode != android.media.AudioManager.RINGER_MODE_NORMAL) {
-            if (DEBUG) Slog.d(TAG, "Skipping sound - ringer mode: " + ringerMode);
-            return;
-        }
+
         
         String type = Settings.System.getString(mContext.getContentResolver(), "trigger_sound_type");
         if (type == null) type = "classic";
@@ -126,7 +119,7 @@ public class TriggerUtils {
     private void initSoundPool() {
         if (DEBUG) Slog.d(TAG, "initSoundPool");
         AudioAttributes audioAttributes = new AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_GAME)
+            .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
             .build();
         mSoundPool = new SoundPool.Builder()

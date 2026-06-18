@@ -114,6 +114,35 @@ public class XiaomiParts extends PreferenceFragmentCompat implements
             }
         });
 
+        Preference mTriggerMappingManager = findPreference("trigger_mapping_manager");
+        if (mTriggerMappingManager != null) {
+            mTriggerMappingManager.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    new android.app.AlertDialog.Builder(getContext())
+                            .setTitle(R.string.trigger_mapping_dialog_title)
+                            .setMessage(android.text.Html.fromHtml(getString(R.string.trigger_mapping_dialog_message), android.text.Html.FROM_HTML_MODE_COMPACT))
+                            .setPositiveButton(android.R.string.ok, null)
+                            .setNegativeButton(R.string.trigger_mapping_reset_all, (dialog, which) -> {
+                                SharedPreferences.Editor editor = mPrefs.edit();
+                                java.util.Map<String, ?> allEntries = mPrefs.getAll();
+                                for (java.util.Map.Entry<String, ?> entry : allEntries.entrySet()) {
+                                    if (entry.getKey().startsWith("left_trigger_x") || 
+                                        entry.getKey().startsWith("left_trigger_y") || 
+                                        entry.getKey().startsWith("right_trigger_x") || 
+                                        entry.getKey().startsWith("right_trigger_y")) {
+                                        editor.remove(entry.getKey());
+                                    }
+                                }
+                                editor.apply();
+                                Toast.makeText(getContext(), R.string.trigger_mapping_reset_toast, Toast.LENGTH_SHORT).show();
+                            })
+                            .show();
+                    return true;
+                }
+            });
+        }
+
         PreferenceCategory misc = (PreferenceCategory) getPreferenceScreen()
                 .findPreference("triggers_category");
 

@@ -245,4 +245,12 @@
     <string name="trigger_map_not_in_game">Trigger mapping only works inside gaming apps</string>
     <string name="trigger_map_tile_not_in_game">Not in game</string>
 
+    <!-- Manager Dialog -->
+    <string name="trigger_mapping_manager_title">Trigger Mapping Guide &amp; Manager</string>
+    <string name="trigger_mapping_manager_summary">Learn how to use trigger mapping and manage your per-app profiles</string>
+    <string name="trigger_mapping_dialog_title">Trigger Mapping</string>
+    <string name="trigger_mapping_dialog_message"><b>How to Map Triggers:</b>\n1. Open a game you added to the Gaming Apps list.\n2. Open both physical triggers within 6 seconds.\n3. The mapping overlay will appear automatically!\n\n<i>Note: You can also toggle the overlay from the Quick Settings tile while in-game.</i>\n\n<b>Per-App Profiles:</b>\nTrigger positions are saved separately for each game. Your PUBG layout won\'t interfere with Genshin Impact.</string>
+    <string name="trigger_mapping_reset_all">Reset All Profiles</string>
+    <string name="trigger_mapping_reset_toast">All trigger mapping profiles have been cleared.</string>
+
 </resources>

@@ -65,6 +65,11 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
 
     private boolean mShowing;
 
+    private String getPrefix() {
+        String pkg = Utils.getForegroundApp(mContext);
+        return pkg != null && !pkg.isEmpty() && Utils.isGameApp(mContext) ? "_" + pkg : "";
+    }
+
     private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -116,8 +121,9 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
         image1.setOnTouchListener(this);
         image2.setOnTouchListener(this);
 
-        mLX = Float.parseFloat(mPrefs.getString("left_trigger_x", "540"));
-        mLY = Float.parseFloat(mPrefs.getString("left_trigger_y", "700"));
+        String suffix = getPrefix();
+        mLX = Float.parseFloat(mPrefs.getString("left_trigger_x" + suffix, mPrefs.getString("left_trigger_x", "540")));
+        mLY = Float.parseFloat(mPrefs.getString("left_trigger_y" + suffix, mPrefs.getString("left_trigger_y", "700")));
 
         image1.animate()
                 .x(mLX)
@@ -125,8 +131,8 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
                 .setDuration(0)
                 .start();
 
-        mRX = Float.parseFloat(mPrefs.getString("right_trigger_x", "540"));
-        mRY = Float.parseFloat(mPrefs.getString("right_trigger_y", "1700"));
+        mRX = Float.parseFloat(mPrefs.getString("right_trigger_x" + suffix, mPrefs.getString("right_trigger_x", "540")));
+        mRY = Float.parseFloat(mPrefs.getString("right_trigger_y" + suffix, mPrefs.getString("right_trigger_y", "1700")));
 
         image2.animate()
                 .x(mRX)
@@ -227,11 +233,12 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
             Slog.d(TAG, "wrote values");
         Toast.makeText(mContext, R.string.trigger_saved_toast, Toast.LENGTH_SHORT).show();
         updatePosition(false, false);
+        String suffix = getPrefix();
         SharedPreferences.Editor editor = mPrefs.edit();
-        editor.putString("left_trigger_x", String.valueOf(lx));
-        editor.putString("left_trigger_y", String.valueOf(ly));
-        editor.putString("right_trigger_x", String.valueOf(rx));
-        editor.putString("right_trigger_y", String.valueOf(ry));
+        editor.putString("left_trigger_x" + suffix, String.valueOf(lx));
+        editor.putString("left_trigger_y" + suffix, String.valueOf(ly));
+        editor.putString("right_trigger_x" + suffix, String.valueOf(rx));
+        editor.putString("right_trigger_y" + suffix, String.valueOf(ry));
         editor.commit();
 
         hide();
@@ -246,11 +253,12 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
         mRY = 1700;
         mBX = 200;
         mBY = 2000;
+        String suffix = getPrefix();
         SharedPreferences.Editor editor = mPrefs.edit();
-        editor.putString("left_trigger_x", String.valueOf(mLX));
-        editor.putString("left_trigger_y", String.valueOf(mLY));
-        editor.putString("right_trigger_x", String.valueOf(mRX));
-        editor.putString("right_trigger_y", String.valueOf(mRY));
+        editor.remove("left_trigger_x" + suffix);
+        editor.remove("left_trigger_y" + suffix);
+        editor.remove("right_trigger_x" + suffix);
+        editor.remove("right_trigger_y" + suffix);
         editor.commit();
 
         updatePosition(false);

@@ -169,18 +169,28 @@ class GamekeyService : Service() {
     }
 
     /**
-     * Get trigger position from SharedPreferences
+     * Get trigger position from SharedPreferences, using per-app profile if available
      */
     private fun getTriggerX(isLeft: Boolean): Float {
-        val key = if (isLeft) "left_trigger_x" else "right_trigger_x"
+        val pkg = Utils.getForegroundApp(this) ?: ""
+        val suffix = if (pkg.isNotEmpty() && Utils.isGameApp(this)) "_$pkg" else ""
+        
+        val baseKey = if (isLeft) "left_trigger_x" else "right_trigger_x"
+        val appKey = baseKey + suffix
         val default = if (isLeft) "540" else "540"
-        return prefs.getString(key, default)?.toFloatOrNull() ?: 540f
+        
+        return prefs.getString(appKey, prefs.getString(baseKey, default))?.toFloatOrNull() ?: 540f
     }
 
     private fun getTriggerY(isLeft: Boolean): Float {
-        val key = if (isLeft) "left_trigger_y" else "right_trigger_y"
+        val pkg = Utils.getForegroundApp(this) ?: ""
+        val suffix = if (pkg.isNotEmpty() && Utils.isGameApp(this)) "_$pkg" else ""
+        
+        val baseKey = if (isLeft) "left_trigger_y" else "right_trigger_y"
+        val appKey = baseKey + suffix
         val default = if (isLeft) "700" else "1700"
-        return prefs.getString(key, default)?.toFloatOrNull() ?: if (isLeft) 700f else 1700f
+        
+        return prefs.getString(appKey, prefs.getString(baseKey, default))?.toFloatOrNull() ?: if (isLeft) 700f else 1700f
     }
 
     /**

@@ -38,6 +38,11 @@
             android:summary="@string/custom_trigger_summary"
             android:title="@string/custom_trigger" />
 
+        <Preference
+            android:key="trigger_mapping_manager"
+            android:title="@string/trigger_mapping_manager_title"
+            android:summary="@string/trigger_mapping_manager_summary" />
+
         <ListPreference
             android:key="alert_slider_mode"
             android:title="@string/alert_slider_mode_title"

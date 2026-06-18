@@ -1,36 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- M3 Expressive trigger overlay layout
+     Shape variety: left=pill, right=rounded-square, save=pill
+     Color hierarchy: primary, secondary, tertiary -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent">
+    android:background="@color/trigger_scrim">
 
+    <!-- Instruction banner at top -->
+    <TextView
+        android:id="@+id/instruction_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="48dp"
+        android:text="@string/trigger_overlay_instruction"
+        android:textColor="@color/m3_on_primary"
+        android:textSize="14sp"
+        android:fontFamily="sans-serif-medium"
+        android:background="@drawable/bg_instruction_banner"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:elevation="4dp" />
+
+    <!-- Left trigger marker — pill shape (M3 Tactic 1: shape variety) -->
     <ImageView
         android:id="@+id/image1"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:src="@drawable/left"
-        android:padding="10dp"
-        android:background="@drawable/circle"
+        android:padding="12dp"
+        android:background="@drawable/bg_trigger_marker_left"
         android:rotation="90"
-        android:visibility="visible" />
+        android:elevation="8dp"
+        android:visibility="visible"
+        android:contentDescription="@string/trigger_left_marker_desc" />
+
+    <!-- Right trigger marker — rounded square (shape variety) -->
     <ImageView
         android:id="@+id/image2"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:src="@drawable/right"
-        android:padding="10dp"
+        android:padding="12dp"
+        android:background="@drawable/bg_trigger_marker_right"
         android:rotation="90"
-        android:background="@drawable/circle"
-        android:visibility="visible" />
+        android:elevation="8dp"
+        android:visibility="visible"
+        android:contentDescription="@string/trigger_right_marker_desc" />
 
+    <!-- Save button — pill shape with tertiary color -->
     <ImageView
         android:id="@+id/button"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:src="@drawable/save"
-        android:padding="10dp"
+        android:padding="12dp"
         android:rotation="90"
-        android:background="@drawable/circle"
-        android:visibility="visible" />
+        android:background="@drawable/bg_save_button"
+        android:elevation="12dp"
+        android:visibility="visible"
+        android:contentDescription="@string/trigger_save_desc" />
 
 </FrameLayout>

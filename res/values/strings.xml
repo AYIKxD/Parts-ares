@@ -213,4 +213,36 @@
     <string name="alert_slider_dnd_vibrate">DND + Vibrate</string>
     <string name="alert_slider_dnd_total">DND Total Silence</string>
 
+    <!-- M3 Expressive — Category titles -->
+    <string name="triggers_category_title">Triggers</string>
+    <string name="leds_category_title">LED Effects</string>
+
+    <!-- M3 Expressive — Trigger preference titles & summaries -->
+    <string name="trigger_sound_title">Trigger Sound</string>
+    <string name="trigger_sound_summary">Play a satisfying sound when triggers open or close</string>
+    <string name="trigger_sound_type_title">Sound Style</string>
+    <string name="gaming_apps_title">Gaming Apps</string>
+    <string name="gaming_apps_summary">Select apps where trigger mapping is active. Open both triggers within 6 seconds to map positions</string>
+    <string name="custom_trigger_summary">Assign custom actions to double-click and long-press — active outside gaming apps</string>
+
+    <!-- M3 Expressive — LED preference titles & summaries -->
+    <string name="led_disco_title">LED Disco</string>
+    <string name="led_disco_summary">Activate RGB light effects on your device</string>
+    <string name="led_in_games_title">Gaming Only</string>
+    <string name="led_in_games_summary">Restrict LED effects to gaming apps</string>
+    <string name="led_in_calls_title">During Calls</string>
+    <string name="led_in_calls_summary">Play LED effects during incoming calls</string>
+
+    <!-- M3 Expressive — Trigger overlay instructions -->
+    <string name="trigger_overlay_instruction">Drag to position triggers • Tap ✓ to save</string>
+    <string name="trigger_left_marker_desc">Left trigger position marker</string>
+    <string name="trigger_right_marker_desc">Right trigger position marker</string>
+    <string name="trigger_save_desc">Save trigger positions</string>
+    <string name="trigger_reset_toast">Trigger positions reset to default</string>
+    <string name="trigger_saved_toast">Trigger positions saved</string>
+
+    <!-- M3 Expressive — QS Tile messages -->
+    <string name="trigger_map_not_in_game">Trigger mapping only works inside gaming apps</string>
+    <string name="trigger_map_tile_not_in_game">Not in game</string>
+
 </resources>

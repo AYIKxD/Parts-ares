@@ -11,57 +11,79 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
+<!-- M3 Expressive app list item — card container with shape variety & color hierarchy -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:settings="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="?android:attr/listPreferredItemHeight"
-    android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-    android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
-    android:background="?android:attr/selectableItemBackground"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    android:minHeight="72dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="12dp"
+    android:paddingBottom="12dp"
+    android:background="@drawable/bg_app_list_card"
     android:clipChildren="false"
-    android:clipToPadding="false">
+    android:clipToPadding="false"
+    android:elevation="1dp">
 
+    <!-- App icon — rounded rect clip for M3 shape feel -->
     <ImageView
         android:id="@+id/icon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
         android:scaleType="centerInside"
         settings:layout_constraintStart_toStartOf="parent"
         settings:layout_constraintTop_toTopOf="parent"
+        settings:layout_constraintBottom_toBottomOf="parent"
         android:contentDescription="@string/application_icon" />
 
+    <!-- App label — M3 Body Large equivalent -->
     <TextView
         android:id="@+id/label"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:textAppearance="?android:attr/textAppearanceListItem"
-        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="16sp"
+        android:textColor="@color/m3_on_surface"
+        android:fontFamily="sans-serif-medium"
+        android:maxLines="1"
+        android:ellipsize="end"
         settings:layout_constraintStart_toEndOf="@id/icon"
         settings:layout_constraintEnd_toStartOf="@id/checkBox"
-        settings:layout_constraintTop_toTopOf="@id/icon" />
+        settings:layout_constraintTop_toTopOf="@id/icon"
+        settings:layout_constraintBottom_toTopOf="@id/packageName"
+        settings:layout_constraintVertical_chainStyle="packed" />
 
+    <!-- Package name — M3 Body Small variant -->
     <TextView
         android:id="@+id/packageName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="?android:attr/textColorSecondary"
+        android:layout_marginTop="2dp"
+        android:textSize="12sp"
+        android:textColor="@color/m3_on_surface_variant"
+        android:fontFamily="sans-serif"
+        android:maxLines="1"
+        android:ellipsize="end"
         settings:layout_constraintStart_toStartOf="@id/label"
         settings:layout_constraintEnd_toEndOf="@id/label"
         settings:layout_constraintTop_toBottomOf="@id/label"
         settings:layout_constraintBottom_toBottomOf="@id/icon" />
 
+    <!-- Checkbox with M3 accent color -->
     <CheckBox
         android:id="@+id/checkBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:focusable="false"
         android:clickable="false"
+        android:buttonTint="@color/m3_primary"
         settings:layout_constraintBottom_toBottomOf="@id/icon"
         settings:layout_constraintEnd_toEndOf="parent"
         settings:layout_constraintTop_toTopOf="@id/icon" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

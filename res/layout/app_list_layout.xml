@@ -11,12 +11,17 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
+<!-- M3 Expressive app list — padded container for card-spaced items -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/m3_surface">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/apps_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:clipToPadding="false" />
 </FrameLayout>

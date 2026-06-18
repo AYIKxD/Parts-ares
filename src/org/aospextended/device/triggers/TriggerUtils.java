@@ -35,7 +35,7 @@ public class TriggerUtils {
 
     private static boolean DEBUG = Utils.DEBUG;
 
-    private TriggerUtils mTriggerUtils;
+
     long mPrevEventTime;
     int mKeycode, mEventAction, mCount, mTapCount;
 

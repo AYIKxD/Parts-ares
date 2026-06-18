@@ -16,9 +16,57 @@
 <resources>
     <!-- Main app theme - inherits from SettingsLib CollapsingToolbar theme -->
     <style name="AppTheme" parent="@style/Theme.CollapsingToolbar.Settings">
+        <!-- M3 Expressive color overrides -->
+        <item name="colorPrimary">@color/m3_primary</item>
+        <item name="colorOnPrimary">@color/m3_on_primary</item>
+        <item name="colorSecondary">@color/m3_secondary</item>
+        <item name="colorOnSecondary">@color/m3_on_secondary</item>
+        <item name="colorAccent">@color/m3_primary</item>
+        <item name="android:colorBackground">@color/m3_surface</item>
+        <item name="android:textColorPrimary">@color/m3_on_surface</item>
+        <item name="android:textColorSecondary">@color/m3_on_surface_variant</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/m3_surface</item>
     </style>
 
     <!-- Alternative theme using Material3 DayNight -->
     <style name="AppTheme.CollapsingToolbar" parent="@style/Theme.CollapsingToolbar.Settings">
+        <item name="colorPrimary">@color/m3_primary</item>
+        <item name="colorAccent">@color/m3_primary</item>
+    </style>
+
+    <!-- M3 Expressive card style for list items -->
+    <style name="M3Card">
+        <item name="android:background">@drawable/bg_app_list_card</item>
+        <item name="android:padding">16dp</item>
+    </style>
+
+    <!-- M3 Emphasized title text -->
+    <style name="M3.Text.TitleEmphasized" parent="@android:style/TextAppearance.Material.Title">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/m3_on_surface</item>
+        <item name="android:letterSpacing">-0.01</item>
+    </style>
+
+    <!-- M3 Body text -->
+    <style name="M3.Text.Body" parent="@android:style/TextAppearance.Material.Body1">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/m3_on_surface_variant</item>
+        <item name="android:lineSpacingMultiplier">1.4</item>
+    </style>
+
+    <!-- M3 Label text -->
+    <style name="M3.Text.Label" parent="@android:style/TextAppearance.Material.Body2">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/m3_on_surface_variant</item>
+    </style>
+
+    <!-- Category header style -->
+    <style name="M3.CategoryHeader">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/m3_primary</item>
+        <item name="android:letterSpacing">0.02</item>
     </style>
 </resources>

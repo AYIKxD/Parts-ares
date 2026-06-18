@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- M3 Expressive Color Palette — Light Mode -->
+<resources>
+    <!-- Primary — vibrant blue-violet for dominant actions -->
+    <color name="m3_primary">#FF6750A4</color>
+    <color name="m3_on_primary">#FFFFFFFF</color>
+    <color name="m3_primary_container">#FFEADDFF</color>
+    <color name="m3_on_primary_container">#FF21005D</color>
+
+    <!-- Secondary — teal/cyan for supporting actions -->
+    <color name="m3_secondary">#FF625B71</color>
+    <color name="m3_on_secondary">#FFFFFFFF</color>
+    <color name="m3_secondary_container">#FFE8DEF8</color>
+    <color name="m3_on_secondary_container">#FF1D192B</color>
+
+    <!-- Tertiary — warm amber/gold accents -->
+    <color name="m3_tertiary">#FF7D5260</color>
+    <color name="m3_on_tertiary">#FFFFFFFF</color>
+    <color name="m3_tertiary_container">#FFFFD8E4</color>
+    <color name="m3_on_tertiary_container">#FF31111D</color>
+
+    <!-- Error -->
+    <color name="m3_error">#FFB3261E</color>
+    <color name="m3_on_error">#FFFFFFFF</color>
+    <color name="m3_error_container">#FFF9DEDC</color>
+    <color name="m3_on_error_container">#FF410E0B</color>
+
+    <!-- Surface hierarchy — for containment & visual depth -->
+    <color name="m3_surface">#FFFFFBFE</color>
+    <color name="m3_on_surface">#FF1C1B1F</color>
+    <color name="m3_on_surface_variant">#FF49454F</color>
+    <color name="m3_surface_container_lowest">#FFFFFFFF</color>
+    <color name="m3_surface_container_low">#FFF7F2FA</color>
+    <color name="m3_surface_container">#FFF3EDF7</color>
+    <color name="m3_surface_container_high">#FFECE6F0</color>
+    <color name="m3_surface_container_highest">#FFE6E0E9</color>
+
+    <!-- Outline -->
+    <color name="m3_outline">#FF79747E</color>
+    <color name="m3_outline_variant">#FFCAC4D0</color>
+
+    <!-- Trigger overlay markers -->
+    <color name="trigger_left_bg">#996750A4</color>
+    <color name="trigger_right_bg">#99625B71</color>
+    <color name="trigger_save_bg">#997D5260</color>
+    <color name="trigger_scrim">#33000000</color>
+    <color name="trigger_instruction_bg">#CC1C1B1F</color>
+
+    <!-- App list card -->
+    <color name="card_bg">#FFF3EDF7</color>
+    <color name="card_stroke">#FFCAC4D0</color>
+    <color name="card_ripple">#1F6750A4</color>
+</resources>

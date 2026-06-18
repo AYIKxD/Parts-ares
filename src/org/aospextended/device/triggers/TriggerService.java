@@ -18,37 +18,24 @@ package org.aospextended.device.triggers;
 
 import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
 
-import android.annotation.NonNull;
-import android.app.KeyguardManager;
-import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Looper;
-import android.view.Gravity;
+import android.util.DisplayMetrics;
 import android.util.Slog;
 import android.view.Display;
-import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout.LayoutParams;
-import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import androidx.annotation.Nullable;
 
 import org.aospextended.device.R;
 import org.aospextended.device.util.Utils;

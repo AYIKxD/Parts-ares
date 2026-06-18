@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- M3 Expressive trigger marker — gradient circle with ring -->
+<!-- M3 Expressive left trigger marker — pill shape with primary color -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Outer glow ring -->
+    <!-- Outer glow ring — pill shape -->
     <item>
-        <shape android:shape="oval">
+        <shape android:shape="rectangle">
+            <corners android:radius="28dp" />
             <stroke android:width="2dp" android:color="@color/m3_primary" />
             <solid android:color="@android:color/transparent" />
             <size android:width="56dp" android:height="56dp" />
         </shape>
     </item>
-    <!-- Inner filled circle with alpha -->
+    <!-- Inner fill -->
     <item android:top="4dp" android:bottom="4dp" android:left="4dp" android:right="4dp">
-        <shape android:shape="oval">
+        <shape android:shape="rectangle">
+            <corners android:radius="24dp" />
             <solid android:color="@color/trigger_left_bg" />
             <size android:width="48dp" android:height="48dp" />
         </shape>

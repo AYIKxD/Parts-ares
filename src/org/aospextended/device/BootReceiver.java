@@ -16,25 +16,13 @@
 
 package org.aospextended.device;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.SharedPreferences;
 
-import androidx.preference.PreferenceManager;
-
-import org.aospextended.device.XiaomiParts;
-
-import org.aospextended.device.util.Utils;
 import org.aospextended.device.util.TaskService;
-
-import org.aospextended.device.vibration.VibratorStrengthPreference;
-import org.aospextended.device.triggers.TriggerService;
-import org.aospextended.device.triggers.TriggerUtils;
 import org.aospextended.device.gamekey.GamekeyService;
 
 public class BootReceiver extends BroadcastReceiver {
@@ -42,7 +30,7 @@ public class BootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
 //        VibratorStrengthPreference.restore(context);
-        TriggerService.onBoot(context);
+
 //        TriggerUtils tr = TriggerUtils.getInstance(context);
 //        tr.onBoot();
         context.startService(new Intent(context, TaskService.class));

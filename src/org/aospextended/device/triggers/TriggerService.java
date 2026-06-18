@@ -87,16 +87,7 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
         }
     };
 
-    public static void onBoot(Context context) {
-        SharedPreferences prefs = Utils.getSharedPreferences(context);
-        Utils.writeValue("/proc/touchpanel/left_trigger_x", prefs.getString("left_trigger_x", "540"));
-        Utils.writeValue("/proc/touchpanel/left_trigger_y", prefs.getString("left_trigger_y", "700"));
-        Utils.writeValue("/proc/touchpanel/right_trigger_x", prefs.getString("right_trigger_x", "540"));
-        Utils.writeValue("/proc/touchpanel/right_trigger_y", prefs.getString("right_trigger_y", "1700"));
-        // Enable triggers at kernel level
-        Utils.writeValue("/proc/touchpanel/left_trigger_enable", "1");
-        Utils.writeValue("/proc/touchpanel/right_trigger_enable", "1");
-    }
+
 
     public static TriggerService getInstance(Context context) {
         if (mInstance == null) {
@@ -120,7 +111,7 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
         
         mPrefs = Utils.getSharedPreferences(context);
 
-        onBoot(context);
+
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
@@ -251,10 +242,7 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
         editor.putString("right_trigger_x", String.valueOf(rx));
         editor.putString("right_trigger_y", String.valueOf(ry));
         editor.commit();
-	Utils.writeValue("/proc/touchpanel/left_trigger_x", String.valueOf(lx));
-        Utils.writeValue("/proc/touchpanel/left_trigger_y", String.valueOf(ly));
-        Utils.writeValue("/proc/touchpanel/right_trigger_x", String.valueOf(rx));
-        Utils.writeValue("/proc/touchpanel/right_trigger_y", String.valueOf(ry));
+
         hide();
     }
 
@@ -272,10 +260,7 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
         editor.putString("right_trigger_x", String.valueOf(mRX));
         editor.putString("right_trigger_y", String.valueOf(mRY));
         editor.commit();
-        Utils.writeValue("/proc/touchpanel/left_trigger_x", String.valueOf(mLX));
-        Utils.writeValue("/proc/touchpanel/left_trigger_y", String.valueOf(mLY));
-        Utils.writeValue("/proc/touchpanel/right_trigger_x", String.valueOf(mRX));
-        Utils.writeValue("/proc/touchpanel/right_trigger_y", String.valueOf(mRY));
+
 
         updatePosition(false);
     }

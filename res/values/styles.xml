@@ -42,7 +42,7 @@
     </style>
 
     <!-- M3 Emphasized title text -->
-    <style name="M3.Text.TitleEmphasized" parent="@android:style/TextAppearance.Material.Title">
+    <style name="M3_Text_TitleEmphasized" parent="@android:style/TextAppearance.Material.Title">
         <item name="android:textSize">22sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/m3_on_surface</item>
@@ -50,20 +50,20 @@
     </style>
 
     <!-- M3 Body text -->
-    <style name="M3.Text.Body" parent="@android:style/TextAppearance.Material.Body1">
+    <style name="M3_Text_Body" parent="@android:style/TextAppearance.Material.Body1">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/m3_on_surface_variant</item>
         <item name="android:lineSpacingMultiplier">1.4</item>
     </style>
 
     <!-- M3 Label text -->
-    <style name="M3.Text.Label" parent="@android:style/TextAppearance.Material.Body2">
+    <style name="M3_Text_Label" parent="@android:style/TextAppearance.Material.Body2">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/m3_on_surface_variant</item>
     </style>
 
     <!-- Category header style -->
-    <style name="M3.CategoryHeader">
+    <style name="M3_CategoryHeader">
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/m3_primary</item>

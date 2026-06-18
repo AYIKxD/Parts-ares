@@ -36,6 +36,7 @@ public class TriggerUtils {
     private Context mContext;
     private boolean mIsSoundPooLoadComplete;
     private SoundPool mSoundPool;
+    private String mPendingSound = null;
 
     private static boolean DEBUG = Utils.DEBUG;
 
@@ -112,6 +113,13 @@ public class TriggerUtils {
     private void checkSoundPoolLoadCompleted() {
         if (LOADED_SOUND_IDS.size() == 16) {
             mIsSoundPooLoadComplete = true;
+            if (DEBUG) Slog.d(TAG, "All 16 sounds loaded successfully");
+            // Play any sound that was requested before loading completed
+            if (mPendingSound != null) {
+                if (DEBUG) Slog.d(TAG, "Playing pending sound: " + mPendingSound);
+                playSound(mPendingSound, false);
+                mPendingSound = null;
+            }
         }
     }
 
@@ -178,7 +186,8 @@ public class TriggerUtils {
     public void playSound(String s, boolean b) {
         if (DEBUG) Slog.d(TAG, "playSound: " + s);
         if (!mIsSoundPooLoadComplete) {
-            if (DEBUG) Slog.d(TAG, "playSound: " + mIsSoundPooLoadComplete + ", size=" + LOADED_SOUND_IDS.size());
+            if (DEBUG) Slog.d(TAG, "playSound: not ready yet, size=" + LOADED_SOUND_IDS.size() + ", queuing: " + s);
+            mPendingSound = s;
             return;
         }
         if (SOUNDS_MAP.containsKey(s)) {

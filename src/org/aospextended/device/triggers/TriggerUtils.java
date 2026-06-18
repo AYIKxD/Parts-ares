@@ -249,15 +249,10 @@ public class TriggerUtils {
     }
 
     public void handleDoubleClick(boolean left) {
-        String action = null;
-        if (left) {
-            action = Utils.getStringSystem(mContext, CustomTrigger.PREF_LEFT_TRIGGER_DOUBLE_CLICK,
-                    Action.ACTION_NULL);
-        } else {
-            action = Utils.getStringSystem(mContext, CustomTrigger.PREF_RIGHT_TRIGGER_DOUBLE_CLICK,
-                    Action.ACTION_NULL);
-        }
-        if (DEBUG) Slog.d(TAG, "handleDoubleClick: " + left + " action: " + action);
+        String key = left ? CustomTrigger.PREF_LEFT_TRIGGER_DOUBLE_CLICK
+                : CustomTrigger.PREF_RIGHT_TRIGGER_DOUBLE_CLICK;
+        String action = Utils.getStringSystem(mContext, key, Action.ACTION_NULL);
+        if (DEBUG) Slog.d(TAG, "handleDoubleClick: left=" + left + " key=" + key + " action: " + action);
         processAction(action);
     }
 
@@ -270,15 +265,10 @@ public class TriggerUtils {
     }
 
     public void handleLongPress(boolean left) {
-        String action = null;
-        if (left) {
-            action = Utils.getStringSystem(mContext, CustomTrigger.PREF_LEFT_TRIGGER_LONGPRESS,
-                    Action.ACTION_NULL);
-        } else {
-            action = Utils.getStringSystem(mContext, CustomTrigger.PREF_RIGHT_TRIGGER_LONGPRESS,
-                    Action.ACTION_NULL);
-        }
-        if (DEBUG) Slog.d(TAG, "handleLongpress: " + left + " action: " + action);
+        String key = left ? CustomTrigger.PREF_LEFT_TRIGGER_LONGPRESS
+                : CustomTrigger.PREF_RIGHT_TRIGGER_LONGPRESS;
+        String action = Utils.getStringSystem(mContext, key, Action.ACTION_NULL);
+        if (DEBUG) Slog.d(TAG, "handleLongpress: left=" + left + " key=" + key + " action: " + action);
         processAction(action);
     }
 

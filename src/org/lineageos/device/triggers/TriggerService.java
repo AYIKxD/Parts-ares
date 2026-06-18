@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.aospextended.device.triggers;
+package org.lineageos.device.triggers;
 
 import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
 
@@ -37,8 +37,8 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import org.aospextended.device.R;
-import org.aospextended.device.util.Utils;
+import org.lineageos.device.R;
+import org.lineageos.device.util.Utils;
 
 public class TriggerService implements View.OnTouchListener, View.OnClickListener {
     private static final boolean DEBUG = Utils.DEBUG;
@@ -74,8 +74,6 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
         }
     };
 
-
-
     public static TriggerService getInstance(Context context) {
         if (mInstance == null) {
             Slog.d(TAG, "NEW INSTANCE");
@@ -93,12 +91,11 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
     }
 
     public void init(Context context) {
-        if (mInitialized) return;  // Prevent duplicate initialization
+        if (mInitialized)
+            return; // Prevent duplicate initialization
         mInitialized = true;
-        
+
         mPrefs = Utils.getSharedPreferences(context);
-
-
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
@@ -137,7 +134,8 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
                 .setDuration(0)
                 .start();
 
-        if (DEBUG) Slog.d(TAG, "lxlyrxry " + mLX + " " + mLY + " " + mRX + " " + mRY);
+        if (DEBUG)
+            Slog.d(TAG, "lxlyrxry " + mLX + " " + mLY + " " + mRX + " " + mRY);
 
         button = mView.findViewById(R.id.button);
 
@@ -164,15 +162,17 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
     }
 
     public void show() {
-        if (mShowing) return;
+        if (mShowing)
+            return;
         init(mContext);
-        if (DEBUG) Slog.d(TAG, "show");
+        if (DEBUG)
+            Slog.d(TAG, "show");
         layoutParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE 
-                    | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-                    | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                        | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                        | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSPARENT);
         layoutParams.gravity = Gravity.CENTER;
         layoutParams.x = 0;
@@ -197,7 +197,7 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             X = v.getX() - event.getRawX();
             Y = v.getY() - event.getRawY();
-	} else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+        } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
 
             v.animate()
                     .x(event.getRawX() + X)
@@ -215,14 +215,16 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
                 mRY = y;
             }
 
-            if (DEBUG) Slog.d(TAG, "action move x,y : " + x + "   " + y  + "  , isleft=" + (v.getId() == R.id.image1));
+            if (DEBUG)
+                Slog.d(TAG, "action move x,y : " + x + "   " + y + "  , isleft=" + (v.getId() == R.id.image1));
         }
         return true;
     }
 
     @Override
     public void onClick(View v) {
-        if (DEBUG) Slog.d(TAG, "wrote values");
+        if (DEBUG)
+            Slog.d(TAG, "wrote values");
         updatePosition(false, false);
         SharedPreferences.Editor editor = mPrefs.edit();
         editor.putString("left_trigger_x", String.valueOf(lx));
@@ -235,7 +237,8 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
     }
 
     public void reset() {
-        if (DEBUG) Slog.d(TAG, "reset values");
+        if (DEBUG)
+            Slog.d(TAG, "reset values");
         mLX = 540;
         mLY = 700;
         mRX = 540;
@@ -249,15 +252,15 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
         editor.putString("right_trigger_y", String.valueOf(mRY));
         editor.commit();
 
-
         updatePosition(false);
     }
 
-
     public void hide() {
-        if (!mShowing) return;
+        if (!mShowing)
+            return;
         mShowing = false;
-        if (DEBUG) Slog.d(TAG, "hide");
+        if (DEBUG)
+            Slog.d(TAG, "hide");
         try {
             if (mView != null && mView.isAttachedToWindow()) {
                 windowManager.removeView(mView);
@@ -284,7 +287,8 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
     }
 
     private void updatePosition(boolean def, boolean update) {
-        if (DEBUG) Slog.d(TAG, "updatePosition");
+        if (DEBUG)
+            Slog.d(TAG, "updatePosition");
         Display defaultDisplay = windowManager.getDefaultDisplay();
 
         DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
@@ -292,7 +296,8 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
 
         int rot = defaultDisplay.getRotation();
         int lastRotation = 0;
-        if (def) mRotation = lastRotation;
+        if (def)
+            mRotation = lastRotation;
         int x, y;
         float LX = mLX;
         float LY = mLY;
@@ -301,10 +306,12 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
         float BX = mBX;
         float BY = mBY;
         int rotation = rot;
-        if (!update) rotation = 0;
+        if (!update)
+            rotation = 0;
         switch (rotation) {
             case Surface.ROTATION_90:
-                if (DEBUG) Slog.d(TAG, "ROTATION_90");
+                if (DEBUG)
+                    Slog.d(TAG, "ROTATION_90");
                 if (mRotation == Surface.ROTATION_270) {
                     LX = size.x - mLX;
                     LY = size.y - mLY;
@@ -325,7 +332,8 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
                 button.setRotation(0f);
                 break;
             case Surface.ROTATION_270:
-                if (DEBUG) Slog.d(TAG, "ROTATION_270");
+                if (DEBUG)
+                    Slog.d(TAG, "ROTATION_270");
                 if (mRotation == Surface.ROTATION_90) {
                     LX = size.x - mLX;
                     LY = size.y - mLY;
@@ -333,7 +341,7 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
                     RY = size.y - mRY;
                     BX = size.x - mBX;
                     BY = size.y - mBY;
-               } else {
+                } else {
                     LX = size.x - mLY;
                     LY = mLX;
                     RX = size.x - mRY;
@@ -346,7 +354,8 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
                 button.setRotation(180f);
                 break;
             default:
-                if (DEBUG) Slog.d(TAG, "ROTATION_0");
+                if (DEBUG)
+                    Slog.d(TAG, "ROTATION_0");
                 if (mRotation == Surface.ROTATION_90) {
                     LX = (!update ? 1080 : size.x) - mLY;
                     LY = mLX;
@@ -367,10 +376,11 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
                 button.setRotation(90f);
         }
 
-        if (DEBUG) Slog.d(TAG, "updatePosition computed: LX=" + LX + " LY=" + LY
-                + " RX=" + RX + " RY=" + RY + " BX=" + BX + " BY=" + BY
-                + " rotation=" + rotation + " mRotation=" + mRotation
-                + " screenW=" + size.x + " screenH=" + size.y);
+        if (DEBUG)
+            Slog.d(TAG, "updatePosition computed: LX=" + LX + " LY=" + LY
+                    + " RX=" + RX + " RY=" + RY + " BX=" + BX + " BY=" + BY
+                    + " rotation=" + rotation + " mRotation=" + mRotation
+                    + " screenW=" + size.x + " screenH=" + size.y);
 
         if (update) {
             image1.animate()

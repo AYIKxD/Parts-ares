@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           android:sharedUserId="android.uid.system"
-          package="org.aospextended.device"
+          package="org.lineageos.device"
           android:versionCode="1"
           android:versionName="1" >
 
@@ -109,7 +109,7 @@
 	<activity android:name=".led.LedOnCall"
 	          android:exported="true">
             <intent-filter>
-                <action android:name="org.aospextended.device.led.LedOnCall" />
+                <action android:name="org.lineageos.device.led.LedOnCall" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

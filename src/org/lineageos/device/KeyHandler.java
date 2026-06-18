@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The AospExtended Project
+ * Copyright (C) 2026 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.aospextended.device;
+package org.lineageos.device;
 
 import static android.view.Display.DEFAULT_DISPLAY;
 import static android.view.Display.INVALID_DISPLAY;
@@ -58,19 +58,16 @@ import android.view.ViewConfiguration;
 
 import com.android.internal.os.DeviceKeyHandler;
 import com.android.internal.util.ArrayUtils;
-import org.aospextended.device.util.Action;
-import org.aospextended.device.util.Utils;
+import org.lineageos.device.util.Action;
+import org.lineageos.device.util.Utils;
 
-
-import org.aospextended.device.triggers.TriggerService;
-import org.aospextended.device.triggers.TriggerUtils;
+import org.lineageos.device.triggers.TriggerService;
+import org.lineageos.device.triggers.TriggerUtils;
 
 public class KeyHandler implements DeviceKeyHandler {
 
     private static final String TAG = Utils.TAG;
     private static final boolean DEBUG = Utils.DEBUG;
-
-
 
     private final Context mContext;
     private Context mAppContext = null;
@@ -132,10 +129,12 @@ public class KeyHandler implements DeviceKeyHandler {
             long now = SystemClock.uptimeMillis();
             long time = now - mPrevEventTime;
             if (time < 3000 && ((mLeftOpen && !left && open) || (mRightOpen && left && open))) {
-                if (DEBUG) Slog.d(TAG, "starting service");
+                if (DEBUG)
+                    Slog.d(TAG, "starting service");
                 triggerService.show();
             } else if (time < 3000 && ((mLeftClosed && !left && !open) || (mRightClosed && left && !open))) {
-                if (DEBUG) Slog.d(TAG, "stopping service");
+                if (DEBUG)
+                    Slog.d(TAG, "stopping service");
                 triggerService.hide();
             }
             mPrevEventTime = now;
@@ -148,7 +147,8 @@ public class KeyHandler implements DeviceKeyHandler {
     }
 
     public KeyEvent handleKeyEvent(KeyEvent event) {
-        if (DEBUG) Slog.d(TAG, "Got KeyEvent: " + event);
+        if (DEBUG)
+            Slog.d(TAG, "Got KeyEvent: " + event);
 
         if (event.getDevice().getProductId() == 1576) {
             return handleTriggerEvent(event);
@@ -162,7 +162,7 @@ public class KeyHandler implements DeviceKeyHandler {
 
     public KeyEvent handleTriggerEvent(KeyEvent event) {
         int keyCode = event.getKeyCode();
-        
+
         // Slider keycodes (KEY_F3-F6): update Settings.System for slider state
         // KEY_F3 (61) = Left slider open, KEY_F4 (62) = Left slider close
         // KEY_F5 (63) = Right slider open, KEY_F6 (64) = Right slider close
@@ -171,13 +171,15 @@ public class KeyHandler implements DeviceKeyHandler {
             boolean isOpen = (keyCode == 61 || keyCode == 63);
             String setting = isLeft ? "triggerleft" : "triggerright";
             Settings.System.putInt(mContext.getContentResolver(), setting, isOpen ? 1 : 0);
-            if (DEBUG) Slog.d(TAG, "Slider event: " + setting + "=" + (isOpen ? 1 : 0));
+            if (DEBUG)
+                Slog.d(TAG, "Slider event: " + setting + "=" + (isOpen ? 1 : 0));
             return event;
         }
-        
+
         // Trigger button keycodes (KEY_F1=59, KEY_F2=60)
         if (!Utils.isGameApp(mContext)) {
-            if (DEBUG) Slog.d(TAG, "not a game app");
+            if (DEBUG)
+                Slog.d(TAG, "not a game app");
             tr.onEvent(event);
             return event;
         }
@@ -190,8 +192,7 @@ public class KeyHandler implements DeviceKeyHandler {
     private void injectMotionEvent(int id, int inputSource, int action, long downTime, long when,
             float x, float y, float pressure, int displayId) {
         final int pointerCount = id;
-        MotionEvent.PointerProperties[] pointerProperties =
-                new MotionEvent.PointerProperties[pointerCount];
+        MotionEvent.PointerProperties[] pointerProperties = new MotionEvent.PointerProperties[pointerCount];
         MotionEvent.PointerCoords[] pointerCoords = new MotionEvent.PointerCoords[pointerCount];
         for (int i = 0; i < pointerCount; i++) {
             pointerProperties[i] = new MotionEvent.PointerProperties();

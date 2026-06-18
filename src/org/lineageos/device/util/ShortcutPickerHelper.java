@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The AospExtended Project
+ * Copyright (C) 2026 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.aospextended.device.util;
+package org.lineageos.device.util;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -30,7 +30,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 
-import org.aospextended.device.R;
+import org.lineageos.device.R;
 
 import java.util.ArrayList;
 
@@ -118,7 +118,7 @@ public class ShortcutPickerHelper {
     }
 
     private void processShortcut(Intent intent,
-        int requestCodeApplication, int requestCodeShortcut) {
+            int requestCodeApplication, int requestCodeShortcut) {
         // Handle case where user selected "Applications"
         String applicationName = mParent.getResources().getString(R.string.group_applications);
         String shortcutName = intent.getStringExtra(Intent.EXTRA_SHORTCUT_NAME);
@@ -137,7 +137,7 @@ public class ShortcutPickerHelper {
 
     private void completeSetCustomApp(Intent data) {
         mListener.shortcutPicked(data.toUri(0),
-            getFriendlyActivityName(mParent, mPackageManager, data, false), null, true);
+                getFriendlyActivityName(mParent, mPackageManager, data, false), null, true);
     }
 
     private void completeSetCustomShortcut(Intent data) {
@@ -161,8 +161,7 @@ public class ShortcutPickerHelper {
             if (extra != null && extra instanceof Intent.ShortcutIconResource) {
                 try {
                     Intent.ShortcutIconResource iconResource = (ShortcutIconResource) extra;
-                    Resources resources =
-                            mPackageManager.getResourcesForApplication(iconResource.packageName);
+                    Resources resources = mPackageManager.getResourcesForApplication(iconResource.packageName);
                     final int id = resources.getIdentifier(iconResource.resourceName, null, null);
                     bmp = BitmapFactory.decodeResource(resources, id);
                 } catch (Exception e) {
@@ -188,19 +187,19 @@ public class ShortcutPickerHelper {
 
         if (friendlyName == null || friendlyName.startsWith("#Intent;")) {
             return context.getResources().getString(
-                com.android.internal.R.string.error_message_title);
+                    com.android.internal.R.string.error_message_title);
         }
         return friendlyName != null || labelOnly ? friendlyName : intent.toUri(0);
     }
 
     public static String getFriendlyShortcutName(
-                Context context, PackageManager pm, Intent intent) {
+            Context context, PackageManager pm, Intent intent) {
         String activityName = getFriendlyActivityName(context, pm, intent, true);
         String name = intent.getStringExtra(Intent.EXTRA_SHORTCUT_NAME);
 
         if (activityName == null || activityName.startsWith("#Intent;")) {
             return context.getResources().getString(
-                com.android.internal.R.string.error_message_title);
+                    com.android.internal.R.string.error_message_title);
         }
         if (activityName != null && name != null) {
             return activityName + ": " + name;

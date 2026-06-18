@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The AospExtended Project
+ * Copyright (C) 2026 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.aospextended.device;
+package org.lineageos.device;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -22,19 +22,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
-import org.aospextended.device.util.TaskService;
-import org.aospextended.device.gamekey.GamekeyService;
+import org.lineageos.device.util.TaskService;
+import org.lineageos.device.gamekey.GamekeyService;
 
 public class BootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
-//        VibratorStrengthPreference.restore(context);
+        // VibratorStrengthPreference.restore(context);
 
-//        TriggerUtils tr = TriggerUtils.getInstance(context);
-//        tr.onBoot();
+        // TriggerUtils tr = TriggerUtils.getInstance(context);
+        // tr.onBoot();
         context.startService(new Intent(context, TaskService.class));
-        
+
         // Start the new Kotlin-based GamekeyService for trigger detection
         GamekeyService.Companion.startService(context);
     }
@@ -42,8 +42,7 @@ public class BootReceiver extends BroadcastReceiver {
     private void enableComponent(Context context, String component) {
         ComponentName name = new ComponentName(context, component);
         PackageManager pm = context.getPackageManager();
-        if (pm.getComponentEnabledSetting(name)
-                == PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
+        if (pm.getComponentEnabledSetting(name) == PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
             pm.setComponentEnabledSetting(name,
                     PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                     PackageManager.DONT_KILL_APP);

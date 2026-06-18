@@ -1,5 +1,5 @@
--keep public class org.aospextended.device.KeyHandler
+-keep public class org.lineageos.device.KeyHandler
 
--keepclassmembers public class org.aospextended.device.KeyHandler {
+-keepclassmembers public class org.lineageos.device.KeyHandler {
     *;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The AospExtended Project
+ * Copyright (C) 2026 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.aospextended.device.vibration;
+package org.lineageos.device.vibration;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -30,8 +30,8 @@ import android.widget.Button;
 import android.os.Bundle;
 import android.util.Log;
 import android.os.Vibrator;
-import org.aospextended.device.util.Utils;
-import org.aospextended.device.R;
+import org.lineageos.device.util.Utils;
+import org.lineageos.device.R;
 
 public class VibratorStrengthPreference extends Preference implements
         SeekBar.OnSeekBarChangeListener {
@@ -43,15 +43,15 @@ public class VibratorStrengthPreference extends Preference implements
     private Vibrator mVibrator;
 
     private static final String FILE_LEVEL = "/sys/class/leds/vibrator/vmax_mv";
-    private static final long testVibrationPattern[] = {0,250};
+    private static final long testVibrationPattern[] = { 0, 250 };
 
     public static final String KEY_VIBSTRENGTH = "vib_strength";
 
     public VibratorStrengthPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         // from drivers/platform/msm/qpnp-haptic.c
-        // #define QPNP_HAP_VMAX_MIN_MV		116
-        // #define QPNP_HAP_VMAX_MAX_MV		3596
+        // #define QPNP_HAP_VMAX_MIN_MV 116
+        // #define QPNP_HAP_VMAX_MAX_MV 3596
         mMinValue = 116;
         mMaxValue = 3596;
 
@@ -75,7 +75,7 @@ public class VibratorStrengthPreference extends Preference implements
     }
 
     public static String getValue(Context context) {
-	return Utils.getFileValue(FILE_LEVEL, "3596");
+        return Utils.getFileValue(FILE_LEVEL, "3596");
     }
 
     private void setValue(String newValue, boolean withFeedback) {
@@ -93,7 +93,7 @@ public class VibratorStrengthPreference extends Preference implements
             return;
         }
 
-        String storedValue = Utils.getSharedPreferences(context).getString(KEY_VIBSTRENGTH, "2700"); 
+        String storedValue = Utils.getSharedPreferences(context).getString(KEY_VIBSTRENGTH, "2700");
         Utils.writeValue(FILE_LEVEL, storedValue);
     }
 
@@ -110,4 +110,3 @@ public class VibratorStrengthPreference extends Preference implements
         // NA
     }
 }
-

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 The AospExtended Project
+ * Copyright (C) 2026 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aospextended.device;
+package org.lineageos.device;
 
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -40,8 +40,8 @@ public class XiaomiPartsActivity extends CollapsingToolbarBaseActivity {
         if (fragment == null) {
             mXiaomiPartsFragment = new XiaomiParts();
             fm.beginTransaction()
-                .add(R.id.content_frame, mXiaomiPartsFragment)
-                .commit();
+                    .add(R.id.content_frame, mXiaomiPartsFragment)
+                    .commit();
         } else {
             mXiaomiPartsFragment = (XiaomiParts) fragment;
         }
@@ -50,11 +50,11 @@ public class XiaomiPartsActivity extends CollapsingToolbarBaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case android.R.id.home:
-            finish();
-            return true;
-        default:
-            break;
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

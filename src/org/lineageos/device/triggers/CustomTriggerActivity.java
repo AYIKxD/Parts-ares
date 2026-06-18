@@ -1,4 +1,4 @@
-package org.aospextended.device.triggers;
+package org.lineageos.device.triggers;
 
 import android.app.Activity;
 import android.os.Bundle;

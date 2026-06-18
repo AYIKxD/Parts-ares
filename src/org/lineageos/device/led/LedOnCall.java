@@ -1,11 +1,11 @@
-package org.aospextended.device.led;
+package org.lineageos.device.led;
 
 import android.content.BroadcastReceiver;
 import android.telephony.TelephonyManager;
 import android.content.Context;
 import android.content.Intent;
 
-import org.aospextended.device.util.Utils;
+import org.lineageos.device.util.Utils;
 
 public class LedOnCall extends BroadcastReceiver {
     @Override

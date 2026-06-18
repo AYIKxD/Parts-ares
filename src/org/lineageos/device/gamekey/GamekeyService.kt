@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.aospextended.device.gamekey
+package org.lineageos.device.gamekey
 
 import android.app.NotificationManager
 import android.app.Service
@@ -19,9 +19,9 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.SystemClock
 import android.util.Log
-import org.aospextended.device.triggers.TriggerService
-import org.aospextended.device.triggers.TriggerUtils
-import org.aospextended.device.util.Utils
+import org.lineageos.device.triggers.TriggerService
+import org.lineageos.device.triggers.TriggerUtils
+import org.lineageos.device.util.Utils
 
 /**
  * Service that monitors trigger hardware via /dev/gamekey and bridges to existing XiaomiParts functionality.

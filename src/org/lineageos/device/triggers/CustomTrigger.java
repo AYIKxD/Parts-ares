@@ -1,4 +1,4 @@
-package org.aospextended.device.triggers;
+package org.lineageos.device.triggers;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -32,16 +32,16 @@ import androidx.preference.SwitchPreference;
 import com.android.settingslib.widget.MainSwitchPreference;
 import com.android.internal.os.DeviceKeyHandler;
 
-import org.aospextended.device.util.Action;
-import org.aospextended.device.util.Utils;
-import org.aospextended.device.KeyHandler;
+import org.lineageos.device.util.Action;
+import org.lineageos.device.util.Utils;
+import org.lineageos.device.KeyHandler;
 
-import org.aospextended.device.R;
-import org.aospextended.device.util.ShortcutPickerHelper;
+import org.lineageos.device.R;
+import org.lineageos.device.util.ShortcutPickerHelper;
 
 public class CustomTrigger extends PreferenceFragment implements
         OnPreferenceChangeListener, CompoundButton.OnCheckedChangeListener,
-	OnPreferenceClickListener, ShortcutPickerHelper.OnPickListener {
+        OnPreferenceClickListener, ShortcutPickerHelper.OnPickListener {
 
     private static final String TAG = "CustomTrigger";
 
@@ -54,8 +54,8 @@ public class CustomTrigger extends PreferenceFragment implements
     public static final String PREF_RIGHT_TRIGGER_LONGPRESS = "custom_right_trigger_longpress";
     public static final String KEY_TRIGGER_HAPTIC_FEEDBACK = "custom_trigger_haptic_feedback";
 
-    private static final int DLG_SHOW_ACTION_DIALOG  = 0;
-    private static final int DLG_RESET_TO_DEFAULT    = 1;
+    private static final int DLG_SHOW_ACTION_DIALOG = 0;
+    private static final int DLG_RESET_TO_DEFAULT = 1;
 
     private static final int MENU_RESET = Menu.FIRST;
 
@@ -100,27 +100,27 @@ public class CustomTrigger extends PreferenceFragment implements
 
         prefs = getPreferenceScreen();
 
-	boolean enableCustomTrigger = Utils.getIntSystem(getActivity(), PREF_CUSTOM_TRIGGER_ENABLE, 1) == 1;
+        boolean enableCustomTrigger = Utils.getIntSystem(getActivity(), PREF_CUSTOM_TRIGGER_ENABLE, 1) == 1;
 
-	mEnableCustomTrigger = (MainSwitchPreference) findPreference(PREF_CUSTOM_TRIGGER_ENABLE);
+        mEnableCustomTrigger = (MainSwitchPreference) findPreference(PREF_CUSTOM_TRIGGER_ENABLE);
         mEnableCustomTrigger.addOnSwitchChangeListener(this);
         mEnableCustomTrigger.setChecked(enableCustomTrigger);
 
-	mLeftTriggerDoubleClick = (Preference) prefs.findPreference(PREF_LEFT_TRIGGER_DOUBLE_CLICK);
-	mRightTriggerDoubleClick = (Preference) prefs.findPreference(PREF_RIGHT_TRIGGER_DOUBLE_CLICK);
+        mLeftTriggerDoubleClick = (Preference) prefs.findPreference(PREF_LEFT_TRIGGER_DOUBLE_CLICK);
+        mRightTriggerDoubleClick = (Preference) prefs.findPreference(PREF_RIGHT_TRIGGER_DOUBLE_CLICK);
         mLeftTriggerLongpress = (Preference) prefs.findPreference(PREF_LEFT_TRIGGER_LONGPRESS);
         mRightTriggerLongpress = (Preference) prefs.findPreference(PREF_RIGHT_TRIGGER_LONGPRESS);
 
         PreferenceCategory haptic = (PreferenceCategory) prefs.findPreference("haptic");
         mHapticFeedback = (SwitchPreference) findPreference(KEY_TRIGGER_HAPTIC_FEEDBACK);
-	mHapticFeedback.setEnabled(enableCustomTrigger);
+        mHapticFeedback.setEnabled(enableCustomTrigger);
         mHapticFeedback.setChecked(Utils.getIntSystem(getActivity(), KEY_TRIGGER_HAPTIC_FEEDBACK, 1) != 0);
         mHapticFeedback.setOnPreferenceChangeListener(this);
 
-	setPref(mLeftTriggerDoubleClick, Utils.getStringSystem(getActivity(), PREF_LEFT_TRIGGER_DOUBLE_CLICK,
+        setPref(mLeftTriggerDoubleClick, Utils.getStringSystem(getActivity(), PREF_LEFT_TRIGGER_DOUBLE_CLICK,
                 Action.ACTION_NULL));
-	setPref(mRightTriggerDoubleClick, Utils.getStringSystem(getActivity(), PREF_RIGHT_TRIGGER_DOUBLE_CLICK,
-		Action.ACTION_NULL));
+        setPref(mRightTriggerDoubleClick, Utils.getStringSystem(getActivity(), PREF_RIGHT_TRIGGER_DOUBLE_CLICK,
+                Action.ACTION_NULL));
         setPref(mLeftTriggerLongpress, Utils.getStringSystem(getActivity(), PREF_LEFT_TRIGGER_LONGPRESS,
                 Action.ACTION_NULL));
         setPref(mRightTriggerLongpress, Utils.getStringSystem(getActivity(), PREF_RIGHT_TRIGGER_LONGPRESS,
@@ -154,7 +154,7 @@ public class CustomTrigger extends PreferenceFragment implements
     public boolean onPreferenceClick(Preference preference) {
         String key = null;
         int title = 0;
-	if (preference == mLeftTriggerDoubleClick) {
+        if (preference == mLeftTriggerDoubleClick) {
             key = PREF_LEFT_TRIGGER_DOUBLE_CLICK;
             title = R.string.custom_left_trigger_double_click_title;
         } else if (preference == mRightTriggerDoubleClick) {
@@ -167,7 +167,7 @@ public class CustomTrigger extends PreferenceFragment implements
             key = PREF_RIGHT_TRIGGER_LONGPRESS;
             title = R.string.custom_right_trigger_longpress_title;
         }
-	if (key != null) {
+        if (key != null) {
             showDialogInner(DLG_SHOW_ACTION_DIALOG, key, title);
             return true;
         }
@@ -178,9 +178,9 @@ public class CustomTrigger extends PreferenceFragment implements
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         final String key = preference.getKey();
         if (KEY_TRIGGER_HAPTIC_FEEDBACK.equals(key)) {
-                final boolean value = (boolean) newValue;
-                Utils.putIntSystem(getActivity(), KEY_TRIGGER_HAPTIC_FEEDBACK, value ? 1 : 0);
-                return true;
+            final boolean value = (boolean) newValue;
+            Utils.putIntSystem(getActivity(), KEY_TRIGGER_HAPTIC_FEEDBACK, value ? 1 : 0);
+            return true;
         }
         return false;
     }
@@ -197,7 +197,7 @@ public class CustomTrigger extends PreferenceFragment implements
 
         Utils.putIntSystem(getActivity(), PREF_CUSTOM_TRIGGER_ENABLE, 1);
 
-	Utils.putStringSystem(getActivity(), PREF_LEFT_TRIGGER_DOUBLE_CLICK,
+        Utils.putStringSystem(getActivity(), PREF_LEFT_TRIGGER_DOUBLE_CLICK,
                 Action.ACTION_NULL);
         Utils.putStringSystem(getActivity(), PREF_RIGHT_TRIGGER_DOUBLE_CLICK,
                 Action.ACTION_NULL);
@@ -205,8 +205,8 @@ public class CustomTrigger extends PreferenceFragment implements
                 Action.ACTION_NULL);
         Utils.putStringSystem(getActivity(), PREF_RIGHT_TRIGGER_LONGPRESS,
                 Action.ACTION_NULL);
-	mHapticFeedback.setChecked(true);
-	initPrefs();
+        mHapticFeedback.setChecked(true);
+        initPrefs();
     }
 
     @Override
@@ -216,7 +216,7 @@ public class CustomTrigger extends PreferenceFragment implements
 
     @Override
     public void shortcutPicked(String action,
-                String description, Bitmap bmp, boolean isApplication) {
+            String description, Bitmap bmp, boolean isApplication) {
         if (mPendingkey == null || action == null) {
             return;
         }
@@ -243,7 +243,7 @@ public class CustomTrigger extends PreferenceFragment implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case MENU_RESET:
-                    showDialogInner(DLG_RESET_TO_DEFAULT, null, 0);
+                showDialogInner(DLG_RESET_TO_DEFAULT, null, 0);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -257,8 +257,7 @@ public class CustomTrigger extends PreferenceFragment implements
     }
 
     private void showDialogInner(int id, String key, int title) {
-        DialogFragment newFragment =
-                MyAlertDialogFragment.newInstance(id, key, title);
+        DialogFragment newFragment = MyAlertDialogFragment.newInstance(id, key, title);
         newFragment.setTargetFragment(this, 0);
         newFragment.show(getFragmentManager(), "dialog " + id);
     }
@@ -288,37 +287,37 @@ public class CustomTrigger extends PreferenceFragment implements
             switch (id) {
                 case DLG_SHOW_ACTION_DIALOG:
                     return new AlertDialog.Builder(getActivity())
-                    .setTitle(title)
-                    .setNegativeButton(R.string.cancel, null)
-                    .setItems(getOwner().mActionEntries,
-                        new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int item) {
-                            if (getOwner().mActionValues[item]
-                                    .equals(Action.ACTION_APP)) {
-                                if (getOwner().mPicker != null) {
-                                    getOwner().mPendingkey = key;
-                                    getOwner().mPicker.pickShortcut(getOwner().getId());
-                                }
-                            } else {
-                                    Utils.putStringSystem(getOwner().getActivity(), key,
-                                        getOwner().mActionValues[item]);
-                                getOwner().initPrefs();
-                            }
-                        }
-                    })
-                    .create();
+                            .setTitle(title)
+                            .setNegativeButton(R.string.cancel, null)
+                            .setItems(getOwner().mActionEntries,
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int item) {
+                                            if (getOwner().mActionValues[item]
+                                                    .equals(Action.ACTION_APP)) {
+                                                if (getOwner().mPicker != null) {
+                                                    getOwner().mPendingkey = key;
+                                                    getOwner().mPicker.pickShortcut(getOwner().getId());
+                                                }
+                                            } else {
+                                                Utils.putStringSystem(getOwner().getActivity(), key,
+                                                        getOwner().mActionValues[item]);
+                                                getOwner().initPrefs();
+                                            }
+                                        }
+                                    })
+                            .create();
                 case DLG_RESET_TO_DEFAULT:
                     return new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.reset)
-                    .setMessage(R.string.reset_message)
-                    .setNegativeButton(R.string.cancel, null)
-                    .setPositiveButton(R.string.dlg_ok,
-                        new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            getOwner().resetToDefault();
-                        }
-                    })
-                    .create();
+                            .setTitle(R.string.reset)
+                            .setMessage(R.string.reset_message)
+                            .setNegativeButton(R.string.cancel, null)
+                            .setPositiveButton(R.string.dlg_ok,
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            getOwner().resetToDefault();
+                                        }
+                                    })
+                            .create();
             }
             throw new IllegalArgumentException("unknown id " + id);
         }

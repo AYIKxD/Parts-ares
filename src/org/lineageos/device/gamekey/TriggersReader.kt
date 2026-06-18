@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.aospextended.device.gamekey
+package org.lineageos.device.gamekey
 
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope

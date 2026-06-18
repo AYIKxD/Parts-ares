@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.aospextended.device.gamekey
+package org.lineageos.device.gamekey
 
 import android.content.Context
 import android.hardware.input.InputManager

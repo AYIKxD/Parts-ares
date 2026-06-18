@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The AospExtended Project
+ * Copyright (C) 2026 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aospextended.device.util;
+package org.lineageos.device.util;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -52,7 +52,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.provider.Settings;
 
-import org.aospextended.device.led.LedUtils;
+import org.lineageos.device.led.LedUtils;
 
 public class TaskService extends Service {
 
@@ -68,16 +68,18 @@ public class TaskService extends Service {
         public void onTaskStackChanged() {
             AsyncTask.execute(() -> {
                 try {
-                    final ActivityTaskManager.RootTaskInfo focusedStack =
-                            ActivityTaskManager.getService().getFocusedRootTaskInfo();
+                    final ActivityTaskManager.RootTaskInfo focusedStack = ActivityTaskManager.getService()
+                            .getFocusedRootTaskInfo();
                     if (focusedStack != null && focusedStack.topActivity != null) {
                         mTaskComponentName = focusedStack.topActivity;
                     }
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
                 try {
                     if (mTaskComponentName != null) {
                         final ActivityInfo ai = mPm.getActivityInfo(mTaskComponentName, 0);
-                        String appName = ai.applicationInfo != null ? ai.applicationInfo.packageName : mTaskComponentName.getPackageName();
+                        String appName = ai.applicationInfo != null ? ai.applicationInfo.packageName
+                                : mTaskComponentName.getPackageName();
                         saveAppName(appName);
                     }
                 } catch (PackageManager.NameNotFoundException e) {
@@ -105,7 +107,8 @@ public class TaskService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (DEBUG) Log.d(TAG, "Starting service");
+        if (DEBUG)
+            Log.d(TAG, "Starting service");
         return START_STICKY;
     }
 
@@ -125,7 +128,8 @@ public class TaskService extends Service {
     }
 
     public void saveAppName(String appName) {
-        if (DEBUG) Log.d(TAG, "appName=" + appName);
+        if (DEBUG)
+            Log.d(TAG, "appName=" + appName);
         Settings.System.putString(getContentResolver(), "appName", appName);
         LedUtils ledUtils = LedUtils.getInstance(this);
         ledUtils.play(Utils.isGameApp(this) && Utils.getSharedPreferences(this).getBoolean("led_disco", false));

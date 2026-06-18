@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The AospExtended Project
+ * Copyright (C) 2026 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.aospextended.device.triggers;
+package org.lineageos.device.triggers;
 
 import android.graphics.drawable.Icon;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 
-import org.aospextended.device.R;
+import org.lineageos.device.R;
 
 /**
  * QS Tile to toggle the trigger mapping overlay.
@@ -53,7 +53,8 @@ public class TriggerMapTile extends TileService {
 
     private void updateTileState() {
         Tile tile = getQsTile();
-        if (tile == null) return;
+        if (tile == null)
+            return;
 
         mTriggerService = TriggerService.getInstance(this);
         boolean active = mTriggerService != null && mTriggerService.isShowing();

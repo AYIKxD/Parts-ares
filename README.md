@@ -161,7 +161,7 @@ Copyright (C) 2025 XiaomiParts Project
 ## Credits
 
 - Based on LineageOS system applications
-- Inspired by AospExtended Project
+- Inspired by sagarmakhar and Pointz XiaomiParts Project
 - Special thanks to the Xiaomi-MT6893-dev
 
 ## Support

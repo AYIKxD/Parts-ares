@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The AospExtended Project
+ * Copyright (C) 2026 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.aospextended.device.util;
+package org.lineageos.device.util;
 
-import org.aospextended.device.util.AppList;
+import org.lineageos.device.util.AppList;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.MenuItem;

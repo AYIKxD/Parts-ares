@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aospextended.device.util
+package org.lineageos.device.util
 
 import android.app.ActivityManager
 import android.content.pm.PackageInfo
@@ -35,7 +35,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
-import org.aospextended.device.R
+import org.lineageos.device.R
 
 import java.util.*
 

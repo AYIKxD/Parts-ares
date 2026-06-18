@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The AospExtended Project
+ * Copyright (C) 2026 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.aospextended.device;
+package org.lineageos.device;
 
 import android.app.Activity;
 import android.content.Context;
@@ -38,10 +38,9 @@ import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
 import androidx.preference.TwoStatePreference;
 
+import org.lineageos.device.util.AppListActivity;
 
-import org.aospextended.device.util.AppListActivity;
-
-import org.aospextended.device.vibration.VibratorStrengthPreference;
+import org.lineageos.device.vibration.VibratorStrengthPreference;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -57,13 +56,13 @@ import android.os.HandlerThread;
 import java.io.*;
 import android.widget.Toast;
 
-import org.aospextended.device.R;
-import org.aospextended.device.util.Utils;
-import org.aospextended.device.triggers.TriggerService;
-import org.aospextended.device.triggers.TriggerUtils;
-import org.aospextended.device.triggers.CustomTriggerActivity;
-import org.aospextended.device.led.LedUtils;
-import org.aospextended.device.led.LedOnCall;
+import org.lineageos.device.R;
+import org.lineageos.device.util.Utils;
+import org.lineageos.device.triggers.TriggerService;
+import org.lineageos.device.triggers.TriggerUtils;
+import org.lineageos.device.triggers.CustomTriggerActivity;
+import org.lineageos.device.led.LedUtils;
+import org.lineageos.device.led.LedOnCall;
 
 public class XiaomiParts extends PreferenceFragmentCompat implements
         Preference.OnPreferenceChangeListener {
@@ -71,8 +70,6 @@ public class XiaomiParts extends PreferenceFragmentCompat implements
     private static final String TAG = "XiaomiParts";
 
     private SharedPreferences mPrefs;
-
-
 
     private SwitchPreference mLedDisco;
     private VibratorStrengthPreference mVibratorStrength;
@@ -93,14 +90,11 @@ public class XiaomiParts extends PreferenceFragmentCompat implements
     private Handler mHandler;
     private HandlerThread mHandlerThread;
 
-
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.XiaomiParts, rootKey);
 
         mPrefs = Utils.getSharedPreferences(getActivity());
-
-
 
         mGame = findPreference("game");
         mGame.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -112,7 +106,7 @@ public class XiaomiParts extends PreferenceFragmentCompat implements
             }
         });
 
-	mCustomTrigger = findPreference("custom_trigger");
+        mCustomTrigger = findPreference("custom_trigger");
         mCustomTrigger.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -123,13 +117,13 @@ public class XiaomiParts extends PreferenceFragmentCompat implements
         });
 
         PreferenceCategory misc = (PreferenceCategory) getPreferenceScreen()
-                 .findPreference("triggers_category");
+                .findPreference("triggers_category");
 
         mTriggerSound = (SwitchPreference) findPreference("trigger_sound");
         mTriggerSound.setChecked(mPrefs.getBoolean("trigger_sound", false));
         mTriggerSound.setOnPreferenceChangeListener(this);
 
-        mTriggerSoundType  = (ListPreference) findPreference("trigger_sound_type");
+        mTriggerSoundType = (ListPreference) findPreference("trigger_sound_type");
         String type = mPrefs.getString("trigger_sound_type", "classic");
         mTriggerSoundType.setValue(type == null ? "classic" : type);
         mTriggerSoundType.setSummary(mTriggerSoundType.getEntry());
@@ -154,14 +148,16 @@ public class XiaomiParts extends PreferenceFragmentCompat implements
         mLedInCalls.setOnPreferenceChangeListener(this);
 
         mTriggers = (Preference) findPreference("triggers");
-//        mTriggers.setOnPreferenceClickListener(this);
-/*        PreferenceCategory vib_strength = (PreferenceCategory) getPreferenceScreen()
-                 .findPreference("vib_strength_category");
-        mVibratorStrength = (VibratorStrengthPreference) findPreference(VibratorStrengthPreference.KEY_VIBSTRENGTH);
-        if (!VibratorStrengthPreference.isSupported()) {
-            getPreferenceScreen().removePreference(vib_strength);
-        }
-*/
+        // mTriggers.setOnPreferenceClickListener(this);
+        /*
+         * PreferenceCategory vib_strength = (PreferenceCategory) getPreferenceScreen()
+         * .findPreference("vib_strength_category");
+         * mVibratorStrength = (VibratorStrengthPreference)
+         * findPreference(VibratorStrengthPreference.KEY_VIBSTRENGTH);
+         * if (!VibratorStrengthPreference.isSupported()) {
+         * getPreferenceScreen().removePreference(vib_strength);
+         * }
+         */
     }
 
     @Override
@@ -176,10 +172,10 @@ public class XiaomiParts extends PreferenceFragmentCompat implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case android.R.id.home:
-            return true;
-        default:
-            break;
+            case android.R.id.home:
+                return true;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

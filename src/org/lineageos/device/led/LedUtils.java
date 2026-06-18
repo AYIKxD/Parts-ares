@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The AospExtended Project
+ * Copyright (C) 2026 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.aospextended.device.led;
+package org.lineageos.device.led;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -32,11 +32,12 @@ import android.util.Slog;
 import java.util.List;
 import java.util.Random;
 
-import org.aospextended.device.util.Utils;
+import org.lineageos.device.util.Utils;
 
 /**
  * Controls the RGB LED on the back of the device using the Android Light HAL.
- * Uses LightsManager API instead of direct sysfs writes to comply with SELinux policy.
+ * Uses LightsManager API instead of direct sysfs writes to comply with SELinux
+ * policy.
  */
 public class LedUtils {
     private static final boolean DEBUG = Utils.DEBUG;
@@ -97,7 +98,8 @@ public class LedUtils {
             writeSysfs("/sys/class/leds/red/brightness", String.valueOf(r));
             writeSysfs("/sys/class/leds/green/brightness", String.valueOf(g));
             writeSysfs("/sys/class/leds/blue/brightness", String.valueOf(b));
-            if (DEBUG) Slog.d(TAG, "Set LED color: R=" + r + " G=" + g + " B=" + b);
+            if (DEBUG)
+                Slog.d(TAG, "Set LED color: R=" + r + " G=" + g + " B=" + b);
         } catch (Exception e) {
             Slog.e(TAG, "Failed to set LED color via sysfs", e);
         }
@@ -110,7 +112,8 @@ public class LedUtils {
             fos.flush();
             fos.close();
         } catch (Exception e) {
-            if (DEBUG) Slog.e(TAG, "Failed to write " + value + " to " + path, e);
+            if (DEBUG)
+                Slog.e(TAG, "Failed to write " + value + " to " + path, e);
         }
     }
 
@@ -119,27 +122,27 @@ public class LedUtils {
     }
 
     private int rgb_limit(int value) {
-            int x = 35;
-            int y = 1;
-            int _value = value;
+        int x = 35;
+        int y = 1;
+        int _value = value;
 
-            if (y == 1) {
-                _value += x;
-            } else {
-                _value -= x;
-            }
+        if (y == 1) {
+            _value += x;
+        } else {
+            _value -= x;
+        }
 
-            if (_value >= 255) {
-                _value = 255;
-                y = 0;
-            }
+        if (_value >= 255) {
+            _value = 255;
+            y = 0;
+        }
 
-            if (_value < 0) {
-                _value = 0;
-                y = 1;
-            }
+        if (_value < 0) {
+            _value = 0;
+            y = 1;
+        }
 
-            return _value;
+        return _value;
     }
 
     private final Runnable mUpdateInfo = new Runnable() {

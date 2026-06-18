@@ -1,4 +1,4 @@
-package org.aospextended.device.triggers;
+package org.lineageos.device.triggers;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -19,9 +19,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.aospextended.device.R;
-import org.aospextended.device.util.Action;
-import org.aospextended.device.util.Utils;
+import org.lineageos.device.R;
+import org.lineageos.device.util.Action;
+import org.lineageos.device.util.Utils;
 
 public class TriggerUtils {
     private List<Integer> LOADED_SOUND_IDS = new ArrayList<>();
@@ -34,7 +34,6 @@ public class TriggerUtils {
     private String mPendingSound = null;
 
     private static boolean DEBUG = Utils.DEBUG;
-
 
     long mPrevEventTime;
     int mKeycode, mEventAction, mCount, mTapCount;
@@ -69,42 +68,49 @@ public class TriggerUtils {
     public static TriggerUtils getInstance(Context context) {
         if (sInstance == null) {
             sInstance = new TriggerUtils(context);
-            if (DEBUG) Slog.d(TAG, "Creating new instance");
+            if (DEBUG)
+                Slog.d(TAG, "Creating new instance");
         }
         return sInstance;
     }
 
     public void triggerAction(boolean left, boolean open) {
-        if (DEBUG) Slog.d(TAG, "left=" + left + ", open=" + open);
+        if (DEBUG)
+            Slog.d(TAG, "left=" + left + ", open=" + open);
         boolean play = Settings.System.getInt(mContext.getContentResolver(), "trigger_sound", 0) == 1;
-        if (!play) return;
-        
+        if (!play)
+            return;
+
         // Lazy load sounds if not already loaded
         if (!mIsSoundPooLoadComplete && LOADED_SOUND_IDS.size() == 0) {
-            if (DEBUG) Slog.d(TAG, "Lazy loading sounds");
+            if (DEBUG)
+                Slog.d(TAG, "Lazy loading sounds");
             loadSoundResource();
         }
 
-        
         String type = Settings.System.getString(mContext.getContentResolver(), "trigger_sound_type");
-        if (type == null) type = "classic";
+        if (type == null)
+            type = "classic";
         StringBuilder sb = new StringBuilder();
         sb.append(type);
         sb.append("-");
         sb.append(left ? 0 : 1);
         sb.append("-");
         sb.append(open ? 1 : 0);
-        if (DEBUG) Slog.d(TAG, "sound=" + sb.toString() );
+        if (DEBUG)
+            Slog.d(TAG, "sound=" + sb.toString());
         playSound(sb.toString(), false);
     }
 
     private void checkSoundPoolLoadCompleted() {
         if (LOADED_SOUND_IDS.size() == 16) {
             mIsSoundPooLoadComplete = true;
-            if (DEBUG) Slog.d(TAG, "All 16 sounds loaded successfully");
+            if (DEBUG)
+                Slog.d(TAG, "All 16 sounds loaded successfully");
             // Play any sound that was requested before loading completed
             if (mPendingSound != null) {
-                if (DEBUG) Slog.d(TAG, "Playing pending sound: " + mPendingSound);
+                if (DEBUG)
+                    Slog.d(TAG, "Playing pending sound: " + mPendingSound);
                 playSound(mPendingSound, false);
                 mPendingSound = null;
             }
@@ -112,19 +118,21 @@ public class TriggerUtils {
     }
 
     private void initSoundPool() {
-        if (DEBUG) Slog.d(TAG, "initSoundPool");
+        if (DEBUG)
+            Slog.d(TAG, "initSoundPool");
         AudioAttributes audioAttributes = new AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
-            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-            .build();
+                .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build();
         mSoundPool = new SoundPool.Builder()
-            .setMaxStreams(10)
-            .setAudioAttributes(audioAttributes)
-            .build();
+                .setMaxStreams(10)
+                .setAudioAttributes(audioAttributes)
+                .build();
         mSoundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
             @Override
             public void onLoadComplete(SoundPool soundPool, int n, int n2) {
-                if (DEBUG) Slog.d(TAG, "onLoadComplete: n=" + n + ", n2=" + n2);
+                if (DEBUG)
+                    Slog.d(TAG, "onLoadComplete: n=" + n + ", n2=" + n2);
                 if (n2 == 0) {
                     LOADED_SOUND_IDS.add(n);
                     checkSoundPoolLoadCompleted();
@@ -134,16 +142,19 @@ public class TriggerUtils {
     }
 
     private int load(int n) {
-        if (DEBUG) Slog.d(TAG, "load");
+        if (DEBUG)
+            Slog.d(TAG, "load");
         if (mSoundPool == null) {
-            if (DEBUG) Slog.d(TAG, "load: soundpool null");
+            if (DEBUG)
+                Slog.d(TAG, "load: soundpool null");
             return -1;
         }
         return mSoundPool.load(mContext, n, 1);
     }
 
     public void loadSoundResource() {
-        if (DEBUG) Slog.d(TAG, "loadSoundResource");
+        if (DEBUG)
+            Slog.d(TAG, "loadSoundResource");
         releaseSoundResource();
         initSoundPool();
         SOUNDS_MAP.put("classic-0-0", load(R.raw.keys_kanata_close_l));
@@ -163,7 +174,8 @@ public class TriggerUtils {
         SOUNDS_MAP.put("wind-0-1", load(R.raw.keys_car_open_l));
         SOUNDS_MAP.put("wind-1-1", load(R.raw.keys_car_open_r));
         SOUNDS_MAP.entrySet().forEach(entry -> {
-        if (DEBUG) Slog.d(TAG, "SOUNDS_MAP: key=" + entry.getKey() + ", value=" + entry.getValue());
+            if (DEBUG)
+                Slog.d(TAG, "SOUNDS_MAP: key=" + entry.getKey() + ", value=" + entry.getValue());
         });
     }
 
@@ -172,9 +184,11 @@ public class TriggerUtils {
     }
 
     public void playSound(String s, boolean b) {
-        if (DEBUG) Slog.d(TAG, "playSound: " + s);
+        if (DEBUG)
+            Slog.d(TAG, "playSound: " + s);
         if (!mIsSoundPooLoadComplete) {
-            if (DEBUG) Slog.d(TAG, "playSound: not ready yet, size=" + LOADED_SOUND_IDS.size() + ", queuing: " + s);
+            if (DEBUG)
+                Slog.d(TAG, "playSound: not ready yet, size=" + LOADED_SOUND_IDS.size() + ", queuing: " + s);
             mPendingSound = s;
             return;
         }
@@ -183,11 +197,10 @@ public class TriggerUtils {
             int n;
             if (b) {
                 n = -1;
-            }
-            else {
+            } else {
                 n = 0;
             }
-            
+
             // Parse sound key to get side (format: type-side-state, e.g., "classic-0-1")
             // side=0 means left trigger, side=1 means right trigger
             float leftVolume = 1.0f;
@@ -199,7 +212,7 @@ public class TriggerUtils {
                     if (side == 0) {
                         // Left trigger - play from left speaker only
                         leftVolume = 1.0f;
-                        rightVolume = 0.1f;  // Small amount to avoid complete silence
+                        rightVolume = 0.1f; // Small amount to avoid complete silence
                     } else {
                         // Right trigger - play from right speaker only
                         leftVolume = 0.1f;
@@ -209,15 +222,17 @@ public class TriggerUtils {
             } catch (Exception e) {
                 // Use default stereo if parsing fails
             }
-            
-            if (DEBUG) Slog.d(TAG, "playSound: playing: intValue=" + intValue + ", L=" + leftVolume + ", R=" + rightVolume);
+
+            if (DEBUG)
+                Slog.d(TAG, "playSound: playing: intValue=" + intValue + ", L=" + leftVolume + ", R=" + rightVolume);
             mSoundPool.play(intValue, leftVolume, rightVolume, 1, n, 0.95f);
         }
     }
 
     public void releaseSoundResource() {
         if (mSoundPool != null) {
-            if (DEBUG) Slog.d(TAG, "SoundPool release");
+            if (DEBUG)
+                Slog.d(TAG, "SoundPool release");
             mIsSoundPooLoadComplete = false;
             SOUNDS_MAP.clear();
             LOADED_SOUND_IDS.clear();
@@ -227,7 +242,8 @@ public class TriggerUtils {
     }
 
     public void onEvent(KeyEvent event) {
-        if (DEBUG) Slog.d(TAG, "onEvent");
+        if (DEBUG)
+            Slog.d(TAG, "onEvent");
         if (isDoubleClick(event)) {
             handleDoubleClick(event.getKeyCode() == 59);
         }
@@ -240,14 +256,16 @@ public class TriggerUtils {
         String key = left ? CustomTrigger.PREF_LEFT_TRIGGER_DOUBLE_CLICK
                 : CustomTrigger.PREF_RIGHT_TRIGGER_DOUBLE_CLICK;
         String action = Utils.getStringSystem(mContext, key, Action.ACTION_NULL);
-        if (DEBUG) Slog.d(TAG, "handleDoubleClick: left=" + left + " key=" + key + " action: " + action);
+        if (DEBUG)
+            Slog.d(TAG, "handleDoubleClick: left=" + left + " key=" + key + " action: " + action);
         processAction(action);
     }
 
     public void processAction(String action) {
         boolean enableCustomTrigger = Utils.getIntSystem(mContext, CustomTrigger.PREF_CUSTOM_TRIGGER_ENABLE, 1) == 1;
         if (action == null || action.equals(Action.ACTION_NULL)
-                || Utils.isGameApp(mContext) || !enableCustomTrigger) return;
+                || Utils.isGameApp(mContext) || !enableCustomTrigger)
+            return;
         doHapticFeedback();
         Action.processAction(mContext, action, false);
     }
@@ -256,7 +274,8 @@ public class TriggerUtils {
         String key = left ? CustomTrigger.PREF_LEFT_TRIGGER_LONGPRESS
                 : CustomTrigger.PREF_RIGHT_TRIGGER_LONGPRESS;
         String action = Utils.getStringSystem(mContext, key, Action.ACTION_NULL);
-        if (DEBUG) Slog.d(TAG, "handleLongpress: left=" + left + " key=" + key + " action: " + action);
+        if (DEBUG)
+            Slog.d(TAG, "handleLongpress: left=" + left + " key=" + key + " action: " + action);
         processAction(action);
     }
 
@@ -284,7 +303,8 @@ public class TriggerUtils {
     }
 
     public boolean isDoubleClick(KeyEvent event) {
-        if (DEBUG) Slog.d(TAG, "isDoubleClick");
+        if (DEBUG)
+            Slog.d(TAG, "isDoubleClick");
         if (event.getAction() != KeyEvent.ACTION_UP) {
             mKeycode = event.getKeyCode();
             return false;
@@ -299,24 +319,26 @@ public class TriggerUtils {
         }
         mTapCount++;
         mPrevEventTime = now;
-        if (isDoubleClick) mTapCount = 0;
+        if (isDoubleClick)
+            mTapCount = 0;
         return isDoubleClick;
     }
 
     public boolean isLongPress(KeyEvent event) {
-        if (DEBUG) Slog.d(TAG, "isLongPress");
-/*
-        if (mEventAction != event.getAction()) {
-             if (mCount > 12 ) {
-                 mCount = 0;
-                 return true;
-             }
-             mCount = 0;
-             return false;
-        }
-        mCount++;
-        mEventAction = event.getAction();
-*/
+        if (DEBUG)
+            Slog.d(TAG, "isLongPress");
+        /*
+         * if (mEventAction != event.getAction()) {
+         * if (mCount > 12 ) {
+         * mCount = 0;
+         * return true;
+         * }
+         * mCount = 0;
+         * return false;
+         * }
+         * mCount++;
+         * mEventAction = event.getAction();
+         */
         if (mEventAction == event.getAction()) {
             if (mCount > 12) {
                 mCount = 0;

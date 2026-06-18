@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The AospExtended Project
+ * Copyright (C) 2026 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aospextended.device.util;
+package org.lineageos.device.util;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -42,39 +42,34 @@ public class Utils {
     public static final boolean DEBUG = true;
 
     public static final String PREFERENCES = "XiaomiPartsPreferences";
-    public static final String AMBIENT_GESTURE_HAPTIC_FEEDBACK =
-            "AMBIENT_GESTURE_HAPTIC_FEEDBACK";
-    public static final String TOUCHSCREEN_GESTURE_HAPTIC_FEEDBACK =
-            "TOUCHSCREEN_GESTURE_HAPTIC_FEEDBACK";
+    public static final String AMBIENT_GESTURE_HAPTIC_FEEDBACK = "AMBIENT_GESTURE_HAPTIC_FEEDBACK";
+    public static final String TOUCHSCREEN_GESTURE_HAPTIC_FEEDBACK = "TOUCHSCREEN_GESTURE_HAPTIC_FEEDBACK";
 
     private static final String SETTINGS_METADATA_NAME = "com.android.settings";
 
     public static SharedPreferences getSharedPreferences(Context context) {
-        return getAppContext(context).getSharedPreferences("org.aospextended.device_preferences",
+        return getAppContext(context).getSharedPreferences("org.lineageos.device_preferences",
                 Context.MODE_PRIVATE | Context.MODE_MULTI_PROCESS);
     }
 
     public static Context getAppContext(Context context) {
         try {
             return context.createPackageContext(
-                    "org.aospextended.device", Context.CONTEXT_IGNORE_SECURITY);
+                    "org.lineageos.device", Context.CONTEXT_IGNORE_SECURITY);
         } catch (NameNotFoundException e) {
         }
         return context;
     }
-
 
     public static boolean putStringSystem(Context context, String name, String value) {
         boolean ret = Settings.System.putString(context.getContentResolver(), name, value);
         return ret;
     }
 
-
     public static String getStringSystem(Context context, String name, String def) {
         String ret = Settings.System.getString(context.getContentResolver(), name);
         return ret == null ? def : ret;
     }
-
 
     public static int getIntSystem(Context context, String name, int def) {
         int ret = Settings.System.getInt(context.getContentResolver(), name, def);
@@ -102,14 +97,16 @@ public class Utils {
         String appName = Settings.System.getString(context.getContentResolver(), "appName");
         String appList = Settings.System.getString(context.getContentResolver(), "game_app_list");
         boolean isGameApp = appList != null && appList.contains(appName);
-        if (DEBUG) Slog.d(TAG, "appName: " + appName + " appList: " + appList + " isGameApp: " + isGameApp);
+        if (DEBUG)
+            Slog.d(TAG, "appName: " + appName + " appList: " + appList + " isGameApp: " + isGameApp);
         return isGameApp;
     }
 
     /**
      * Write a string value to the specified file.
+     * 
      * @param filename The filename
-     * @param value The value
+     * @param value    The value
      */
     public static void writeValue(String filename, String value) {
         try {
@@ -127,8 +124,9 @@ public class Utils {
     /**
      * Write the "color value" to the specified file. The value is scaled from
      * an integer to an unsigned integer by multiplying by 2.
+     * 
      * @param filename The filename
-     * @param value The value of max value Integer.MAX
+     * @param value    The value of max value Integer.MAX
      */
     public static void writeColor(String filename, int value) {
         writeValue(filename, String.valueOf((long) value * 2));
@@ -136,8 +134,9 @@ public class Utils {
 
     /**
      * Write the "gamma value" to the specified file.
+     * 
      * @param filename The filename
-     * @param value The value
+     * @param value    The value
      */
     public static void writeGamma(String filename, int value) {
         writeValue(filename, String.valueOf(value));
@@ -145,6 +144,7 @@ public class Utils {
 
     /**
      * Check if the specified file exists.
+     * 
      * @param filename The filename
      * @return Whether the file exists or not
      */
@@ -178,15 +178,15 @@ public class Utils {
 
     public static boolean getFileValueAsBoolean(String filename, boolean defValue) {
         String fileValue = readLine(filename);
-        if(fileValue!=null){
-            return (fileValue.equals("0")?false:true);
+        if (fileValue != null) {
+            return (fileValue.equals("0") ? false : true);
         }
         return defValue;
     }
 
     public static String getFileValue(String filename, String defValue) {
         String fileValue = readLine(filename);
-        if(fileValue!=null){
+        if (fileValue != null) {
             return fileValue;
         }
         return defValue;
@@ -226,11 +226,11 @@ public class Utils {
                 FileInputStream fileInputStream = new FileInputStream(file);
                 fileInputStream.read(b3);
                 fileInputStream.close();
-            }
-            catch (IOException ex) {
+            } catch (IOException ex) {
                 ex.printStackTrace();
             }
-            if (DEBUG) Slog.d(TAG, "triggerleft=" + b3[0] + ", triggerright=" + b3[1]);
+            if (DEBUG)
+                Slog.d(TAG, "triggerleft=" + b3[0] + ", triggerright=" + b3[1]);
             return b3[position] == 1;
         }
         return false;

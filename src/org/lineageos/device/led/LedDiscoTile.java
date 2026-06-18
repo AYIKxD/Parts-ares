@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The AospExtended Project
+ * Copyright (C) 2026 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package org.aospextended.device.led;
+package org.lineageos.device.led;
 
 import android.content.SharedPreferences;
 import android.graphics.drawable.Icon;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 
-import org.aospextended.device.R;
-import org.aospextended.device.util.Utils;
+import org.lineageos.device.R;
+import org.lineageos.device.util.Utils;
 
 /**
  * QS Tile to quickly toggle LED disco mode on/off.
@@ -53,7 +53,8 @@ public class LedDiscoTile extends TileService {
 
     private void updateTileState() {
         Tile tile = getQsTile();
-        if (tile == null) return;
+        if (tile == null)
+            return;
 
         SharedPreferences prefs = Utils.getSharedPreferences(this);
         boolean active = prefs.getBoolean("led_disco", false);

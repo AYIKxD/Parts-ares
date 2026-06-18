@@ -19,11 +19,14 @@ package org.lineageos.device.triggers;
 import android.graphics.drawable.Icon;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
+import android.widget.Toast;
 
 import org.lineageos.device.R;
+import org.lineageos.device.util.Utils;
 
 /**
  * QS Tile to toggle the trigger mapping overlay.
+ * Only activates when user is inside an app from the game app list.
  * Allows adjusting trigger positions while in-game.
  */
 public class TriggerMapTile extends TileService {
@@ -39,6 +42,13 @@ public class TriggerMapTile extends TileService {
     @Override
     public void onClick() {
         super.onClick();
+
+        // Only allow trigger mapping inside game apps
+        if (!Utils.isGameApp(this)) {
+            Toast.makeText(this, R.string.trigger_map_not_in_game, Toast.LENGTH_SHORT).show();
+            updateTileState();
+            return;
+        }
 
         mTriggerService = TriggerService.getInstance(this);
 
@@ -58,10 +68,19 @@ public class TriggerMapTile extends TileService {
 
         mTriggerService = TriggerService.getInstance(this);
         boolean active = mTriggerService != null && mTriggerService.isShowing();
+        boolean inGame = Utils.isGameApp(this);
 
         tile.setState(active ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
         tile.setLabel(getString(R.string.qs_trigger_map_label));
-        tile.setSubtitle(active ? getString(R.string.switch_bar_on) : getString(R.string.switch_bar_off));
+
+        if (active) {
+            tile.setSubtitle(getString(R.string.switch_bar_on));
+        } else if (!inGame) {
+            tile.setSubtitle(getString(R.string.trigger_map_tile_not_in_game));
+        } else {
+            tile.setSubtitle(getString(R.string.switch_bar_off));
+        }
+
         tile.setIcon(Icon.createWithResource(this, R.drawable.ic_qs_trigger_map));
         tile.updateTile();
     }

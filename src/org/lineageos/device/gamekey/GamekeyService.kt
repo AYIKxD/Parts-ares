@@ -29,6 +29,11 @@ import org.lineageos.device.util.Utils
  * Combines:
  * - Reference implementation: TriggersReader for hardware detection
  * - Existing XiaomiParts: TriggerUtils for sounds, actions, haptics
+ * 
+ * Trigger mapping activation:
+ * - Both triggers must be opened within a 6-second window
+ * - User must be inside an app selected in the game app list
+ * - Auto-shows the trigger mapping overlay when conditions are met
  */
 class GamekeyService : Service() {
     companion object {
@@ -37,6 +42,9 @@ class GamekeyService : Service() {
         // Double-click detection
         private const val DOUBLE_CLICK_TIMEOUT_MS = 300L
         private const val LONG_PRESS_DURATION_MS = 500L
+
+        // Dual-trigger activation window (6 seconds)
+        private const val TRIGGER_WINDOW_MS = 6000L
 
         fun startService(context: Context) {
             try {
@@ -69,6 +77,11 @@ class GamekeyService : Service() {
     private var rightTriggerDown = false
     private var leftSliderOpen = false
     private var rightSliderOpen = false
+    
+    // Dual-trigger activation timestamps
+    private var leftSliderOpenTime = 0L
+    private var rightSliderOpenTime = 0L
+    private var triggerMappingAutoShown = false
     
     // Double-click detection
     private var lastLeftClickTime = 0L
@@ -175,6 +188,10 @@ class GamekeyService : Service() {
      * 
      * - hallLeft/hallRight: slider open/closed state
      * - keyLeft/keyRight: button press state
+     * 
+     * Dual-trigger activation: When both sliders are opened within a 6-second
+     * window AND the user is inside an app from the game app list, the trigger
+     * mapping overlay is automatically shown.
      */
     private fun processTriggerState(
         hallLeft: Boolean,
@@ -182,10 +199,16 @@ class GamekeyService : Service() {
         keyLeft: Boolean,
         keyRight: Boolean
     ) {
+        val now = SystemClock.uptimeMillis()
+
         // Handle left slider state change (for sounds + alert slider)
         if (hallLeft != leftSliderOpen) {
             leftSliderOpen = hallLeft
             triggerUtils?.triggerAction(true, hallLeft)
+            
+            if (hallLeft) {
+                leftSliderOpenTime = now
+            }
             
             // Alert slider: left slider triggers selected mode
             val alertMode = prefs.getString("alert_slider_mode", "disabled")
@@ -200,14 +223,56 @@ class GamekeyService : Service() {
         if (hallRight != rightSliderOpen) {
             rightSliderOpen = hallRight
             triggerUtils?.triggerAction(false, hallRight)
+
+            if (hallRight) {
+                rightSliderOpenTime = now
+            }
+
             Log.d(TAG, "Right slider: $hallRight")
         }
         
-        // NOTE: Auto-show trigger overlay removed - user should enable it manually from settings
+        // Dual-trigger activation check:
+        // Both sliders must be open, both openings within 6-second window,
+        // and user must be inside a game app from the app list
+        checkDualTriggerActivation(now)
         
         // Handle button presses
         handleButtonState(true, keyLeft)
         handleButtonState(false, keyRight)
+    }
+
+    /**
+     * Check if both triggers are in the open state within a 6-second window
+     * and the user is inside a selected game app. If so, auto-show the
+     * trigger mapping overlay.
+     */
+    private fun checkDualTriggerActivation(now: Long) {
+        if (leftSliderOpen && rightSliderOpen) {
+            // Both sliders are open — check if both opened within the 6-second window
+            val timeBetweenOpenings = Math.abs(leftSliderOpenTime - rightSliderOpenTime)
+            
+            if (timeBetweenOpenings <= TRIGGER_WINDOW_MS) {
+                // Within window — check if we're in a game app
+                if (Utils.isGameApp(this) && !triggerMappingAutoShown) {
+                    Log.i(TAG, "Dual-trigger activation: both triggers opened within ${timeBetweenOpenings}ms, showing overlay")
+                    val triggerService = TriggerService.getInstance(this)
+                    if (!triggerService.isShowing) {
+                        triggerService.show()
+                    }
+                    triggerMappingAutoShown = true
+                } else if (!Utils.isGameApp(this)) {
+                    Log.d(TAG, "Dual-trigger detected but not in game app, skipping overlay")
+                }
+            } else {
+                Log.d(TAG, "Both triggers open but outside 6s window (${timeBetweenOpenings}ms)")
+            }
+        } else if (!leftSliderOpen && !rightSliderOpen) {
+            // Both sliders closed — reset auto-show flag so it can trigger again
+            if (triggerMappingAutoShown) {
+                Log.d(TAG, "Both triggers closed, resetting auto-show flag")
+                triggerMappingAutoShown = false
+            }
+        }
     }
 
     private fun handleButtonState(isLeft: Boolean, pressed: Boolean) {
@@ -367,4 +432,3 @@ class GamekeyService : Service() {
         }
     }
 }
-

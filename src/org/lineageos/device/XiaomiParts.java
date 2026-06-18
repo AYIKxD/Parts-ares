@@ -58,7 +58,6 @@ import android.widget.Toast;
 
 import org.lineageos.device.R;
 import org.lineageos.device.util.Utils;
-import org.lineageos.device.triggers.TriggerService;
 import org.lineageos.device.triggers.TriggerUtils;
 import org.lineageos.device.triggers.CustomTriggerActivity;
 import org.lineageos.device.led.LedUtils;
@@ -83,7 +82,6 @@ public class XiaomiParts extends PreferenceFragmentCompat implements
     private SwitchPreference mTriggerSound;
     private ListPreference mTriggerSoundType;
 
-    private Preference mTriggers;
     private Preference mCustomTrigger;
     private boolean mStop;
 
@@ -147,8 +145,6 @@ public class XiaomiParts extends PreferenceFragmentCompat implements
         mLedInCalls.setChecked(Utils.getIntSystem(getActivity(), "led_in_calls", 1) == 1);
         mLedInCalls.setOnPreferenceChangeListener(this);
 
-        mTriggers = (Preference) findPreference("triggers");
-        // mTriggers.setOnPreferenceClickListener(this);
         /*
          * PreferenceCategory vib_strength = (PreferenceCategory) getPreferenceScreen()
          * .findPreference("vib_strength_category");
@@ -158,15 +154,6 @@ public class XiaomiParts extends PreferenceFragmentCompat implements
          * getPreferenceScreen().removePreference(vib_strength);
          * }
          */
-    }
-
-    @Override
-    public boolean onPreferenceTreeClick(Preference preference) {
-        if (preference == mTriggers) {
-            TriggerService.getInstance(getActivity()).show();
-            return true;
-        }
-        return super.onPreferenceTreeClick(preference);
     }
 
     @Override

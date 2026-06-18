@@ -143,7 +143,7 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
         button.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                Toast.makeText(mContext, "Resetted values", Toast.LENGTH_LONG).show();
+                Toast.makeText(mContext, R.string.trigger_reset_toast, Toast.LENGTH_LONG).show();
                 reset();
                 return true;
             }
@@ -158,7 +158,7 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
                 .setDuration(0)
                 .start();
 
-        mView.setAlpha(0.5f);
+        mView.setAlpha(0.6f);
     }
 
     public void show() {
@@ -225,6 +225,7 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
     public void onClick(View v) {
         if (DEBUG)
             Slog.d(TAG, "wrote values");
+        Toast.makeText(mContext, R.string.trigger_saved_toast, Toast.LENGTH_SHORT).show();
         updatePosition(false, false);
         SharedPreferences.Editor editor = mPrefs.edit();
         editor.putString("left_trigger_x", String.valueOf(lx));

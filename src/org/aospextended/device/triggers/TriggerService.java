@@ -379,6 +379,11 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
                 button.setRotation(90f);
         }
 
+        if (DEBUG) Slog.d(TAG, "updatePosition computed: LX=" + LX + " LY=" + LY
+                + " RX=" + RX + " RY=" + RY + " BX=" + BX + " BY=" + BY
+                + " rotation=" + rotation + " mRotation=" + mRotation
+                + " screenW=" + size.x + " screenH=" + size.y);
+
         if (update) {
             image1.animate()
                     .x(LX - mHeight / 2)

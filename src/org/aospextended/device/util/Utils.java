@@ -118,9 +118,9 @@ public class Utils {
             fos.flush();
             fos.close();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Slog.e(TAG, "writeValue failed: " + filename, e);
         } catch (IOException e) {
-            e.printStackTrace();
+            Slog.e(TAG, "writeValue failed: " + filename, e);
         }
     }
 

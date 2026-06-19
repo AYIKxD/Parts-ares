@@ -143,8 +143,8 @@ fun CustomTriggerScreen(
         ) {
             item {
                 ListItem(
-                    headlineContent = { Text(context.getString(R.string.custom_trigger_enable_title)) },
-                    supportingContent = { Text(context.getString(R.string.custom_trigger_enable_summary)) },
+                    headlineContent = { Text(context.getString(R.string.custom_trigger)) },
+                    supportingContent = { Text(context.getString(R.string.custom_trigger_summary)) },
                     leadingContent = { Icon(Icons.Default.Build, null) },
                     trailingContent = {
                         Switch(

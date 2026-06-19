@@ -24,7 +24,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import androidx.compose.ui.viewinterop.AndroidView
+import android.widget.ImageView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.lineageos.device.R
@@ -199,9 +200,14 @@ fun AppListItem(appInfo: AppInfo, isSelected: Boolean, onClick: () -> Unit) {
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = rememberDrawablePainter(appInfo.icon),
-                contentDescription = null,
+            AndroidView(
+                factory = { ctx ->
+                    ImageView(ctx).apply {
+                        scaleType = ImageView.ScaleType.FIT_CENTER
+                        setImageDrawable(appInfo.icon)
+                    }
+                },
+                update = { view -> view.setImageDrawable(appInfo.icon) },
                 modifier = Modifier
                     .size(52.dp)
                     .clip(RoundedCornerShape(12.dp))

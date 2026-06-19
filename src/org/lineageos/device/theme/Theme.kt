@@ -123,17 +123,9 @@ fun XiaomiPartsTheme(
         else -> LightColors
     }
 
-    try {
-        MaterialExpressiveTheme(
-            colorScheme = colorScheme,
-            motionScheme = MotionScheme.expressive(),
-            content = content
-        )
-    } catch (e: NoSuchMethodError) {
-        // Fallback if ExperimentalMaterial3ExpressiveApi is not fully available
-        MaterialTheme(
-            colorScheme = colorScheme,
-            content = content
-        )
-    }
+    MaterialExpressiveTheme(
+        colorScheme = colorScheme,
+        motionScheme = MotionScheme.expressive(),
+        content = content
+    )
 }

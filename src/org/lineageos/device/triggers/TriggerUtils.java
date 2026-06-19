@@ -253,8 +253,8 @@ public class TriggerUtils {
     }
 
     public void handleDoubleClick(boolean left) {
-        String key = left ? CustomTrigger.PREF_LEFT_TRIGGER_DOUBLE_CLICK
-                : CustomTrigger.PREF_RIGHT_TRIGGER_DOUBLE_CLICK;
+        String key = left ? "custom_left_trigger_double_click"
+                : "custom_right_trigger_double_click";
         String action = Utils.getStringSystem(mContext, key, Action.ACTION_NULL);
         if (DEBUG)
             Slog.d(TAG, "handleDoubleClick: left=" + left + " key=" + key + " action: " + action);
@@ -262,7 +262,7 @@ public class TriggerUtils {
     }
 
     public void processAction(String action) {
-        boolean enableCustomTrigger = Utils.getIntSystem(mContext, CustomTrigger.PREF_CUSTOM_TRIGGER_ENABLE, 1) == 1;
+        boolean enableCustomTrigger = Utils.getIntSystem(mContext, "custom_trigger_enable", 1) == 1;
         if (action == null || action.equals(Action.ACTION_NULL)
                 || Utils.isGameApp(mContext) || !enableCustomTrigger)
             return;
@@ -271,8 +271,8 @@ public class TriggerUtils {
     }
 
     public void handleLongPress(boolean left) {
-        String key = left ? CustomTrigger.PREF_LEFT_TRIGGER_LONGPRESS
-                : CustomTrigger.PREF_RIGHT_TRIGGER_LONGPRESS;
+        String key = left ? "custom_left_trigger_longpress"
+                : "custom_right_trigger_longpress";
         String action = Utils.getStringSystem(mContext, key, Action.ACTION_NULL);
         if (DEBUG)
             Slog.d(TAG, "handleLongpress: left=" + left + " key=" + key + " action: " + action);
@@ -280,7 +280,7 @@ public class TriggerUtils {
     }
 
     private void doHapticFeedback() {
-        boolean enabled = Utils.getIntSystem(mContext, CustomTrigger.KEY_TRIGGER_HAPTIC_FEEDBACK, 1) != 0;
+        boolean enabled = Utils.getIntSystem(mContext, "custom_trigger_haptic_feedback", 1) != 0;
         Vibrator mVibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
         if (enabled && mVibrator != null && mVibrator.hasVibrator()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

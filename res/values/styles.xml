@@ -14,8 +14,8 @@
     limitations under the License.
 -->
 <resources>
-    <!-- Main app theme - inherits from SettingsLib CollapsingToolbar theme -->
-    <style name="AppTheme" parent="@style/Theme.CollapsingToolbar.Settings">
+    <!-- Main app theme - inherits from Material3 -->
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- M3 Expressive color overrides -->
         <item name="colorPrimary">@color/m3_primary</item>
         <item name="colorOnPrimary">@color/m3_on_primary</item>
@@ -27,12 +27,6 @@
         <item name="android:textColorSecondary">@color/m3_on_surface_variant</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@color/m3_surface</item>
-    </style>
-
-    <!-- Alternative theme using Material3 DayNight -->
-    <style name="AppTheme.CollapsingToolbar" parent="@style/Theme.CollapsingToolbar.Settings">
-        <item name="colorPrimary">@color/m3_primary</item>
-        <item name="colorAccent">@color/m3_primary</item>
     </style>
 
     <!-- M3 Expressive card style for list items -->

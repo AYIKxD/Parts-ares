@@ -19,18 +19,17 @@ android_app {
 
     static_libs: [
         "androidx.appcompat_appcompat",
-        "androidx.legacy_legacy-support-v13",
         "androidx.palette_palette",
-        "androidx.preference_preference",
-        "androidx.recyclerview_recyclerview",
         "androidx.core_core-ktx",
         "kotlinx-coroutines-android",
         "com.google.android.material_material",
         "SystemUISharedLib",
         "SettingsLib",
-        "SettingsLibCollapsingToolbarBaseActivity",
-        "SettingsLibSettingsTheme",
-        "SettingsLibSettingsTransition",
+        "androidx.activity_activity-compose",
+        "androidx.compose.ui_ui",
+        "androidx.compose.foundation_foundation",
+        "androidx.compose.runtime_runtime",
+        "androidx.compose.material3_material3",
     ],
 
     srcs: [

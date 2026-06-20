@@ -23,6 +23,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.util.DisplayMetrics;
@@ -35,6 +37,8 @@ import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.lineageos.device.R;
@@ -45,44 +49,64 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
     private static final String TAG = "TriggerService";
 
     private SharedPreferences mPrefs;
+    private Context mContext;
+    private WindowManager mWindowManager;
+    private static TriggerService mInstance;
 
     private View mView;
-    private ImageView image1, image2;
-    private WindowManager windowManager;
-    private ImageView button;
-    Point p = new Point();
-    WindowManager.LayoutParams layoutParams;
+    private ImageView mLeftTriggerImage;
+    private ImageView mRightTriggerImage;
+    private ImageView mSaveButton;
+    private ImageView mResetButton;
+    private LinearLayout mInfoBanner;
+    private TextView mAppNameText;
 
-    float X, Y, mLX, mLY, mRX, mRY, lx, ly, rx, ry, bx, by;
-    float mBX = 200;
-    float mBY = 2000;
-    int mHeight, mRotation;
+    private WindowManager.LayoutParams mLayoutParams;
+    private Point mScreenSize = new Point();
 
-    private Context mContext;
-    private static TriggerService mInstance;
+    // Touch offset and temporary coordinates
+    private float mTouchOffsetX, mTouchOffsetY;
+    
+    // Persistent normalized coordinates
+    private float mNormLeftX, mNormLeftY;
+    private float mNormRightX, mNormRightY;
+    
+    // Current screen coordinates
+    private float mScreenLeftX, mScreenLeftY;
+    private float mScreenRightX, mScreenRightY;
+    
+    // Save button coordinates
+    private float mButtonX = 200;
+    private float mButtonY = 2000;
+
+    // Reset button coordinates
+    private float mResetX = 200;
+    private float mResetY = 1800;
+    
+    private int mMarkerHeight;
+    private int mCurrentRotation;
+
     private boolean mInitialized = false;
     private boolean mReceiverRegistered = false;
-
-    private boolean mShowing;
-
-    private String getPrefix() {
-        String pkg = Utils.getForegroundApp(mContext);
-        return pkg != null && !pkg.isEmpty() && Utils.isGameApp(mContext) ? "_" + pkg : "";
-    }
+    private boolean mShowing = false;
 
     private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(Intent.ACTION_CONFIGURATION_CHANGED)) {
+            if (Intent.ACTION_CONFIGURATION_CHANGED.equals(intent.getAction())) {
                 updatePosition(false);
             }
         }
     };
 
+    private TriggerService(Context context) {
+        mContext = context;
+    }
+
     public static TriggerService getInstance(Context context) {
         if (mInstance == null) {
-            Slog.d(TAG, "NEW INSTANCE");
-            mInstance = new TriggerService(context);
+            if (DEBUG) Slog.d(TAG, "NEW INSTANCE");
+            mInstance = new TriggerService(context.getApplicationContext());
         }
         return mInstance;
     }
@@ -91,203 +115,206 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
         return mShowing;
     }
 
-    private TriggerService(Context context) {
-        mContext = context;
+    private String getPrefix() {
+        String pkg = Utils.getForegroundApp(mContext);
+        return pkg != null && !pkg.isEmpty() && Utils.isGameApp(mContext) ? "_" + pkg : "";
     }
 
     public void init(Context context) {
-        if (mInitialized)
-            return; // Prevent duplicate initialization
+        if (mInitialized) return;
         mInitialized = true;
 
         mPrefs = Utils.getSharedPreferences(context);
 
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
+        IntentFilter filter = new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED);
         mContext.registerReceiver(mIntentReceiver, filter);
         mReceiverRegistered = true;
 
-        mHeight = context.getResources().getDimensionPixelSize(R.dimen.image_height);
-
-        windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        mMarkerHeight = context.getResources().getDimensionPixelSize(R.dimen.image_height);
+        mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-        p.x = metrics.widthPixels;
-        p.y = metrics.heightPixels;
+        mScreenSize.x = metrics.widthPixels;
+        mScreenSize.y = metrics.heightPixels;
 
         mView = LayoutInflater.from(context).inflate(R.layout.view, null);
-        image1 = mView.findViewById(R.id.image1);
-        image2 = mView.findViewById(R.id.image2);
+        mLeftTriggerImage = mView.findViewById(R.id.image1);
+        mRightTriggerImage = mView.findViewById(R.id.image2);
+        mSaveButton = mView.findViewById(R.id.button);
+        mResetButton = mView.findViewById(R.id.reset_button);
+        mInfoBanner = mView.findViewById(R.id.info_banner);
+        mAppNameText = mView.findViewById(R.id.app_name_text);
 
-        image1.setOnTouchListener(this);
-        image2.setOnTouchListener(this);
+        setupAppProfileUI();
+
+        mLeftTriggerImage.setOnTouchListener(this);
+        mRightTriggerImage.setOnTouchListener(this);
+        mSaveButton.setOnClickListener(this);
+        mResetButton.setOnClickListener(v -> reset());
 
         String suffix = getPrefix();
-        mLX = Float.parseFloat(mPrefs.getString("left_trigger_x" + suffix, mPrefs.getString("left_trigger_x", "540")));
-        mLY = Float.parseFloat(mPrefs.getString("left_trigger_y" + suffix, mPrefs.getString("left_trigger_y", "700")));
+        mNormLeftX = Float.parseFloat(mPrefs.getString("left_trigger_x" + suffix, mPrefs.getString("left_trigger_x", "540")));
+        mNormLeftY = Float.parseFloat(mPrefs.getString("left_trigger_y" + suffix, mPrefs.getString("left_trigger_y", "700")));
+        mNormRightX = Float.parseFloat(mPrefs.getString("right_trigger_x" + suffix, mPrefs.getString("right_trigger_x", "540")));
+        mNormRightY = Float.parseFloat(mPrefs.getString("right_trigger_y" + suffix, mPrefs.getString("right_trigger_y", "1700")));
 
-        image1.animate()
-                .x(mLX)
-                .y(mLY)
-                .setDuration(0)
-                .start();
+        mButtonX = 200;
+        mButtonY = 2000;
+        mResetX = 200;
+        mResetY = 1800;
 
-        mRX = Float.parseFloat(mPrefs.getString("right_trigger_x" + suffix, mPrefs.getString("right_trigger_x", "540")));
-        mRY = Float.parseFloat(mPrefs.getString("right_trigger_y" + suffix, mPrefs.getString("right_trigger_y", "1700")));
-
-        image2.animate()
-                .x(mRX)
-                .y(mRY)
-                .setDuration(0)
-                .start();
-
-        if (DEBUG)
-            Slog.d(TAG, "lxlyrxry " + mLX + " " + mLY + " " + mRX + " " + mRY);
-
-        button = mView.findViewById(R.id.button);
-
-        button.setOnClickListener(this);
-        button.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                Toast.makeText(mContext, R.string.trigger_reset_toast, Toast.LENGTH_LONG).show();
-                reset();
-                return true;
-            }
-        });
-
-        mBX = 200;
-        mBY = 2000;
-
-        button.animate()
-                .x(mBX)
-                .y(mBY)
-                .setDuration(0)
-                .start();
+        mLeftTriggerImage.animate().x(mNormLeftX).y(mNormLeftY).setDuration(0).start();
+        mRightTriggerImage.animate().x(mNormRightX).y(mNormRightY).setDuration(0).start();
+        mSaveButton.animate().x(mButtonX).y(mButtonY).setDuration(0).start();
+        mResetButton.animate().x(mResetX).y(mResetY).setDuration(0).start();
 
         mView.setAlpha(0.6f);
     }
 
+    private void setupAppProfileUI() {
+        String pkg = Utils.getForegroundApp(mContext);
+        String appName = "Global Profile";
+        
+        if (pkg != null && !pkg.isEmpty()) {
+            try {
+                PackageManager pm = mContext.getPackageManager();
+                ApplicationInfo info = pm.getApplicationInfo(pkg, 0);
+                appName = "Profile: " + pm.getApplicationLabel(info).toString();
+            } catch (Exception e) {
+                appName = "Profile: " + pkg;
+            }
+        }
+        
+        if (mAppNameText != null) {
+            mAppNameText.setText(appName);
+        }
+    }
+
     public void show() {
-        if (mShowing)
-            return;
+        if (mShowing) return;
         init(mContext);
-        if (DEBUG)
-            Slog.d(TAG, "show");
-        layoutParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.MATCH_PARENT,
+        
+        if (DEBUG) Slog.d(TAG, "show");
+        
+        mLayoutParams = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                         | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                         | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSPARENT);
-        layoutParams.gravity = Gravity.CENTER;
-        layoutParams.x = 0;
-        layoutParams.y = 0;
-        layoutParams.setFitInsetsTypes(0);
-        layoutParams.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
+                
+        mLayoutParams.gravity = Gravity.CENTER;
+        mLayoutParams.x = 0;
+        mLayoutParams.y = 0;
+        mLayoutParams.setFitInsetsTypes(0);
+        mLayoutParams.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
+        
         try {
-            windowManager.addView(mView, layoutParams);
+            mWindowManager.addView(mView, mLayoutParams);
+            mShowing = true;
+            mView.setVisibility(View.VISIBLE);
+            mLeftTriggerImage.setVisibility(View.VISIBLE);
+            mRightTriggerImage.setVisibility(View.VISIBLE);
+            updatePosition(true);
         } catch (RuntimeException e) {
             Slog.e(TAG, "Failed to add overlay view", e);
         }
-        mShowing = true;
-        mView.setVisibility(View.VISIBLE);
-        image1.setVisibility(View.VISIBLE);
-        image2.setVisibility(View.VISIBLE);
-
-        updatePosition(true);
     }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            X = v.getX() - event.getRawX();
-            Y = v.getY() - event.getRawY();
+            mTouchOffsetX = v.getX() - event.getRawX();
+            mTouchOffsetY = v.getY() - event.getRawY();
         } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-
             v.animate()
-                    .x(event.getRawX() + X)
-                    .y(event.getRawY() + Y)
+                    .x(event.getRawX() + mTouchOffsetX)
+                    .y(event.getRawY() + mTouchOffsetY)
                     .setDuration(0)
                     .start();
-            float x = v.getX() + mHeight / 2;
-            float y = v.getY() + mHeight / 2;
-            boolean left = v.getId() == R.id.image1;
-            if (left) {
-                mLX = x;
-                mLY = y;
-            } else {
-                mRX = x;
-                mRY = y;
+                    
+            float x = v.getX() + mMarkerHeight / 2f;
+            float y = v.getY() + mMarkerHeight / 2f;
+            
+            if (v.getId() == R.id.image1) {
+                mNormLeftX = x;
+                mNormLeftY = y;
+            } else if (v.getId() == R.id.image2) {
+                mNormRightX = x;
+                mNormRightY = y;
             }
-
-            if (DEBUG)
-                Slog.d(TAG, "action move x,y : " + x + "   " + y + "  , isleft=" + (v.getId() == R.id.image1));
+            
+            if (DEBUG) Slog.d(TAG, "action move x,y : " + x + " " + y);
         }
         return true;
     }
 
     @Override
     public void onClick(View v) {
-        if (DEBUG)
-            Slog.d(TAG, "wrote values");
+        if (DEBUG) Slog.d(TAG, "saving values");
         Toast.makeText(mContext, R.string.trigger_saved_toast, Toast.LENGTH_SHORT).show();
         updatePosition(false, false);
+        
         String suffix = getPrefix();
         SharedPreferences.Editor editor = mPrefs.edit();
-        editor.putString("left_trigger_x" + suffix, String.valueOf(lx));
-        editor.putString("left_trigger_y" + suffix, String.valueOf(ly));
-        editor.putString("right_trigger_x" + suffix, String.valueOf(rx));
-        editor.putString("right_trigger_y" + suffix, String.valueOf(ry));
-        editor.commit();
+        editor.putString("left_trigger_x" + suffix, String.valueOf(mScreenLeftX));
+        editor.putString("left_trigger_y" + suffix, String.valueOf(mScreenLeftY));
+        editor.putString("right_trigger_x" + suffix, String.valueOf(mScreenRightX));
+        editor.putString("right_trigger_y" + suffix, String.valueOf(mScreenRightY));
+        editor.apply();
 
         hide();
     }
 
     public void reset() {
-        if (DEBUG)
-            Slog.d(TAG, "reset values");
-        mLX = 540;
-        mLY = 700;
-        mRX = 540;
-        mRY = 1700;
-        mBX = 200;
-        mBY = 2000;
+        if (DEBUG) Slog.d(TAG, "reset values");
+        mNormLeftX = 540;
+        mNormLeftY = 700;
+        mNormRightX = 540;
+        mNormRightY = 1700;
+        mButtonX = 200;
+        mButtonY = 2000;
+        mResetX = 200;
+        mResetY = 1800;
+        
         String suffix = getPrefix();
         SharedPreferences.Editor editor = mPrefs.edit();
         editor.remove("left_trigger_x" + suffix);
         editor.remove("left_trigger_y" + suffix);
         editor.remove("right_trigger_x" + suffix);
         editor.remove("right_trigger_y" + suffix);
-        editor.commit();
-
+        editor.apply();
+        
+        Toast.makeText(mContext, R.string.trigger_mapping_reset_toast, Toast.LENGTH_SHORT).show();
         updatePosition(false);
     }
 
     public void hide() {
-        if (!mShowing)
-            return;
+        if (!mShowing) return;
         mShowing = false;
-        if (DEBUG)
-            Slog.d(TAG, "hide");
+        
+        if (DEBUG) Slog.d(TAG, "hide");
         try {
             if (mView != null && mView.isAttachedToWindow()) {
-                windowManager.removeView(mView);
+                mWindowManager.removeView(mView);
             }
             if (mReceiverRegistered) {
                 mContext.unregisterReceiver(mIntentReceiver);
                 mReceiverRegistered = false;
             }
-        } catch (IllegalArgumentException e) {
-            Slog.w(TAG, "View not attached to window manager, ignoring", e);
         } catch (Exception e) {
             Slog.e(TAG, "Error hiding trigger overlay", e);
         }
-        // Reset all state so overlay can be shown fresh next time
+        
         mView = null;
-        image1 = null;
-        image2 = null;
-        button = null;
+        mLeftTriggerImage = null;
+        mRightTriggerImage = null;
+        mSaveButton = null;
+        mResetButton = null;
+        mInfoBanner = null;
+        mAppNameText = null;
         mInitialized = false;
     }
 
@@ -295,136 +322,174 @@ public class TriggerService implements View.OnTouchListener, View.OnClickListene
         updatePosition(def, true);
     }
 
-    private void updatePosition(boolean def, boolean update) {
-        if (DEBUG)
-            Slog.d(TAG, "updatePosition");
-        Display defaultDisplay = windowManager.getDefaultDisplay();
-
+    private void updatePosition(boolean isDefaultRotation, boolean animateUpdate) {
+        if (DEBUG) Slog.d(TAG, "updatePosition");
+        
+        Display defaultDisplay = mWindowManager.getDefaultDisplay();
         DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
         Point size = new Point(metrics.widthPixels, metrics.heightPixels);
 
-        int rot = defaultDisplay.getRotation();
-        int lastRotation = 0;
-        if (def)
-            mRotation = lastRotation;
-        int x, y;
-        float LX = mLX;
-        float LY = mLY;
-        float RX = mRX;
-        float RY = mRY;
-        float BX = mBX;
-        float BY = mBY;
-        int rotation = rot;
-        if (!update)
-            rotation = 0;
-        switch (rotation) {
+        int currentRot = defaultDisplay.getRotation();
+        if (isDefaultRotation) {
+            mCurrentRotation = 0;
+        }
+        
+        float lx = mNormLeftX;
+        float ly = mNormLeftY;
+        float rx = mNormRightX;
+        float ry = mNormRightY;
+        float bx = mButtonX;
+        float by = mButtonY;
+        float resetX = mResetX;
+        float resetY = mResetY;
+        
+        int rotationToApply = animateUpdate ? currentRot : 0;
+        float bannerRot = 0f;
+        float bannerX = size.x / 2f;
+        float bannerY = 150f;
+
+        switch (rotationToApply) {
             case Surface.ROTATION_90:
-                if (DEBUG)
-                    Slog.d(TAG, "ROTATION_90");
-                if (mRotation == Surface.ROTATION_270) {
-                    LX = size.x - mLX;
-                    LY = size.y - mLY;
-                    RX = size.x - mRX;
-                    RY = size.y - mRY;
-                    BX = size.x - mBX;
-                    BY = size.y - mBY;
+                if (mCurrentRotation == Surface.ROTATION_270) {
+                    lx = size.x - mNormLeftX;
+                    ly = size.y - mNormLeftY;
+                    rx = size.x - mNormRightX;
+                    ry = size.y - mNormRightY;
+                    bx = size.x - mButtonX;
+                    by = size.y - mButtonY;
+                    resetX = size.x - mResetX;
+                    resetY = size.y - mResetY;
                 } else {
-                    LX = mLY;
-                    LY = size.y - mLX;
-                    RX = mRY;
-                    RY = size.y - mRX;
-                    BX = mBY;
-                    BY = size.y - mBX;
+                    lx = mNormLeftY;
+                    ly = size.y - mNormLeftX;
+                    rx = mNormRightY;
+                    ry = size.y - mNormRightX;
+                    bx = mButtonY;
+                    by = size.y - mButtonX;
+                    resetX = mResetY;
+                    resetY = size.y - mResetX;
                 }
-                image1.setRotation(0f);
-                image2.setRotation(0f);
-                button.setRotation(0f);
+                mLeftTriggerImage.setRotation(0f);
+                mRightTriggerImage.setRotation(0f);
+                mSaveButton.setRotation(0f);
+                mResetButton.setRotation(0f);
+                bannerRot = 0f;
+                bannerX = size.x / 2f;
+                bannerY = 150f;
                 break;
+                
             case Surface.ROTATION_270:
-                if (DEBUG)
-                    Slog.d(TAG, "ROTATION_270");
-                if (mRotation == Surface.ROTATION_90) {
-                    LX = size.x - mLX;
-                    LY = size.y - mLY;
-                    RX = size.x - mRX;
-                    RY = size.y - mRY;
-                    BX = size.x - mBX;
-                    BY = size.y - mBY;
+                if (mCurrentRotation == Surface.ROTATION_90) {
+                    lx = size.x - mNormLeftX;
+                    ly = size.y - mNormLeftY;
+                    rx = size.x - mNormRightX;
+                    ry = size.y - mNormRightY;
+                    bx = size.x - mButtonX;
+                    by = size.y - mButtonY;
+                    resetX = size.x - mResetX;
+                    resetY = size.y - mResetY;
                 } else {
-                    LX = size.x - mLY;
-                    LY = mLX;
-                    RX = size.x - mRY;
-                    RY = mRX;
-                    BX = size.x - mBY;
-                    BY = mBX;
+                    lx = size.x - mNormLeftY;
+                    ly = mNormLeftX;
+                    rx = size.x - mNormRightY;
+                    ry = mNormRightX;
+                    bx = size.x - mButtonY;
+                    by = mButtonX;
+                    resetX = size.x - mResetY;
+                    resetY = mResetX;
                 }
-                image1.setRotation(180f);
-                image2.setRotation(180f);
-                button.setRotation(180f);
+                mLeftTriggerImage.setRotation(180f);
+                mRightTriggerImage.setRotation(180f);
+                mSaveButton.setRotation(180f);
+                mResetButton.setRotation(180f);
+                bannerRot = 180f;
+                bannerX = size.x / 2f;
+                bannerY = size.y - 150f;
                 break;
+                
             default:
-                if (DEBUG)
-                    Slog.d(TAG, "ROTATION_0");
-                if (mRotation == Surface.ROTATION_90) {
-                    LX = (!update ? 1080 : size.x) - mLY;
-                    LY = mLX;
-                    RX = (!update ? 1080 : size.x) - mRY;
-                    RY = mRX;
-                    BX = (!update ? 1080 : size.x) - mBY;
-                    BY = mBX;
-                } else if (mRotation == Surface.ROTATION_270) {
-                    LX = mLY;
-                    LY = (!update ? 2400 : size.y) - mLX;
-                    RX = mRY;
-                    RY = (!update ? 2400 : size.y) - mRX;
-                    BX = mBY;
-                    BY = (!update ? 2400 : size.y) - mBX;
+                if (mCurrentRotation == Surface.ROTATION_90) {
+                    lx = (!animateUpdate ? 1080 : size.x) - mNormLeftY;
+                    ly = mNormLeftX;
+                    rx = (!animateUpdate ? 1080 : size.x) - mNormRightY;
+                    ry = mNormRightX;
+                    bx = (!animateUpdate ? 1080 : size.x) - mButtonY;
+                    by = mButtonX;
+                    resetX = (!animateUpdate ? 1080 : size.x) - mResetY;
+                    resetY = mResetX;
+                } else if (mCurrentRotation == Surface.ROTATION_270) {
+                    lx = mNormLeftY;
+                    ly = (!animateUpdate ? 2400 : size.y) - mNormLeftX;
+                    rx = mNormRightY;
+                    ry = (!animateUpdate ? 2400 : size.y) - mNormRightX;
+                    bx = mButtonY;
+                    by = (!animateUpdate ? 2400 : size.y) - mButtonX;
+                    resetX = mResetY;
+                    resetY = (!animateUpdate ? 2400 : size.y) - mResetX;
                 }
-                image1.setRotation(90f);
-                image2.setRotation(90f);
-                button.setRotation(90f);
+                mLeftTriggerImage.setRotation(90f);
+                mRightTriggerImage.setRotation(90f);
+                mSaveButton.setRotation(90f);
+                mResetButton.setRotation(90f);
+                bannerRot = 90f;
+                bannerX = 150f;
+                bannerY = size.y / 2f;
         }
 
-        if (DEBUG)
-            Slog.d(TAG, "updatePosition computed: LX=" + LX + " LY=" + LY
-                    + " RX=" + RX + " RY=" + RY + " BX=" + BX + " BY=" + BY
-                    + " rotation=" + rotation + " mRotation=" + mRotation
-                    + " screenW=" + size.x + " screenH=" + size.y);
-
-        if (update) {
-            image1.animate()
-                    .x(LX - mHeight / 2)
-                    .y(LY - mHeight / 2)
+        if (animateUpdate) {
+            mLeftTriggerImage.animate()
+                    .x(lx - mMarkerHeight / 2f)
+                    .y(ly - mMarkerHeight / 2f)
                     .setDuration(0)
                     .start();
 
-            image2.animate()
-                    .x(RX - mHeight / 2)
-                    .y(RY - mHeight / 2 - (def ? mHeight : 0))
+            mRightTriggerImage.animate()
+                    .x(rx - mMarkerHeight / 2f)
+                    .y(ry - mMarkerHeight / 2f - (isDefaultRotation ? mMarkerHeight : 0))
                     .setDuration(0)
                     .start();
 
-            button.animate()
-                    .x(BX - mHeight / 2)
-                    .y(BY - mHeight / 2 - (def ? 2 * mHeight : 0))
+            mSaveButton.animate()
+                    .x(bx - mMarkerHeight / 2f)
+                    .y(by - mMarkerHeight / 2f - (isDefaultRotation ? 2 * mMarkerHeight : 0))
                     .setDuration(0)
                     .start();
 
-            mRotation = rotation;
+            mResetButton.animate()
+                    .x(resetX - mMarkerHeight / 2f)
+                    .y(resetY - mMarkerHeight / 2f - (isDefaultRotation ? 3 * mMarkerHeight : 0))
+                    .setDuration(0)
+                    .start();
 
-            mLX = LX;
-            mLY = LY;
-            mRX = RX;
-            mRY = RY;
-            mBX = BX;
-            mBY = BY;
+            if (mInfoBanner != null) {
+                // Determine width of banner to center it
+                mInfoBanner.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                int bannerWidth = mInfoBanner.getMeasuredWidth();
+                int bannerHeight = mInfoBanner.getMeasuredHeight();
+                
+                mInfoBanner.animate()
+                        .x(bannerX - bannerWidth / 2f)
+                        .y(bannerY - bannerHeight / 2f)
+                        .setDuration(0)
+                        .start();
+                mInfoBanner.setRotation(bannerRot);
+            }
+
+            mCurrentRotation = rotationToApply;
+
+            mNormLeftX = lx;
+            mNormLeftY = ly;
+            mNormRightX = rx;
+            mNormRightY = ry;
+            mButtonX = bx;
+            mButtonY = by;
+            mResetX = resetX;
+            mResetY = resetY;
         }
 
-        lx = LX;
-        ly = LY;
-        rx = RX;
-        ry = RY;
-        bx = BX;
-        by = BY;
+        mScreenLeftX = lx;
+        mScreenLeftY = ly;
+        mScreenRightX = rx;
+        mScreenRightY = ry;
     }
 }

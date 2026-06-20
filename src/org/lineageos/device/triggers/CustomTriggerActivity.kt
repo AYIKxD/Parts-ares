@@ -139,47 +139,35 @@ fun CustomTriggerScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(horizontal = 24.dp),
+            contentPadding = PaddingValues(top = 16.dp, bottom = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                ListItem(
-                    headlineContent = { Text(context.getString(R.string.custom_trigger)) },
-                    supportingContent = { Text(context.getString(R.string.custom_trigger_summary)) },
-                    leadingContent = { Icon(Icons.Default.Build, null) },
-                    trailingContent = {
-                        Switch(
-                            checked = enableCustomTrigger,
-                            onCheckedChange = {
-                                enableCustomTrigger = it
-                                Utils.putIntSystem(context, "custom_trigger_enable", if (it) 1 else 0)
-                            }
-                        )
+                org.lineageos.device.ui.SwitchFeatureCard(
+                    title = context.getString(R.string.custom_trigger),
+                    subtitle = context.getString(R.string.custom_trigger_summary),
+                    checked = enableCustomTrigger,
+                    onCheckedChange = {
+                        enableCustomTrigger = it
+                        Utils.putIntSystem(context, "custom_trigger_enable", if (it) 1 else 0)
                     },
-                    modifier = Modifier.clickable {
-                        enableCustomTrigger = !enableCustomTrigger
-                        Utils.putIntSystem(context, "custom_trigger_enable", if (enableCustomTrigger) 1 else 0)
-                    }
+                    icon = Icons.Default.Build
                 )
             }
             
             item {
-                ListItem(
-                    headlineContent = { Text(context.getString(R.string.custom_trigger_haptic_feedback_title)) },
-                    leadingContent = { Icon(Icons.Default.Vibration, null) },
-                    trailingContent = {
-                        Switch(
-                            checked = hapticFeedback,
-                            onCheckedChange = {
-                                hapticFeedback = it
-                                Utils.putIntSystem(context, "custom_trigger_haptic_feedback", if (it) 1 else 0)
-                            },
-                            enabled = enableCustomTrigger
-                        )
+                org.lineageos.device.ui.SwitchFeatureCard(
+                    title = context.getString(R.string.custom_trigger_haptic_feedback_title),
+                    subtitle = "Provide haptic feedback when actions trigger", // Note: A subtitle is required, I'll add a placeholder or leave it blank
+                    checked = hapticFeedback,
+                    onCheckedChange = {
+                        if (enableCustomTrigger) {
+                            hapticFeedback = it
+                            Utils.putIntSystem(context, "custom_trigger_haptic_feedback", if (it) 1 else 0)
+                        }
                     },
-                    modifier = Modifier.clickable(enabled = enableCustomTrigger) {
-                        hapticFeedback = !hapticFeedback
-                        Utils.putIntSystem(context, "custom_trigger_haptic_feedback", if (hapticFeedback) 1 else 0)
-                    }
+                    icon = Icons.Default.Vibration
                 )
             }
 
@@ -247,11 +235,11 @@ fun ActionItem(
         if (index >= 0) entries[index] else entries.firstOrNull() ?: ""
     }
 
-    ListItem(
-        headlineContent = { Text(title) },
-        supportingContent = { Text(currentSummary) },
-        leadingContent = { Icon(Icons.Default.TouchApp, null) },
-        modifier = Modifier.clickable(enabled = enabled) { showDialog = true }
+    org.lineageos.device.ui.FeatureCard(
+        title = title,
+        subtitle = currentSummary,
+        icon = Icons.Default.TouchApp,
+        onClick = { if (enabled) showDialog = true }
     )
 
     if (showDialog) {

@@ -238,65 +238,105 @@ fun DashboardScreen(prefs: SharedPreferences, onNavigate: (Screen) -> Unit) {
 fun TriggersScreen(prefs: SharedPreferences) {
     val context = LocalContext.current
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(bottom = 24.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp),
+        contentPadding = PaddingValues(top = 16.dp, bottom = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
             var sound by rememberBooleanPreference(prefs, "trigger_sound", false)
-            SwitchSettingsItem(
+            SwitchFeatureCard(
                 title = context.getString(R.string.trigger_sound_title),
-                summary = context.getString(R.string.trigger_sound_summary),
+                subtitle = context.getString(R.string.trigger_sound_summary),
                 checked = sound,
                 onCheckedChange = {
                     sound = it
                     Settings.System.putInt(context.contentResolver, "trigger_sound", if (it) 1 else 0)
                 },
-                icon = { Icon(Icons.Default.VolumeUp, null) }
+                icon = Icons.Default.VolumeUp
             )
         }
         item {
             var soundType by rememberStringPreference(prefs, "trigger_sound_type", "classic")
             val entries = context.resources.getStringArray(R.array.trigger_sound_type_entries)
             val values = context.resources.getStringArray(R.array.trigger_sound_type_values)
-            ListSettingsItem(
+            var expanded by remember { mutableStateOf(false) }
+
+            FeatureCard(
                 title = context.getString(R.string.trigger_sound_type_title),
-                summary = entries.getOrNull(values.indexOf(soundType)) ?: "classic",
-                icon = { Icon(Icons.Default.MusicNote, null) },
-                entries = entries,
-                values = values,
-                currentValue = soundType,
-                onValueChange = {
-                    soundType = it
-                    Settings.System.putString(context.contentResolver, "trigger_sound_type", it)
-                    TriggerUtils.getInstance(context).triggerAction(true, true)
-                }
+                subtitle = entries.getOrNull(values.indexOf(soundType)) ?: "classic",
+                icon = Icons.Default.MusicNote,
+                onClick = { expanded = true }
             )
+
+            if (expanded) {
+                AlertDialog(
+                    onDismissRequest = { expanded = false },
+                    title = { Text(context.getString(R.string.trigger_sound_type_title)) },
+                    text = {
+                        Column {
+                            entries.forEachIndexed { index, entry ->
+                                Row(
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            soundType = values[index]
+                                            Settings.System.putString(context.contentResolver, "trigger_sound_type", values[index])
+                                            TriggerUtils.getInstance(context).triggerAction(true, true)
+                                            expanded = false
+                                        }
+                                        .padding(vertical = 12.dp, horizontal = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    RadioButton(
+                                        selected = soundType == values[index],
+                                        onClick = {
+                                            soundType = values[index]
+                                            Settings.System.putString(context.contentResolver, "trigger_sound_type", values[index])
+                                            TriggerUtils.getInstance(context).triggerAction(true, true)
+                                            expanded = false
+                                        }
+                                    )
+                                    Spacer(Modifier.width(16.dp))
+                                    Text(entry, style = MaterialTheme.typography.bodyLarge)
+                                }
+                            }
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { expanded = false }) {
+                            Text(LocalContext.current.getString(android.R.string.cancel))
+                        }
+                    }
+                )
+            }
         }
         item {
-            SettingsItem(
+            FeatureCard(
                 title = context.getString(R.string.gaming_apps_title),
-                summary = context.getString(R.string.gaming_apps_summary),
-                icon = { Icon(Icons.Default.Gamepad, null) },
+                subtitle = context.getString(R.string.gaming_apps_summary),
+                icon = Icons.Default.Gamepad,
                 onClick = {
                     context.startActivity(Intent(context, AppListActivity::class.java))
                 }
             )
         }
         item {
-            SettingsItem(
+            FeatureCard(
                 title = context.getString(R.string.custom_trigger),
-                summary = context.getString(R.string.custom_trigger_summary),
-                icon = { Icon(Icons.Default.Build, null) },
+                subtitle = context.getString(R.string.custom_trigger_summary),
+                icon = Icons.Default.Build,
                 onClick = {
                     context.startActivity(Intent(context, CustomTriggerActivity::class.java))
                 }
             )
         }
         item {
-            SettingsItem(
+            FeatureCard(
                 title = context.getString(R.string.trigger_mapping_manager_title),
-                summary = context.getString(R.string.trigger_mapping_manager_summary),
-                icon = { Icon(Icons.Default.Settings, null) },
+                subtitle = context.getString(R.string.trigger_mapping_manager_summary),
+                icon = Icons.Default.Settings,
                 onClick = {
                     AlertDialog.Builder(context)
                         .setTitle(R.string.trigger_mapping_dialog_title)
@@ -325,153 +365,58 @@ fun TriggersScreen(prefs: SharedPreferences) {
 fun LedEffectsScreen(prefs: SharedPreferences) {
     val context = LocalContext.current
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(bottom = 24.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp),
+        contentPadding = PaddingValues(top = 16.dp, bottom = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
             var ledDisco by rememberBooleanPreference(prefs, "led_disco", false)
             var ledInGames by rememberBooleanPreference(prefs, "led_in_games", false)
             
-            SwitchSettingsItem(
+            SwitchFeatureCard(
                 title = context.getString(R.string.led_disco_title),
-                summary = context.getString(R.string.led_disco_summary),
+                subtitle = context.getString(R.string.led_disco_summary),
                 checked = ledDisco,
                 onCheckedChange = {
                     ledDisco = it
                     LedUtils.getInstance(context).play(it)
                     if (!it) { ledInGames = false }
                 },
-                icon = { Icon(Icons.Default.Lightbulb, null) }
+                icon = Icons.Default.Lightbulb
             )
         }
         item {
             var ledDisco by rememberBooleanPreference(prefs, "led_disco", false)
             var ledInGames by rememberBooleanPreference(prefs, "led_in_games", false)
             
-            SwitchSettingsItem(
+            SwitchFeatureCard(
                 title = context.getString(R.string.led_in_games_title),
-                summary = context.getString(R.string.led_in_games_summary),
+                subtitle = context.getString(R.string.led_in_games_summary),
                 checked = ledInGames,
                 onCheckedChange = {
                     ledInGames = it
                     LedUtils.getInstance(context).play(!it || (it && ledDisco))
                 },
-                enabled = ledDisco,
-                icon = { Icon(Icons.Default.VideogameAsset, null) }
+                icon = Icons.Default.VideogameAsset
             )
         }
         item {
             var ledInCalls by rememberState(
                 initial = Utils.getIntSystem(context, "led_in_calls", 1) == 1
             )
-            SwitchSettingsItem(
+            SwitchFeatureCard(
                 title = context.getString(R.string.led_in_calls_title),
-                summary = context.getString(R.string.led_in_calls_summary),
+                subtitle = context.getString(R.string.led_in_calls_summary),
                 checked = ledInCalls,
                 onCheckedChange = {
                     ledInCalls = it
                     Utils.putIntSystem(context, "led_in_calls", if (it) 1 else 0)
                 },
-                icon = { Icon(Icons.Default.Call, null) }
+                icon = Icons.Default.Call
             )
         }
-    }
-}
-
-@Composable
-fun SettingsItem(
-    title: String,
-    summary: String? = null,
-    icon: @Composable (() -> Unit)? = null,
-    onClick: () -> Unit
-) {
-    ListItem(
-        headlineContent = { Text(title) },
-        supportingContent = summary?.let { { Text(it) } },
-        leadingContent = icon,
-        modifier = Modifier.clickable(onClick = onClick)
-    )
-}
-
-@Composable
-fun SwitchSettingsItem(
-    title: String,
-    summary: String? = null,
-    icon: @Composable (() -> Unit)? = null,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    enabled: Boolean = true
-) {
-    ListItem(
-        headlineContent = { Text(title) },
-        supportingContent = summary?.let { { Text(it) } },
-        leadingContent = icon,
-        trailingContent = {
-            Switch(
-                checked = checked,
-                onCheckedChange = onCheckedChange,
-                enabled = enabled
-            )
-        },
-        modifier = Modifier.clickable(enabled = enabled) { onCheckedChange(!checked) }
-    )
-}
-
-@Composable
-fun ListSettingsItem(
-    title: String,
-    summary: String,
-    icon: @Composable (() -> Unit)? = null,
-    entries: Array<String>,
-    values: Array<String>,
-    currentValue: String,
-    onValueChange: (String) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    ListItem(
-        headlineContent = { Text(title) },
-        supportingContent = { Text(summary) },
-        leadingContent = icon,
-        modifier = Modifier.clickable { expanded = true }
-    )
-
-    if (expanded) {
-        AlertDialog(
-            onDismissRequest = { expanded = false },
-            title = { Text(title) },
-            text = {
-                Column {
-                    entries.forEachIndexed { index, entry ->
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    onValueChange(values[index])
-                                    expanded = false
-                                }
-                                .padding(vertical = 12.dp, horizontal = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            RadioButton(
-                                selected = currentValue == values[index],
-                                onClick = {
-                                    onValueChange(values[index])
-                                    expanded = false
-                                }
-                            )
-                            Spacer(Modifier.width(16.dp))
-                            Text(entry, style = MaterialTheme.typography.bodyLarge)
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { expanded = false }) {
-                    Text(LocalContext.current.getString(android.R.string.cancel))
-                }
-            }
-        )
     }
 }
 

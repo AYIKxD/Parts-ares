@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathNode
 import androidx.compose.ui.graphics.vector.VectorPainter
+import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -306,7 +307,7 @@ val GithubIcon: ImageVector
         ).apply {
             path(
                 fill = SolidColor(Color.Black),
-                pathFillType = androidx.compose.ui.graphics.vector.PathFillType.NonZero
+                pathFillType = androidx.compose.ui.graphics.PathFillType.NonZero
             ) {
                 moveTo(12f, 2f)
                 curveTo(6.477f, 2f, 2f, 6.477f, 2f, 12f)

@@ -308,7 +308,8 @@ fun ListSettingsItem(
                                     onValueChange(values[index])
                                     expanded = false
                                 }
-                                .padding(vertical = 12.dp, horizontal = 8.dp)
+                                .padding(vertical = 12.dp, horizontal = 8.dp),
+                            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                         ) {
                             RadioButton(
                                 selected = currentValue == values[index],

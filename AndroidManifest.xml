@@ -54,7 +54,7 @@
             </intent-filter>
             <meta-data
                 android:name="com.android.settings.icon"
-                android:resource="@drawable/ic_settings_gestures" />
+                android:resource="@mipmap/ic_launcher" />
             <meta-data
                 android:name="com.android.settings.icon_tintable"
                 android:value="true" />
@@ -66,15 +66,6 @@
             <meta-data android:name="com.android.settings.order"
                 android:value="-1" />
         </activity-alias>
-
-        <activity
-            android:name=".gestures.TouchGesturesActivity"
-            android:label="@string/screen_off_gestures"
-            android:exported="true">
-          <intent-filter>
-                <action android:name="com.android.settings.action.IA_SETTINGS" />
-          </intent-filter>
-        </activity>
 
         <receiver android:name=".BootReceiver"
             android:exported="true">

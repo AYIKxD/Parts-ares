@@ -78,8 +78,6 @@ fun XiaomiPartsScreen(prefs: SharedPreferences, onNavigateUp: () -> Unit) {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            item { CategoryHeader(context.getString(R.string.gestures)) }
-            // Gestures Activity was removed or missing from the repository
 
             item { CategoryHeader(context.getString(R.string.triggers_category_title)) }
             item {

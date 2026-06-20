@@ -108,7 +108,7 @@ fun XiaomiPartsApp(
                     }
                 },
                 scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.largeTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest
                 )
@@ -255,7 +255,7 @@ fun TriggersScreen(prefs: SharedPreferences) {
                     sound = it
                     Settings.System.putInt(context.contentResolver, "trigger_sound", if (it) 1 else 0)
                 },
-                icon = Icons.Default.VolumeUp
+                icon = androidx.compose.material.icons.Icons.AutoMirrored.Filled.VolumeUp
             )
         }
         item {

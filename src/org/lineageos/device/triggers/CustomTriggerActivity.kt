@@ -45,27 +45,12 @@ class CustomTriggerActivity : ComponentActivity(), ShortcutPickerHelper.OnPickLi
                     onNavigateUp = { finish() },
                     onPickApp = { key ->
                         pendingKey = key
-                        picker.pickShortcut(1) // Assuming 1 is some ID
+                        picker.pickShortcut(false)
                     },
                     activity = this
                 )
             }
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == ShortcutPickerHelper.REQUEST_PICK_SHORTCUT ||
-                requestCode == ShortcutPickerHelper.REQUEST_PICK_APPLICATION ||
-                requestCode == ShortcutPickerHelper.REQUEST_CREATE_SHORTCUT
-            ) {
-                picker.onActivityResult(requestCode, resultCode, data)
-                return
-            }
-        } else {
-            pendingKey = null
-        }
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun shortcutPicked(action: String?, description: String?, bmp: Bitmap?, isApplication: Boolean) {
@@ -74,6 +59,10 @@ class CustomTriggerActivity : ComponentActivity(), ShortcutPickerHelper.OnPickLi
             onShortcutPicked?.invoke()
             pendingKey = null
         }
+    }
+
+    override fun onPickCancelled() {
+        pendingKey = null
     }
 }
 
@@ -129,7 +118,7 @@ fun CustomTriggerScreen(
                     }
                 },
                 scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.largeTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest
                 )

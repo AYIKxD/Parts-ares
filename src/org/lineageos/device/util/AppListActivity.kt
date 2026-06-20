@@ -96,20 +96,26 @@ fun AppListScreen(onNavigateUp: () -> Unit) {
         topBar = {
             if (isSearchActive) {
                 SearchBar(
-                    query = searchQuery,
-                    onQueryChange = { searchQuery = it },
-                    onSearch = { isSearchActive = false },
-                    active = true,
-                    onActiveChange = { isSearchActive = it },
-                    placeholder = { Text(context.getString(R.string.search_apps)) },
-                    leadingIcon = {
-                        IconButton(onClick = { 
-                            isSearchActive = false
-                            searchQuery = ""
-                        }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                        }
+                    inputField = {
+                        SearchBarDefaults.InputField(
+                            query = searchQuery,
+                            onQueryChange = { searchQuery = it },
+                            onSearch = { isSearchActive = false },
+                            expanded = true,
+                            onExpandedChange = { isSearchActive = it },
+                            placeholder = { Text(context.getString(R.string.search_apps)) },
+                            leadingIcon = {
+                                IconButton(onClick = { 
+                                    isSearchActive = false
+                                    searchQuery = ""
+                                }) {
+                                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                                }
+                            }
+                        )
                     },
+                    expanded = true,
+                    onExpandedChange = { isSearchActive = it },
                     modifier = Modifier.fillMaxWidth()
                 ) {}
             } else {
@@ -131,7 +137,7 @@ fun AppListScreen(onNavigateUp: () -> Unit) {
                         }
                     },
                     scrollBehavior = scrollBehavior,
-                    colors = TopAppBarDefaults.largeTopAppBarColors(
+                    colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.surface,
                         scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest
                     )

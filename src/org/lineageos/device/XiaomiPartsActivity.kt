@@ -18,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -255,7 +256,7 @@ fun TriggersScreen(prefs: SharedPreferences) {
                     sound = it
                     Settings.System.putInt(context.contentResolver, "trigger_sound", if (it) 1 else 0)
                 },
-                icon = androidx.compose.material.icons.Icons.AutoMirrored.Filled.VolumeUp
+                icon = Icons.AutoMirrored.Filled.VolumeUp
             )
         }
         item {

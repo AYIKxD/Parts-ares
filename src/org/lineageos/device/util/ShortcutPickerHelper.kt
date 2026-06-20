@@ -1,4 +1,3 @@
-@file:Suppress("DEPRECATION", "deprecation")
 package org.lineageos.device.util
 
 import android.app.Activity
@@ -55,7 +54,6 @@ class ShortcutPickerHelper(
         }
     }
 
-    @Suppress("DEPRECATION")
     fun pickShortcut(fullAppsOnly: Boolean = false) {
         if (fullAppsOnly) {
             val mainIntent = Intent(Intent.ACTION_MAIN, null).apply {
@@ -81,7 +79,6 @@ class ShortcutPickerHelper(
         }
     }
 
-    @Suppress("DEPRECATION")
     private fun processShortcut(intent: Intent) {
         val applicationName = parent.getString(R.string.group_applications)
         val shortcutName = intent.getStringExtra(Intent.EXTRA_SHORTCUT_NAME)
@@ -108,7 +105,6 @@ class ShortcutPickerHelper(
         )
     }
 
-    @Suppress("DEPRECATION")
     private fun completeSetCustomShortcut(data: Intent) {
         val intent = if (android.os.Build.VERSION.SDK_INT >= 33) {
             data.getParcelableExtra(Intent.EXTRA_SHORTCUT_INTENT, Intent::class.java)
@@ -177,7 +173,6 @@ class ShortcutPickerHelper(
             return if (labelOnly) friendlyName else friendlyName
         }
 
-        @Suppress("DEPRECATION")
         fun getFriendlyShortcutName(
             context: Context,
             pm: PackageManager,

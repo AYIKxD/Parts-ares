@@ -53,7 +53,7 @@ class CustomTriggerActivity : ComponentActivity(), ShortcutPickerHelper.OnPickLi
         }
     }
 
-    override fun shortcutPicked(action: String?, description: String?, bmp: Bitmap?, isApplication: Boolean) {
+    override fun shortcutPicked(action: String?, friendlyName: String?, bmp: Bitmap?, isApplication: Boolean) {
         if (pendingKey != null && action != null) {
             Utils.putStringSystem(this, pendingKey, action)
             onShortcutPicked?.invoke()

@@ -54,6 +54,7 @@ class ShortcutPickerHelper(
         }
     }
 
+    @Suppress("DEPRECATION")
     fun pickShortcut(fullAppsOnly: Boolean = false) {
         if (fullAppsOnly) {
             val mainIntent = Intent(Intent.ACTION_MAIN, null).apply {
@@ -79,6 +80,7 @@ class ShortcutPickerHelper(
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun processShortcut(intent: Intent) {
         val applicationName = parent.getString(R.string.group_applications)
         val shortcutName = intent.getStringExtra(Intent.EXTRA_SHORTCUT_NAME)
@@ -105,19 +107,34 @@ class ShortcutPickerHelper(
         )
     }
 
+    @Suppress("DEPRECATION")
     private fun completeSetCustomShortcut(data: Intent) {
-        val intent = data.getParcelableExtra<Intent>(Intent.EXTRA_SHORTCUT_INTENT) ?: return
+        val intent = if (android.os.Build.VERSION.SDK_INT >= 33) {
+            data.getParcelableExtra(Intent.EXTRA_SHORTCUT_INTENT, Intent::class.java)
+        } else {
+            data.getParcelableExtra<Intent>(Intent.EXTRA_SHORTCUT_INTENT)
+        } ?: return
+
         intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, data.getStringExtra(Intent.EXTRA_SHORTCUT_NAME))
         var appUri = intent.toUri(0)
         appUri = appUri.replace("com.android.contacts.action.QUICK_CONTACT", "android.intent.action.VIEW")
 
         var bmp: Bitmap? = null
-        var extra: Parcelable? = data.getParcelableExtra(Intent.EXTRA_SHORTCUT_ICON)
+        var extra: Parcelable? = if (android.os.Build.VERSION.SDK_INT >= 33) {
+            data.getParcelableExtra(Intent.EXTRA_SHORTCUT_ICON, Bitmap::class.java)
+        } else {
+            data.getParcelableExtra(Intent.EXTRA_SHORTCUT_ICON)
+        }
+        
         if (extra is Bitmap) {
             bmp = extra
         }
         if (bmp == null) {
-            extra = data.getParcelableExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE)
+            extra = if (android.os.Build.VERSION.SDK_INT >= 33) {
+                data.getParcelableExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, ShortcutIconResource::class.java)
+            } else {
+                data.getParcelableExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE)
+            }
             if (extra is ShortcutIconResource) {
                 try {
                     val resources = packageManager.getResourcesForApplication(extra.packageName)
@@ -159,6 +176,7 @@ class ShortcutPickerHelper(
             return if (labelOnly) friendlyName else friendlyName
         }
 
+        @Suppress("DEPRECATION")
         fun getFriendlyShortcutName(
             context: Context,
             pm: PackageManager,

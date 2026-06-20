@@ -1,3 +1,4 @@
+@file:Suppress("DEPRECATION", "deprecation")
 package org.lineageos.device.util
 
 import android.app.Activity

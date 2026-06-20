@@ -36,6 +36,7 @@ import org.lineageos.device.ui.LEDsIllustration
 import org.lineageos.device.ui.MadeWithLoveFooter
 import org.lineageos.device.ui.TriggersIllustration
 import org.lineageos.device.ui.VisualCard
+import org.lineageos.device.ui.SwitchFeatureCard
 import org.lineageos.device.util.AppListActivity
 import org.lineageos.device.util.Utils
 

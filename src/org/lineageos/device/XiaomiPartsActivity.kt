@@ -9,26 +9,39 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-// Gestures removed
 import org.lineageos.device.led.LedUtils
 import org.lineageos.device.theme.XiaomiPartsTheme
 import org.lineageos.device.triggers.CustomTriggerActivity
 import org.lineageos.device.triggers.TriggerUtils
+import org.lineageos.device.ui.FeatureCard
+import org.lineageos.device.ui.LEDsIllustration
+import org.lineageos.device.ui.MadeWithLoveFooter
+import org.lineageos.device.ui.TriggersIllustration
+import org.lineageos.device.ui.VisualCard
 import org.lineageos.device.util.AppListActivity
 import org.lineageos.device.util.Utils
+
+enum class Screen {
+    Dashboard, Triggers, LedEffects
+}
 
 class XiaomiPartsActivity : ComponentActivity() {
 
@@ -38,17 +51,45 @@ class XiaomiPartsActivity : ComponentActivity() {
 
         setContent {
             XiaomiPartsTheme {
-                XiaomiPartsScreen(prefs, onNavigateUp = { finish() })
+                var currentScreen by remember { mutableStateOf(Screen.Dashboard) }
+                
+                BackHandler(enabled = currentScreen != Screen.Dashboard) {
+                    currentScreen = Screen.Dashboard
+                }
+
+                XiaomiPartsApp(
+                    prefs = prefs,
+                    currentScreen = currentScreen,
+                    onNavigate = { currentScreen = it },
+                    onNavigateUp = { 
+                        if (currentScreen == Screen.Dashboard) {
+                            finish()
+                        } else {
+                            currentScreen = Screen.Dashboard
+                        }
+                    }
+                )
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun XiaomiPartsScreen(prefs: SharedPreferences, onNavigateUp: () -> Unit) {
+fun XiaomiPartsApp(
+    prefs: SharedPreferences, 
+    currentScreen: Screen,
+    onNavigate: (Screen) -> Unit,
+    onNavigateUp: () -> Unit
+) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val context = LocalContext.current
+
+    val title = when (currentScreen) {
+        Screen.Dashboard -> "XiaomiParts"
+        Screen.Triggers -> context.getString(R.string.triggers_category_title)
+        Screen.LedEffects -> context.getString(R.string.leds_category_title)
+    }
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -56,7 +97,7 @@ fun XiaomiPartsScreen(prefs: SharedPreferences, onNavigateUp: () -> Unit) {
             LargeTopAppBar(
                 title = { 
                     Text(
-                        "XiaomiParts", 
+                        text = title, 
                         style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.ExtraBold) 
                     ) 
                 },
@@ -73,165 +114,268 @@ fun XiaomiPartsScreen(prefs: SharedPreferences, onNavigateUp: () -> Unit) {
             )
         }
     ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-
-            item { CategoryHeader(context.getString(R.string.triggers_category_title)) }
-            item {
-                var sound by rememberBooleanPreference(prefs, "trigger_sound", false)
-                SwitchSettingsItem(
-                    title = context.getString(R.string.trigger_sound_title),
-                    summary = context.getString(R.string.trigger_sound_summary),
-                    checked = sound,
-                    onCheckedChange = {
-                        sound = it
-                        Settings.System.putInt(context.contentResolver, "trigger_sound", if (it) 1 else 0)
-                    },
-                    icon = { Icon(Icons.Default.VolumeUp, null) }
-                )
-            }
-            item {
-                var soundType by rememberStringPreference(prefs, "trigger_sound_type", "classic")
-                val entries = context.resources.getStringArray(R.array.trigger_sound_type_entries)
-                val values = context.resources.getStringArray(R.array.trigger_sound_type_values)
-                ListSettingsItem(
-                    title = context.getString(R.string.trigger_sound_type_title),
-                    summary = entries.getOrNull(values.indexOf(soundType)) ?: "classic",
-                    icon = { Icon(Icons.Default.MusicNote, null) },
-                    entries = entries,
-                    values = values,
-                    currentValue = soundType,
-                    onValueChange = {
-                        soundType = it
-                        Settings.System.putString(context.contentResolver, "trigger_sound_type", it)
-                        TriggerUtils.getInstance(context).triggerAction(true, true)
-                    }
-                )
-            }
-            item {
-                SettingsItem(
-                    title = context.getString(R.string.gaming_apps_title),
-                    summary = context.getString(R.string.gaming_apps_summary),
-                    icon = { Icon(Icons.Default.Gamepad, null) },
-                    onClick = {
-                        context.startActivity(Intent(context, AppListActivity::class.java))
-                    }
-                )
-            }
-            item {
-                SettingsItem(
-                    title = context.getString(R.string.custom_trigger),
-                    summary = context.getString(R.string.custom_trigger_summary),
-                    icon = { Icon(Icons.Default.Build, null) },
-                    onClick = {
-                        context.startActivity(Intent(context, CustomTriggerActivity::class.java))
-                    }
-                )
-            }
-            item {
-                SettingsItem(
-                    title = context.getString(R.string.trigger_mapping_manager_title),
-                    summary = context.getString(R.string.trigger_mapping_manager_summary),
-                    icon = { Icon(Icons.Default.Settings, null) },
-                    onClick = {
-                        AlertDialog.Builder(context)
-                            .setTitle(R.string.trigger_mapping_dialog_title)
-                            .setMessage(android.text.Html.fromHtml(context.getString(R.string.trigger_mapping_dialog_message), android.text.Html.FROM_HTML_MODE_COMPACT))
-                            .setPositiveButton(android.R.string.ok, null)
-                            .setNegativeButton(R.string.trigger_mapping_reset_all) { _, _ ->
-                                val editor = prefs.edit()
-                                prefs.all.keys.forEach { key ->
-                                    if (key.startsWith("left_trigger_x") || key.startsWith("left_trigger_y") ||
-                                        key.startsWith("right_trigger_x") || key.startsWith("right_trigger_y")
-                                    ) {
-                                        editor.remove(key)
-                                    }
-                                }
-                                editor.apply()
-                                Toast.makeText(context, R.string.trigger_mapping_reset_toast, Toast.LENGTH_SHORT).show()
-                            }
-                            .show()
-                    }
-                )
-            }
-            item {
-                var alertMode by rememberStringPreference(prefs, "alert_slider_mode", "disabled")
-                val entries = context.resources.getStringArray(R.array.alert_slider_mode_entries)
-                val values = context.resources.getStringArray(R.array.alert_slider_mode_values)
-                ListSettingsItem(
-                    title = context.getString(R.string.alert_slider_mode_title),
-                    summary = entries.getOrNull(values.indexOf(alertMode)) ?: "Disabled",
-                    icon = { Icon(Icons.Default.Tune, null) },
-                    entries = entries,
-                    values = values,
-                    currentValue = alertMode,
-                    onValueChange = { alertMode = it }
-                )
-            }
-
-            item { CategoryHeader(context.getString(R.string.leds_category_title)) }
-            item {
-                var ledDisco by rememberBooleanPreference(prefs, "led_disco", false)
-                var ledInGames by rememberBooleanPreference(prefs, "led_in_games", false)
-                
-                SwitchSettingsItem(
-                    title = context.getString(R.string.led_disco_title),
-                    summary = context.getString(R.string.led_disco_summary),
-                    checked = ledDisco,
-                    onCheckedChange = {
-                        ledDisco = it
-                        LedUtils.getInstance(context).play(it)
-                        if (!it) { ledInGames = false }
-                    },
-                    icon = { Icon(Icons.Default.Lightbulb, null) }
-                )
-            }
-            item {
-                var ledDisco by rememberBooleanPreference(prefs, "led_disco", false)
-                var ledInGames by rememberBooleanPreference(prefs, "led_in_games", false)
-                
-                SwitchSettingsItem(
-                    title = context.getString(R.string.led_in_games_title),
-                    summary = context.getString(R.string.led_in_games_summary),
-                    checked = ledInGames,
-                    onCheckedChange = {
-                        ledInGames = it
-                        LedUtils.getInstance(context).play(!it || (it && ledDisco))
-                    },
-                    enabled = ledDisco,
-                    icon = { Icon(Icons.Default.VideogameAsset, null) }
-                )
-            }
-            item {
-                var ledInCalls by rememberState(
-                    initial = Utils.getIntSystem(context, "led_in_calls", 1) == 1
-                )
-                SwitchSettingsItem(
-                    title = context.getString(R.string.led_in_calls_title),
-                    summary = context.getString(R.string.led_in_calls_summary),
-                    checked = ledInCalls,
-                    onCheckedChange = {
-                        ledInCalls = it
-                        Utils.putIntSystem(context, "led_in_calls", if (it) 1 else 0)
-                    },
-                    icon = { Icon(Icons.Default.Call, null) }
-                )
+        Crossfade(
+            targetState = currentScreen, 
+            modifier = Modifier.padding(innerPadding)
+        ) { screen ->
+            when (screen) {
+                Screen.Dashboard -> DashboardScreen(prefs, onNavigate)
+                Screen.Triggers -> TriggersScreen(prefs)
+                Screen.LedEffects -> LedEffectsScreen(prefs)
             }
         }
     }
 }
 
 @Composable
-fun CategoryHeader(title: String) {
-    Text(
-        text = title,
-        color = MaterialTheme.colorScheme.primary,
-        style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 8.dp)
-    )
+fun DashboardScreen(prefs: SharedPreferences, onNavigate: (Screen) -> Unit) {
+    val scrollState = rememberScrollState()
+    val context = LocalContext.current
+    
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+            .padding(horizontal = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(280.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            VisualCard(
+                title = context.getString(R.string.triggers_category_title),
+                onClick = { onNavigate(Screen.Triggers) },
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                illustration = { TriggersIllustration() }
+            )
+            
+            VisualCard(
+                title = context.getString(R.string.leds_category_title),
+                onClick = { onNavigate(Screen.LedEffects) },
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                illustration = { LEDsIllustration() }
+            )
+        }
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "System",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(horizontal = 8.dp)
+        )
+
+        var alertMode by rememberStringPreference(prefs, "alert_slider_mode", "disabled")
+        val entries = context.resources.getStringArray(R.array.alert_slider_mode_entries)
+        val values = context.resources.getStringArray(R.array.alert_slider_mode_values)
+        
+        var expanded by remember { mutableStateOf(false) }
+
+        FeatureCard(
+            title = context.getString(R.string.alert_slider_mode_title),
+            subtitle = entries.getOrNull(values.indexOf(alertMode)) ?: "Disabled",
+            icon = Icons.Default.Tune,
+            onClick = { expanded = true },
+            illustrationColor = MaterialTheme.colorScheme.tertiaryContainer,
+            iconTint = MaterialTheme.colorScheme.onTertiaryContainer
+        )
+        
+        if (expanded) {
+            AlertDialog(
+                onDismissRequest = { expanded = false },
+                title = { Text(context.getString(R.string.alert_slider_mode_title)) },
+                text = {
+                    Column {
+                        entries.forEachIndexed { index, entry ->
+                            Row(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        alertMode = values[index]
+                                        expanded = false
+                                    }
+                                    .padding(vertical = 12.dp, horizontal = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                RadioButton(
+                                    selected = alertMode == values[index],
+                                    onClick = {
+                                        alertMode = values[index]
+                                        expanded = false
+                                    }
+                                )
+                                Spacer(Modifier.width(16.dp))
+                                Text(entry, style = MaterialTheme.typography.bodyLarge)
+                            }
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { expanded = false }) {
+                        Text(context.getString(android.R.string.cancel))
+                    }
+                }
+            )
+        }
+
+        Spacer(modifier = Modifier.weight(1f, fill = false))
+        MadeWithLoveFooter()
+        Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
+    }
+}
+
+@Composable
+fun TriggersScreen(prefs: SharedPreferences) {
+    val context = LocalContext.current
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(bottom = 24.dp)
+    ) {
+        item {
+            var sound by rememberBooleanPreference(prefs, "trigger_sound", false)
+            SwitchSettingsItem(
+                title = context.getString(R.string.trigger_sound_title),
+                summary = context.getString(R.string.trigger_sound_summary),
+                checked = sound,
+                onCheckedChange = {
+                    sound = it
+                    Settings.System.putInt(context.contentResolver, "trigger_sound", if (it) 1 else 0)
+                },
+                icon = { Icon(Icons.Default.VolumeUp, null) }
+            )
+        }
+        item {
+            var soundType by rememberStringPreference(prefs, "trigger_sound_type", "classic")
+            val entries = context.resources.getStringArray(R.array.trigger_sound_type_entries)
+            val values = context.resources.getStringArray(R.array.trigger_sound_type_values)
+            ListSettingsItem(
+                title = context.getString(R.string.trigger_sound_type_title),
+                summary = entries.getOrNull(values.indexOf(soundType)) ?: "classic",
+                icon = { Icon(Icons.Default.MusicNote, null) },
+                entries = entries,
+                values = values,
+                currentValue = soundType,
+                onValueChange = {
+                    soundType = it
+                    Settings.System.putString(context.contentResolver, "trigger_sound_type", it)
+                    TriggerUtils.getInstance(context).triggerAction(true, true)
+                }
+            )
+        }
+        item {
+            SettingsItem(
+                title = context.getString(R.string.gaming_apps_title),
+                summary = context.getString(R.string.gaming_apps_summary),
+                icon = { Icon(Icons.Default.Gamepad, null) },
+                onClick = {
+                    context.startActivity(Intent(context, AppListActivity::class.java))
+                }
+            )
+        }
+        item {
+            SettingsItem(
+                title = context.getString(R.string.custom_trigger),
+                summary = context.getString(R.string.custom_trigger_summary),
+                icon = { Icon(Icons.Default.Build, null) },
+                onClick = {
+                    context.startActivity(Intent(context, CustomTriggerActivity::class.java))
+                }
+            )
+        }
+        item {
+            SettingsItem(
+                title = context.getString(R.string.trigger_mapping_manager_title),
+                summary = context.getString(R.string.trigger_mapping_manager_summary),
+                icon = { Icon(Icons.Default.Settings, null) },
+                onClick = {
+                    AlertDialog.Builder(context)
+                        .setTitle(R.string.trigger_mapping_dialog_title)
+                        .setMessage(android.text.Html.fromHtml(context.getString(R.string.trigger_mapping_dialog_message), android.text.Html.FROM_HTML_MODE_COMPACT))
+                        .setPositiveButton(android.R.string.ok, null)
+                        .setNegativeButton(R.string.trigger_mapping_reset_all) { _, _ ->
+                            val editor = prefs.edit()
+                            prefs.all.keys.forEach { key ->
+                                if (key.startsWith("left_trigger_x") || key.startsWith("left_trigger_y") ||
+                                    key.startsWith("right_trigger_x") || key.startsWith("right_trigger_y")
+                                ) {
+                                    editor.remove(key)
+                                }
+                            }
+                            editor.apply()
+                            Toast.makeText(context, R.string.trigger_mapping_reset_toast, Toast.LENGTH_SHORT).show()
+                        }
+                        .show()
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun LedEffectsScreen(prefs: SharedPreferences) {
+    val context = LocalContext.current
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(bottom = 24.dp)
+    ) {
+        item {
+            var ledDisco by rememberBooleanPreference(prefs, "led_disco", false)
+            var ledInGames by rememberBooleanPreference(prefs, "led_in_games", false)
+            
+            SwitchSettingsItem(
+                title = context.getString(R.string.led_disco_title),
+                summary = context.getString(R.string.led_disco_summary),
+                checked = ledDisco,
+                onCheckedChange = {
+                    ledDisco = it
+                    LedUtils.getInstance(context).play(it)
+                    if (!it) { ledInGames = false }
+                },
+                icon = { Icon(Icons.Default.Lightbulb, null) }
+            )
+        }
+        item {
+            var ledDisco by rememberBooleanPreference(prefs, "led_disco", false)
+            var ledInGames by rememberBooleanPreference(prefs, "led_in_games", false)
+            
+            SwitchSettingsItem(
+                title = context.getString(R.string.led_in_games_title),
+                summary = context.getString(R.string.led_in_games_summary),
+                checked = ledInGames,
+                onCheckedChange = {
+                    ledInGames = it
+                    LedUtils.getInstance(context).play(!it || (it && ledDisco))
+                },
+                enabled = ledDisco,
+                icon = { Icon(Icons.Default.VideogameAsset, null) }
+            )
+        }
+        item {
+            var ledInCalls by rememberState(
+                initial = Utils.getIntSystem(context, "led_in_calls", 1) == 1
+            )
+            SwitchSettingsItem(
+                title = context.getString(R.string.led_in_calls_title),
+                summary = context.getString(R.string.led_in_calls_summary),
+                checked = ledInCalls,
+                onCheckedChange = {
+                    ledInCalls = it
+                    Utils.putIntSystem(context, "led_in_calls", if (it) 1 else 0)
+                },
+                icon = { Icon(Icons.Default.Call, null) }
+            )
+        }
+    }
 }
 
 @Composable
@@ -307,7 +451,7 @@ fun ListSettingsItem(
                                     expanded = false
                                 }
                                 .padding(vertical = 12.dp, horizontal = 8.dp),
-                            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             RadioButton(
                                 selected = currentValue == values[index],
